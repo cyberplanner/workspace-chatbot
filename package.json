@@ -1,0 +1,24 @@
+{
+  "name": "hr-chatbot",
+  "version": "1.0.0",
+  "description": "HR ChatBot with MSBot framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Capgemini-AIE/hr-chatbot.git"
+  },
+  "keywords": [
+    "chatbot",
+    "msbot",
+    "HR"
+  ],
+  "author": "Capgemini",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Capgemini-AIE/hr-chatbot/issues"
+  },
+  "homepage": "https://github.com/Capgemini-AIE/hr-chatbot#readme"
+}

@@ -6,7 +6,7 @@ sample setup to get this started
     * Install Bot Framework Emulator
     * Install ngrok found at https://ngrok.com/.
     * Run the bot from the command line using "index app.js".
-    * In Emulator enter "http://localhost:3978/api/messages" as endpoint.
+    * In Emulator enter "http://localhost:3978/api/messages" as endpoint and connect.
     * say "Hello"
 
 -----------------------------------------------------------------------------*/

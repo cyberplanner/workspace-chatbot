@@ -1,0 +1,33 @@
+{
+  "Endpoints": {
+    
+  },
+  "Bot": {
+    "intents": {
+      "holidaysleft": {
+        "name": "holidaysleft",
+        "messages": {
+          "default": "OK, I will be back with all the holidays details for you in no time."
+        }
+      },
+      "holidaysentitlement": {
+        "name": "holidaysentitlement",
+        "messages": {
+          "default": "OK, let me check into the system. Thank you for your patience."
+        }
+      },
+      "none": {
+        "name": "none",
+        "messages": {
+           "default": "I'm sorry I didn't understand that. Why not ask me about our new HR Scheme and how it can benefit you?"
+        }
+      },
+      "welcome": {
+        "name": "welcome",
+        "messages": {
+          "default": "Hi, my name is Simron. Nice to meet you! I'm a personal stylist available 24/7 to help you with anything you need - so feel free to ask me anything."
+        }
+      }
+    }
+  }
+}

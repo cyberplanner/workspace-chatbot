@@ -23,6 +23,7 @@
   "homepage": "https://github.com/Capgemini-AIE/hr-chatbot#readme",
   "dependencies": {
     "botbuilder": "^3.8.3",
-    "restify": "^4.3.0"
+    "restify": "^4.3.0",
+    "config": "^1.21.0"
   }
 }

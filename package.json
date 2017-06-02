@@ -24,7 +24,7 @@
   "dependencies": {
     "botbuilder": "^3.8.3",
     "cloudant": "^1.8.0",
-    "dotenv":"^7.4.0",
+    "dotenv": "^4.0.0",
     "restify": "^4.3.0"
   }
 }

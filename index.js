@@ -10,9 +10,12 @@ sample setup to get this started
     * say "Hello"
 
 -----------------------------------------------------------------------------*/
+var dotenv = require('dotenv');
 var dbcon = require('./custom_modules/module_dbConnection');
 var restify = require('restify');
 var builder = require('botbuilder');
+
+dotenv.load();
 
 var db = dbcon.getConnection();
 

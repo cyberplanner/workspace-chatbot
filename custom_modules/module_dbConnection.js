@@ -5,8 +5,6 @@ var nconf = require('nconf');
 var cloudant;
 
 dotenv.load();
-nconf.argv().env();
-nconf.file({ file: './local.env.json' });
 
 var dbCredentials = {
 	dbName : process.env.cloudant_dbName
@@ -14,47 +12,40 @@ var dbCredentials = {
 
 function initDBConnection() {
 		
-        
-		dbCredentials.url = process.env.cloudant_url ;
+        dbCredentials.url = process.env.cloudant_url ;
         if (process.env.VCAP_SERVICES = 'undefined'){
-            cloudant  = Cloudant(dbCredentials.url, function(err , cloudant){
-                if (err) {
+           cloudant  = Cloudant(dbCredentials.url, function(err , cloudant){
+                if (err){
                          console.log('Failed to initialize Cloudant: ' + err.message);
-                      }
-                else {
-                    // check if DB exists if not create
-                    cloudant.db.create(dbCredentials.dbName, function (err, res) {		
-                        if (err) { 
-                            console.log('ERROR: '+err.message); 
-                        }
-                    });
-
-                    db = cloudant.use(dbCredentials.dbName);
                 }
-            });
-        }else {
-            cloudant = Cloudant({vcapServices: JSON.parse(process.env.VCAP_SERVICES)},function(err,cloudant){
-                if (err) {
-                         console.log('Failed to initialize Cloudant: ' + err.message);
-                      }
-                else {
+                else{
                     // check if DB exists if not create
                     cloudant.db.create(dbCredentials.dbName, function (err, res) {		
-                        if (err) { 
-                            console.log('ERROR: '+err.message); 
-                        }
+                        if (err){ console.log('ERROR: '+err.message); }
                     });
-
                     db = cloudant.use(dbCredentials.dbName);
                 }
             });
         }
-       
+        else {
+            cloudant = Cloudant({vcapServices: JSON.parse(process.env.VCAP_SERVICES)},function(err,cloudant){
+                if (err){
+                         console.log('Failed to initialize Cloudant: ' + err.message);
+                }
+                else {
+                    // check if DB exists if not create
+                    cloudant.db.create(dbCredentials.dbName, function (err, res) {		
+                        if (err) { 
+                            console.log('ERROR: '+err.message); 
+                        }
+                    });
+                    db = cloudant.use(dbCredentials.dbName);
+                }
+            });
+        }
 }
 
 initDBConnection();
-
-
 
 module.exports = {
 	getConnection: function(){

@@ -1,0 +1,9 @@
+applications:
+- path: .
+  memory: 128M
+  instances: 1
+  domain: eu-gb.mybluemix.net
+  name: hr-chatbot-capgemini
+  host: hr-chatbot-capgemini
+  disk_quota: 128M
+  buildpack: https://github.com/cloudfoundry/nodejs-buildpack

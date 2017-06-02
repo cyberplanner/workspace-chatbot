@@ -10,28 +10,48 @@ sample setup to get this started
     * say "Hello"
 
 -----------------------------------------------------------------------------*/
-var dbcon = require('./custom_modules/module_dbConnection');
-var restify = require('restify');
-var builder = require('botbuilder');
 
+var config = require('config');
+require('dotenv').config();
+var botComponents = require('./custom_modules/module_botComponents');
+var dbcon = require('./custom_modules/module_dbConnection');
+
+var builder = botComponents.getBuilder();
+var bot = botComponents.getBot();
 var db = dbcon.getConnection();
 
-// Setup Restify Server
-var server = restify.createServer();
-server.listen(process.env.port || process.env.PORT || 3978, function () {
-   console.log('%s listening to %s', server.name, server.url); 
-});
+//=========================================================
+//Bots Dialogs
+//=========================================================
+// Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
+var recognizer = botComponents.getRecognizer();
+var dialog = botComponents.getDialog();
+bot.dialog('/', dialog);
 
-// Create chat connector for communicating with the Bot Framework Service
-var connector = new builder.ChatConnector({
-    appId: process.env.MICROSOFT_APP_ID,
-    appPassword: process.env.MICROSOFT_APP_PASSWORD
-});
+//Get intents configuration
+var intentsConfig = config.get("Bot.intents");
 
-// Listen for messages from users 
-server.post('/api/messages', connector.listen());
 
-// Receive messages from the user and respond by echoing each message back (prefixed with 'You said:')
-var bot = new builder.UniversalBot(connector, function (session) {
-    session.send("Hi, how can I assist you Today ?");
-});
+//HolidaysLeft intent. Luis based.
+dialog.matches(intentsConfig.holidaysleft.name, [
+    function (session, args, next) {
+        session.send(intentsConfig.holidaysleft.messages.default);
+    }
+]);
+
+//HolidaysEntitlement intent. Luis based.
+dialog.matches(intentsConfig.holidaysentitlement.name, [
+    function (session, args, next) {
+        session.send(intentsConfig.holidaysentitlement.messages.default);
+    }
+]);
+
+//welcome intent. Luis based.
+dialog.matches(intentsConfig.welcome.name, [
+    function (session, args, next) {
+        session.send(intentsConfig.welcome.messages.default);
+    }
+]);
+
+//default response if users command is unknown.
+dialog.onDefault(builder.DialogAction.send(intentsConfig.none.messages.default));

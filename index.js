@@ -14,11 +14,11 @@ sample setup to get this started
 var config = require('config');
 require('dotenv').config();
 var botComponents = require('./custom_modules/module_botComponents');
-var dbcon = require('./custom_modules/module_dbConnection');
+//var dbcon = require('./custom_modules/module_dbConnection');
 
 var builder = botComponents.getBuilder();
 var bot = botComponents.getBot();
-var db = dbcon.getConnection();
+//var db = dbcon.getConnection();
 
 //=========================================================
 //Bots Dialogs

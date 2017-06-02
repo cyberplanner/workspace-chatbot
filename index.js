@@ -11,6 +11,7 @@ sample setup to get this started
 
 -----------------------------------------------------------------------------*/
 var config = require('config');
+require('dotenv').config();
 var botComponents = require('./custom_modules/module_botComponents');
 
 var builder = botComponents.getBuilder();

@@ -16,18 +16,18 @@ require('dotenv').config();
 
  // Create chat bot (Uncomment before pushing)
 
-//  var connector = new builder.ChatConnector({
-//  	appId: process.env.MICROSOFT_APP_ID,
-//      appPassword: process.env.MICROSOFT_APP_PASSWORD
-//  });
+  var connector = new builder.ChatConnector({
+  	appId: process.env.MICROSOFT_APP_ID,
+      appPassword: process.env.MICROSOFT_APP_PASSWORD
+  });
 
-//  var bot = new builder.UniversalBot(connector);
-//  server.post('/api/messages', connector.listen());
+  var bot = new builder.UniversalBot(connector);
+  server.post('/api/messages', connector.listen());
 
-//Create chat bot (Uncomment to test locally)
+//Create chat bot (Uncomment this to test locally)
 
-var connector = new builder.ConsoleConnector().listen();
-var bot = new builder.UniversalBot(connector);
+//var connector = new builder.ConsoleConnector().listen();
+//var bot = new builder.UniversalBot(connector);
 
 var model = 'https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/' + process.env.LUIS_APP_ID +'?subscription-key=' + process.env.LUIS_APP_SUBSCRIPTION_KEY;
 var recognizer = new builder.LuisRecognizer(model);

@@ -10,9 +10,11 @@ sample setup to get this started
     * say "Hello"
 
 -----------------------------------------------------------------------------*/
-
+var dbcon = require('./custom_modules/module_dbConnection');
 var restify = require('restify');
 var builder = require('botbuilder');
+
+var db = dbcon.getConnection();
 
 // Setup Restify Server
 var server = restify.createServer();

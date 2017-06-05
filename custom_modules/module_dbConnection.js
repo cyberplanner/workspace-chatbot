@@ -14,8 +14,8 @@ function initDBConnection() {
         console.log("[CLOUDANT] " +  "Parsed VCAP Successfully");
         cloudant = Cloudant({vcapServices: vcap, plugin:'promises'});
     } catch (error) {
-        console.error(error);
         console.log("[CLOUDANT] " +  "ERROR Parsing VCAP");
+        console.error(error);
         cloudant = Cloudant({url: dbCredentials.url, plugin:'promises'});
         console.log("[CLOUDANT] " +  "Initialised cloudant from env variable: " + dbCredentials.url);
     }
@@ -29,9 +29,9 @@ initDBConnection();
 function testConnection(){
     
     cloudant.db.create(dbCredentials.dbName).then(res => {
-        console.log('RESULT: '+res.message );
+        console.log('[CLOUDANT] Success: '+res.message );
     }).catch(err => {
-        console.error('ERROR: '+err.error);
+        console.error('[CLOUDANT] ERROR: '+err.error);
         console.error(err);
     });      
 }

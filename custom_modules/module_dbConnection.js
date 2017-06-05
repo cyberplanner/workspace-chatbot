@@ -8,12 +8,16 @@ const dbCredentials = {
 };
 
 function initDBConnection() {
-    
-    if (process.env.VCAP_SERVICES = 'undefined'){
+    try {
+        console.log("[CLOUDANT] " +  "Parsing VCAP");
+        let vcap = JSON.parse(process.env.VCAP_SERVICES);
+        console.log("[CLOUDANT] " +  "Parsed VCAP Successfully");
+        cloudant = Cloudant({vcapServices: vcap, plugin:'promises'});
+    } catch (error) {
+        console.error(error);
+        console.log("[CLOUDANT] " +  "ERROR Parsing VCAP");
         cloudant = Cloudant({url: dbCredentials.url, plugin:'promises'});
-    }
-    else{
-        cloudant = Cloudant({vcapServices: JSON.parse(process.env.VCAP_SERVICES),plugin:'promises'});
+        console.log("[CLOUDANT] " +  "Initialised cloudant from env variable: " + dbCredentials.url);
     }
 
     testConnection();   

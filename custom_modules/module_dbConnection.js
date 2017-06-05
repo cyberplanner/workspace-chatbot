@@ -31,7 +31,8 @@ function testConnection(){
     cloudant.db.create(dbCredentials.dbName).then(res => {
         console.log('RESULT: '+res.message );
     }).catch(err => {
-        console.log('ERROR: '+err.error);
+        console.error('ERROR: '+err.error);
+        console.error(err);
     });      
 }
 

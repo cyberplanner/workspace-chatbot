@@ -4,7 +4,7 @@
   "description": "HR ChatBot with MSBot framework",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "./node_modules/.bin/jasmine-node spec",
     "start": "node index"
   },
   "repository": {
@@ -28,7 +28,8 @@
     "config": "^1.21.0",
     "dotenv": "^4.0.0",
     "nconf": "^0.8.4",
-    "restify": "^4.3.0"
+    "restify": "^4.3.0",
+    "jasmine-node": "^2.0.0"
   },
   "engines": {
     "node": "7.x"

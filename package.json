@@ -29,5 +29,8 @@
     "dotenv": "^4.0.0",
     "nconf": "^0.8.4",
     "restify": "^4.3.0"
+  },
+  "engines": {
+    "node": "7.x"
   }
 }

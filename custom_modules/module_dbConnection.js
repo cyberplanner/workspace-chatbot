@@ -18,25 +18,20 @@ function initDBConnection() {
 
     testConnection();   
     db = cloudant.db.use(dbCredentials.dbName);
-       
 }
 
 initDBConnection();
 
 function testConnection(){
     
-    // check if DB exists if not create
-    cloudant.db.create(dbCredentials.dbName, function (res) {		
-        //console.log('res: '+res.message +' ');
-    }).catch(function(err){
-        console.log('ERROR: '+err.message +' ');
-    });
-       
+    cloudant.db.create(dbCredentials.dbName).then(res => {
+        console.log('RESULT: '+res.message );
+    }).catch(err => {
+        console.log('ERROR: '+err.error);
+    });      
 }
 
 module.exports = {
-	getConnection: function(){
-		return db;
-	},
+	getConnection: () => db,
     testDBConnection: testConnection
 }

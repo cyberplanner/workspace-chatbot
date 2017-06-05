@@ -10,6 +10,9 @@ sample setup to get this started
     * say "Hello"
 
 -----------------------------------------------------------------------------*/
+var dotenv = require('dotenv').load();
+var dbcon = require('./custom_modules/module_dbConnection');
+var db = dbcon.getConnection();
 
 var config = require('config');
 require('dotenv').config();

@@ -30,5 +30,8 @@
     "nconf": "^0.8.4",
     "restify": "^4.3.0",
     "jasmine-node": "^2.0.0"
+  },
+  "engines": {
+    "node": "7.9.0"
   }
 }

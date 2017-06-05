@@ -15,11 +15,11 @@ const config = require('config');
 require('dotenv').config();
 const botComponents = require('./custom_modules/module_botComponents');
 const restify = require('restify');
-//var dbcon = require('./custom_modules/module_dbConnection');
+var dbcon = require('./custom_modules/module_dbConnection');
 
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
-//var db = dbcon.getConnection();
+var db = dbcon.getConnection();
 
 //=========================================================
 //Bots Dialogs

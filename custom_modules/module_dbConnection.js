@@ -12,7 +12,7 @@ function initDBConnection() {
         console.log("[CLOUDANT] " +  "Parsing VCAP");
         let vcap = JSON.parse(process.env.VCAP_SERVICES);
         console.log("[CLOUDANT] " +  "Parsed VCAP Successfully");
-        cloudant = Cloudant({instanceName: 'HR_Chatbot_Capgemini_Cloudant',
+        cloudant = Cloudant({instanceName: getInstanceName(vcap),
                              vcapServices: vcap, plugin:'promises'});
     } catch (error) {
         console.log("[CLOUDANT] " +  "ERROR Parsing VCAP");
@@ -35,6 +35,18 @@ function testConnection(){
         console.error('[CLOUDANT] ERROR: '+err.error);
         console.error(err);
     });      
+}
+
+
+/* get instance name from envirmoment JSON obeject */
+function getInstanceName(envJson){
+    var InstanceName;
+    
+    envJson.cloudantNoSQLDB.forEach(function(entry){
+        InstanceName = entry.name;
+    });
+    
+    return InstanceName;
 }
 
 module.exports = {

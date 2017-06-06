@@ -12,7 +12,8 @@ function initDBConnection() {
         console.log("[CLOUDANT] " +  "Parsing VCAP");
         let vcap = JSON.parse(process.env.VCAP_SERVICES);
         console.log("[CLOUDANT] " +  "Parsed VCAP Successfully");
-        cloudant = Cloudant({vcapServices: vcap, plugin:'promises'});
+        cloudant = Cloudant({instanceName: 'HR_Chatbot_Capgemini_Cloudant',
+                             vcapServices: vcap, plugin:'promises'});
     } catch (error) {
         console.log("[CLOUDANT] " +  "ERROR Parsing VCAP");
         console.error(error);

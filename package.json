@@ -4,7 +4,7 @@
   "description": "HR ChatBot with MSBot framework",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine-node spec/ --junitreport",
+    "test": "./node_modules/.bin/jasmine-node spec --junitreport",
     "start": "node index"
   },
   "repository": {
@@ -29,6 +29,8 @@
     "dotenv": "^4.0.0",
     "nconf": "^0.8.4",
     "restify": "^4.3.0",
-    "jasmine-node": "1.3.1"
+    "jasmine-node": "^1.3.1",
+    "jasmine" : "^2.6.0",
+    "jasmine-xml-reporter": "1.0.6"
   }
 }

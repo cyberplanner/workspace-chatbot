@@ -15,14 +15,20 @@ const config = require('config');
 require('dotenv').config();
 const botComponents = require('./custom_modules/module_botComponents');
 const restify = require('restify');
-var dbcon = require('./custom_modules/module_dbConnection');
+const dbcon = require('./custom_modules/module_dbConnection');
+const RestifyRouter = require('restify-routing');
+
+/*
+    Load routes
+*/
+const knowledgeRouter = require('./routes/knowledge');
 
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
-var db = dbcon.getConnection();
+const db = dbcon.getConnection();
 
 //=========================================================
-//Bots Dialogs
+// Bots Dialogs
 //=========================================================
 // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
 const recognizer = botComponents.getRecognizer();
@@ -61,10 +67,26 @@ dialog.onDefault(builder.DialogAction.send(intentsConfig.none.messages.default))
 // Setup Server
 //=========================================================
 
-// Setup Restify Server
+// Setup Restify Router
 const server = restify.createServer();
+
+// Add middleware
+server.use(restify.queryParser());
+server.use(restify.bodyParser());
+
+// Setup Restify Router
+const rootRouter = new RestifyRouter();
+
+// Bot Framework Endpoint
+rootRouter.post('/api/messages', botComponents.getConnector().listen());
+
+// Knowledge Management
+rootRouter.use('/knowledge', knowledgeRouter);
+
+// Apply routes
+rootRouter.applyRoutes(server);
+
+// Listen on port
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
-
-server.post('/api/messages', botComponents.getConnector().listen());

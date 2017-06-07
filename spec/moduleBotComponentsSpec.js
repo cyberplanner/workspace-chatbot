@@ -1,6 +1,7 @@
 var botComponents = require("../custom_modules/module_botComponents");
 
 describe("Test botComponents functions", function() {
+	console.error("###file being called###");
 	it("Tests that the getBot() is called", function() {
 		spyOn(botComponents, "getBot");
         botComponents.getBot();

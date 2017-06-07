@@ -63,8 +63,16 @@ dialog.onDefault(builder.DialogAction.send(intentsConfig.none.messages.default))
 
 // Setup Restify Server
 const server = restify.createServer();
+server.use(restify.queryParser());
+server.use(restify.bodyParser());
+
+// Bot Framework Endpoint
+server.post('/api/messages', botComponents.getConnector().listen());
+
+// Knowledge Management
+server.use('/user')
+
+// Listen on port
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });
-
-server.post('/api/messages', botComponents.getConnector().listen());

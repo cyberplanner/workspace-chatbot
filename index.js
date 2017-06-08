@@ -22,10 +22,26 @@ const RestifyRouter = require('restify-routing');
     Load routes
 */
 const knowledgeRouter = require('./routes/knowledge');
-
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
 const db = dbcon.getConnection();
+
+//=========================================================
+//swagger setup
+//=========================================================
+var swaggerJSDoc = require('swagger-jsdoc');
+
+// Swagger definition
+config.swagger.host = process.env.HOST;
+var swaggerDefinition = config.swagger;
+
+// Options for the swagger docs
+var options = {
+  swaggerDefinition: swaggerDefinition,   // Import swaggerDefinitions
+  apis: ['./routes/knowledge.js'],  // Path to the API docs
+};
+
+var swaggerSpec = swaggerJSDoc(options);
 
 //=========================================================
 // Bots Dialogs
@@ -76,6 +92,12 @@ server.use(restify.bodyParser());
 
 // Setup Restify Router
 const rootRouter = new RestifyRouter();
+
+// Serve swagger docs
+rootRouter.get('/swagger.json', function(req, res) {
+  res.setHeader('Content-Type', 'application/json');
+  res.send(swaggerSpec);
+});
 
 // Bot Framework Endpoint
 rootRouter.post('/api/messages', botComponents.getConnector().listen());

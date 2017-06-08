@@ -12,6 +12,22 @@ let knowledgeRouter = new RestifyRouter();
 */
 const createKnowledgeSchema = require('./schemas/createKnowledge.json');
 
+/**
+* @swagger
+* /knowledge/:id:
+*   post:
+*     description: Creates a new Knowledge Management item in storage.
+*     required:
+*      - id
+*     properties:
+*       id:
+*         type: string  
+*     responses:
+*       200:
+*         description: Successful Creation
+*       500:
+*         description: Creation failed. Item may already exist in DB.
+*/
 knowledgeRouter.post('/:id', 
     validator.body( createKnowledgeSchema ),
     (req, res) => {

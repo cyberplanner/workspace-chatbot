@@ -4,7 +4,7 @@
   "description": "HR ChatBot with MSBot framework",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine-node spec",
+    "test": "./node_modules/.bin/jasmine-node spec --junitreport",
     "start": "node index"
   },
   "repository": {
@@ -27,10 +27,12 @@
     "cloudant": "^1.8.0",
     "config": "^1.21.0",
     "dotenv": "^4.0.0",
-    "jasmine-node": "^2.0.0",
+    "jasmine-node": "^1.14.5",
+    "jasmine-xml-reporter": "^1.0.6",
     "nconf": "^0.8.4",
     "restify": "^4.3.0",
     "restify-json-schema-validation-middleware": "^2.1.0",
+    "swagger-jsdoc": "^1.9.4",
     "restify-routing": "^0.3.11"
   },
   "engines": {

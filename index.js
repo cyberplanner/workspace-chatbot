@@ -54,7 +54,7 @@ bot.dialog('/', dialog);
 //Get intents configuration
 const intentsConfig = config.get("Bot.intents");
 
-
+/*
 //HolidaysLeft intent. Luis based.
 dialog.matches(intentsConfig.holidaysleft.name, [
     (session, args, next) => {
@@ -75,9 +75,25 @@ dialog.matches(intentsConfig.welcome.name, [
         session.send(intentsConfig.welcome.messages.default);
     }
 ]);
+*/ 
+
 
 //default response if users command is unknown.
-dialog.onDefault(builder.DialogAction.send(intentsConfig.none.messages.default));
+dialog.onDefault([(session, args, next) => {
+    console.log(args);
+    if (args.intent && args.intent != null) {
+        db.get(args.intent)
+            .then(result => {
+                console.log("Successfully responding: ");
+                session.send(result.responses[0]);
+            })
+            .catch(error => {
+                builder.DialogAction.send(intentsConfig.none.messages.default);
+            });
+    } else {
+        builder.DialogAction.send(intentsConfig.none.messages.default);
+    }
+}]);
 
 //=========================================================
 // Setup Server

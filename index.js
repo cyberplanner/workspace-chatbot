@@ -81,7 +81,7 @@ const rootRouter = new RestifyRouter();
 rootRouter.post('/api/messages', botComponents.getConnector().listen());
 
 // Knowledge Management
-rootRouter.use('/knowledge', knowledgeRouter);
+rootRouter.use('/knowledge', knowledgeRouter(db));
 
 // Apply routes
 rootRouter.applyRoutes(server);

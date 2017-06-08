@@ -1,6 +1,7 @@
 // Module Imports
 const RestifyRouter = require('restify-routing');
-const validator = require('restify-ajv-middleware');
+
+let db;
 
 // Setup Router
 let knowledgeRouter = new RestifyRouter();
@@ -10,9 +11,21 @@ let knowledgeRouter = new RestifyRouter();
 */
 const createKnowledgeSchema = require('./schemas/createKnowledge.json');
 
-// Setup basic subroute
-knowledgeRouter.post('/:username', (req, res) => {
-    res.send(200, 'Hello ' + req.params.username);
+knowledgeRouter.post('/:id', (req, res) => {
+    db.insert(req.body, Object.assign({
+        _id: req.params.id
+    }))
+    .then(() => {
+        res.json(200, {message: "Successfully saved knowledge."});
+    })
+    .catch(error => {
+      console.error(error);  
+      res.json(500, {error: error.message});
+    });
+    
 });
 
-module.exports = knowledgeRouter;
+module.exports = (database) => {
+    db = database;
+    return knowledgeRouter
+};

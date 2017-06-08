@@ -31,7 +31,7 @@ const createKnowledgeSchema = require('./schemas/createKnowledge.json');
 knowledgeRouter.post('/:id', 
     validator.body( createKnowledgeSchema ),
     (req, res) => {
-        db.insert(req.body, Object.assign({
+        db.insert(Object.assign(req.body, {
             _id: req.params.id
         }))
         .then(() => {
@@ -39,7 +39,7 @@ knowledgeRouter.post('/:id',
         })
         .catch(error => {
             console.error(error);  
-            res.json(500, {error: error.message});
+            res.json(500, {error: error.reason});
         });
     });
 

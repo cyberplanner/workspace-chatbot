@@ -16,10 +16,17 @@ require('dotenv').config();
 const botComponents = require('./custom_modules/module_botComponents');
 const restify = require('restify');
 var dbcon = require('./custom_modules/module_dbConnection');
+const swgr = require('./public/app');
 
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
 var db = dbcon.getConnection();
+
+//=========================================================
+//swagger setup
+//=========================================================
+const swgr = require('./public/app');
+
 
 //=========================================================
 //Bots Dialogs

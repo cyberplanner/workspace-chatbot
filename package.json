@@ -23,13 +23,16 @@
   },
   "homepage": "https://github.com/Capgemini-AIE/hr-chatbot#readme",
   "dependencies": {
+    "body-parser": "^1.17.2",
     "botbuilder": "^3.8.3",
     "cloudant": "^1.8.0",
     "config": "^1.21.0",
     "dotenv": "^4.0.0",
+    "express": "^4.15.3",
+    "jasmine-node": "^2.0.0",
     "nconf": "^0.8.4",
     "restify": "^4.3.0",
-    "jasmine-node": "^2.0.0"
+    "swagger-jsdoc": "^1.9.4"
   },
   "engines": {
     "node": "7.9.0"

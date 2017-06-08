@@ -23,7 +23,6 @@
   },
   "homepage": "https://github.com/Capgemini-AIE/hr-chatbot#readme",
   "dependencies": {
-    "body-parser": "^1.17.2",
     "botbuilder": "^3.8.3",
     "cloudant": "^1.8.0",
     "config": "^1.21.0",

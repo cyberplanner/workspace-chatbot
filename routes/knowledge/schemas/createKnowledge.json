@@ -1,0 +1,18 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": false,
+    "properties": {
+        "responses": {
+            "id": "/properties/responses",
+            "items": {
+                "id": "/properties/responses/items",
+                "type": "string"
+            },
+            "type": "array"
+        }
+    },
+    "required": [
+        "responses"
+    ],
+    "type": "object"
+}

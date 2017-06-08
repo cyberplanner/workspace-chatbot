@@ -32,7 +32,11 @@ const db = dbcon.getConnection();
 var swaggerJSDoc = require('swagger-jsdoc');
 
 // Swagger definition
-var swaggerDefinition = config.swagger;
+var swaggerDefinition = {
+  info: config.swagger.info,
+  host: process.env.HOST, // Host (optional)
+  basePath: config.swagger.basePath // Base path (optional)
+};
 
 // Options for the swagger docs
 var options = {
@@ -93,7 +97,7 @@ server.use(restify.bodyParser());
 const rootRouter = new RestifyRouter();
 
 // Serve swagger docs
-rootRouter.get('/api-docs.json', function(req, res) {
+rootRouter.get('/swagger.json', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });

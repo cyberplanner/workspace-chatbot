@@ -30,6 +30,7 @@
     "jasmine-node": "^2.0.0",
     "nconf": "^0.8.4",
     "restify": "^4.3.0",
+    "restify-json-schema-validation-middleware": "^2.1.0",
     "restify-routing": "^0.3.11"
   },
   "engines": {

@@ -4,7 +4,7 @@
   "description": "HR ChatBot with MSBot framework",
   "main": "index.js",
   "scripts": {
-    "test": "./node_modules/.bin/jasmine-node spec --junitreport --output FOLDER=report",
+    "test": "./node_modules/.bin/jasmine-node spec --junitreport",
     "start": "node index"
   },
   "repository": {

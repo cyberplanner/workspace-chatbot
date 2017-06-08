@@ -38,7 +38,7 @@ var swaggerDefinition = config.swagger;
 // Options for the swagger docs
 var options = {
   swaggerDefinition: swaggerDefinition,   // Import swaggerDefinitions
-  apis: ['./routes/knowledge.js'],  // Path to the API docs
+  apis: ['./routes/knowledge/index.js'],  // Path to the API docs
 };
 
 var swaggerSpec = swaggerJSDoc(options);

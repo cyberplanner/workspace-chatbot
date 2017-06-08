@@ -29,5 +29,14 @@
         }
       }
     }
+  },
+  "swagger": {
+    "info": {
+      "title": "HR chatbot Service",
+      "version": "1.0.0",
+      "description": " HR chatbot RESTful API Documentation with Swagger "
+    },
+    "host": "localhost:3978",
+    "basePath": "/"
   }
 }

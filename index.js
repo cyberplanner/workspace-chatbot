@@ -32,11 +32,8 @@ const db = dbcon.getConnection();
 var swaggerJSDoc = require('swagger-jsdoc');
 
 // Swagger definition
-var swaggerDefinition = {
-  info: config.swagger.info,
-  host: process.env.HOST, // Host (optional)
-  basePath: config.swagger.basePath // Base path (optional)
-};
+config.swagger.host = process.env.HOST;
+var swaggerDefinition = config.swagger;
 
 // Options for the swagger docs
 var options = {

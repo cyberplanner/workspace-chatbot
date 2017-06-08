@@ -22,6 +22,8 @@ const RestifyRouter = require('restify-routing');
     Load routes
 */
 const knowledgeRouter = require('./routes/knowledge');
+const botHandler = require('./bot.js');
+
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
 const db = dbcon.getConnection();
@@ -51,49 +53,8 @@ const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 bot.dialog('/', dialog);
 
-//Get intents configuration
-const intentsConfig = config.get("Bot.intents");
-
-/*
-//HolidaysLeft intent. Luis based.
-dialog.matches(intentsConfig.holidaysleft.name, [
-    (session, args, next) => {
-        session.send(intentsConfig.holidaysleft.messages.default);
-    }
-]);
-
-//HolidaysEntitlement intent. Luis based.
-dialog.matches(intentsConfig.holidaysentitlement.name, [
-    (session, args, next) => {
-        session.send(intentsConfig.holidaysentitlement.messages.default);
-    }
-]);
-
-//welcome intent. Luis based.
-dialog.matches(intentsConfig.welcome.name, [
-    (session, args, next) => {
-        session.send(intentsConfig.welcome.messages.default);
-    }
-]);
-*/ 
-
-
-//default response if users command is unknown.
-dialog.onDefault([(session, args, next) => {
-    console.log(args);
-    if (args.intent && args.intent != null) {
-        db.get(args.intent)
-            .then(result => {
-                console.log("Successfully responding: ");
-                session.send(result.responses[0]);
-            })
-            .catch(error => {
-                builder.DialogAction.send(intentsConfig.none.messages.default);
-            });
-    } else {
-        builder.DialogAction.send(intentsConfig.none.messages.default);
-    }
-}]);
+// Use bot module to find response from KM.
+dialog.onDefault(botHandler(db));
 
 //=========================================================
 // Setup Server

@@ -92,7 +92,7 @@ server.use(restify.bodyParser());
 // Setup Restify Router
 const rootRouter = new RestifyRouter();
 
-// Serve swagger docs the way you like (Recommendation: swagger-tools)
+// Serve swagger docs
 rootRouter.get('/api-docs.json', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);

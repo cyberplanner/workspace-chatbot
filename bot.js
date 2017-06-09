@@ -26,7 +26,7 @@ module.exports = (database) => {
           })
           .catch(error => {
               defaultResponse = {
-                responses: "I'm not sure how to reply to that. Please ask me again or in a different way?"
+                responses: "I\'m not sure how to reply to that. Please ask me again or in a different way?"
               };
           });
   return bot;

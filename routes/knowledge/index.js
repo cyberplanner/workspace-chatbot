@@ -62,20 +62,20 @@ knowledgeRouter.post('/:id',
  *       404:
  *          description: doc not found
  */
-knowledgeRouter.get('/:id', (req,res) => {
-    
-    db.get(req.params.id).then(doc =>{
-        res.setHeader('Content-Type', 'application/json');
-        res.write(JSON.stringify(doc));
-        res.end();
-        return;    
-    })
-    .catch(err => {
-        console.log("Error :"+err)
-        res.json(err.statusCode, {error: err.reason});
+knowledgeRouter.get('/:id', 
+    (req,res) => { 
+        db.get(req.params.id)
+        .then(doc => {
+            res.setHeader('Content-Type', 'application/json');
+            res.write(JSON.stringify(doc));
+            res.end();
+            return;    
+        })
+        .catch(err => {
+            console.log("Error :"+err)
+            res.json(err.statusCode, {error: err.reason});
+        });
     });
-   
-});
 
 
 

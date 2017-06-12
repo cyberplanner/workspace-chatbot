@@ -66,10 +66,7 @@ knowledgeRouter.get('/:id',
     (req,res) => { 
         db.get(req.params.id)
         .then(doc => {
-            res.setHeader('Content-Type', 'application/json');
-            res.write(JSON.stringify(doc));
-            res.end();
-            return;    
+            res.json(doc);
         })
         .catch(err => {
             console.log("Error :"+err)

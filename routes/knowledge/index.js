@@ -43,6 +43,39 @@ knowledgeRouter.post('/:id',
         });
     });
 
+
+/**
+ * @swagger
+ * /knowledge/:id:
+ *   get:
+ *     description: Returns the whole document
+ *     produces:
+ *       - application/json
+ *     required:
+ *      - id
+ *     properties:
+ *       id:
+ *         type: string
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: doc not found
+ */
+knowledgeRouter.get('/:id', 
+    (req,res) => { 
+        db.get(req.params.id)
+        .then(doc => {
+            res.json(doc);
+        })
+        .catch(err => {
+            console.log("Error :"+err)
+            res.json(err.statusCode, {error: err.reason});
+        });
+    });
+
+
+
 module.exports = (database) => {
     db = database;
     return knowledgeRouter

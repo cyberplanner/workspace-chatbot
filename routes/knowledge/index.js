@@ -27,6 +27,8 @@ const createKnowledgeSchema = require('./schemas/createKnowledge.json');
 *         description: Successful Creation
 *       500:
 *         description: Creation failed. Item may already exist in DB.
+*       404:
+ *        description: doc not found
 */
 knowledgeRouter.post('/:id', 
     validator.body( createKnowledgeSchema ),
@@ -74,6 +76,45 @@ knowledgeRouter.get('/:id',
         });
     });
 
+
+/**
+* @swagger
+* /knowledge/:id:
+*   put:
+*     description: Updates a new Knowledge Management item in storage.
+*     required:
+*      - id
+*     properties:
+*       id:
+*         type: string
+*     responses:
+*       200:
+*         description: Successful Update
+*       500:
+*         description: Update failed. Item may not exist in DB.
+*/
+ knowledgeRouter.put('/:id', 
+ validator.body( createKnowledgeSchema ),
+    (req, res) => {
+    	db.get(req.params.id)
+        .then(doc => {
+              db.insert(Object.assign(req.body, {
+  		            _rev: doc._rev,
+  		            _id:  req.params.id
+  		      }))
+  		      .then(() => {
+  		           res.json(200, {message: "Successfully updated knowledge."});
+  		      })
+  		      .catch(error => {
+  		            console.error(error);  
+  		            res.json(500, {error: error.reason});
+  		      });
+        })
+        .catch(err => {
+            console.log("Error :"+err)
+            res.json(err.statusCode, {error: err.reason});
+        });		      
+    });
 
 
 module.exports = (database) => {

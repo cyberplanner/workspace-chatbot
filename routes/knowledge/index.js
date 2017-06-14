@@ -57,7 +57,7 @@ knowledgeRouter.post('/:id',
  *       id:
  *         type: string
  *     required:
-*      		- id
+*      - id
  *     responses:
  *       200:
  *         description: Successfully retrieved
@@ -84,9 +84,6 @@ knowledgeRouter.get('/:id',
  *     description: Returns all Knowledge Management items from the storage
  *     produces:
  *       - application/json
- *     properties:
- *       id:
- *         type: string
  *     responses:
  *       200:
  *         description: Successfully retrieved

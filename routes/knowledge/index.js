@@ -50,11 +50,9 @@ knowledgeRouter.post('/:id',
  * @swagger
  * /knowledge/:id:
  *   get:
- *     description: Returns the whole document
+ *     description: Returns the whole document for that id. If id is not passed then it returns all documents with bodies.
  *     produces:
  *       - application/json
- *     required:
- *      - id
  *     properties:
  *       id:
  *         type: string
@@ -65,17 +63,27 @@ knowledgeRouter.post('/:id',
  *          description: doc not found
  */
 knowledgeRouter.get('/:id', 
-    (req,res) => { 
-        db.get(req.params.id)
-        .then(doc => {
-            res.json(doc);
-        })
-        .catch(err => {
-            console.log("Error :"+err)
-            res.json(err.statusCode, {error: err.reason});
-        });
+    (req,res) => {
+    	if (req.params.id) {
+	        db.get(req.params.id)
+	        .then(doc => {
+	            res.json(doc);
+	        })
+	        .catch(err => {
+	            console.log("Error :"+err)
+	            res.json(err.statusCode, {error: err.reason});
+	        });
+    	} else {
+    		db.list({include_docs:true})
+	        .then(doc => {
+	            res.json(doc);
+	        })
+	        .catch(err => {
+	            console.log("Error :"+err)
+	            res.json(err.statusCode, {error: err.reason});
+	        });
+    	}
     });
-
 
 /**
 * @swagger

@@ -50,7 +50,38 @@ knowledgeRouter.post('/:id',
  * @swagger
  * /knowledge/:id:
  *   get:
- *     description: Returns the whole document for that id. If id is not passed then it returns all documents with bodies.
+ *     description: Returns the whole document for that id
+ *     produces:
+ *       - application/json
+ *     properties:
+ *       id:
+ *         type: string
+ *     required:
+*      		- id
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: doc not found
+ */
+knowledgeRouter.get('/:id', 
+    (req,res) => {
+        db.get(req.params.id)
+        .then(doc => {
+            res.json(doc);
+        })
+        .catch(err => {
+            console.log("Error :"+err)
+            res.json(err.statusCode, {error: err.reason});
+        });
+    });
+
+
+/**
+ * @swagger
+ * /knowledge:
+ *   get:
+ *     description: Returns all Knowledge Management items from the storage
  *     produces:
  *       - application/json
  *     properties:
@@ -62,18 +93,8 @@ knowledgeRouter.post('/:id',
  *       404:
  *          description: doc not found
  */
-knowledgeRouter.get('/:id', 
+knowledgeRouter.get('/', 
     (req,res) => {
-    	if (req.params.id) {
-	        db.get(req.params.id)
-	        .then(doc => {
-	            res.json(doc);
-	        })
-	        .catch(err => {
-	            console.log("Error :"+err)
-	            res.json(err.statusCode, {error: err.reason});
-	        });
-    	} else {
     		db.list({include_docs:true})
 	        .then(doc => {
 	            res.json(doc);
@@ -82,8 +103,8 @@ knowledgeRouter.get('/:id',
 	            console.log("Error :"+err)
 	            res.json(err.statusCode, {error: err.reason});
 	        });
-    	}
     });
+
 
 /**
 * @swagger

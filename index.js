@@ -66,6 +66,11 @@ const server = restify.createServer();
 // Add middleware
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
+server.use(restify.CORS({
+  origins: ['http://localhost:3000'],  // defaults to ['*']
+  credentials: false,
+  headers: ['Access-Control-Allow-Origin', '*']
+}));
 
 // Setup Restify Router
 const rootRouter = new RestifyRouter();

@@ -3,7 +3,7 @@ var Cloudant= require('cloudant');
 var cloudant;
 
 const dbCredentials = {
-	dbName : process.env.cloudant_dbName,
+	//dbName : process.env.cloudant_dbName,
     url : process.env.cloudant_url
 };
 
@@ -25,7 +25,7 @@ function initDBConnection() {
     db = cloudant.db.use(dbCredentials.dbName);
 }
 
-initDBConnection();
+
 
 function testConnection(){
     
@@ -39,6 +39,11 @@ function testConnection(){
 
 
 module.exports = {
-	getConnection: () => db,
+	getConnection: (db_name) => {
+        console.log("db nanme :" + db_name);
+        dbCredentials.dbName = db_name;
+        initDBConnection();
+        return db;
+    },
     testDBConnection: testConnection
 }

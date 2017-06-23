@@ -37,7 +37,7 @@ conversationRouter.get('/',
 
 /**
 * @swagger
-* /conversation/:id:
+* /conversation/
 *   post:
 *     description: Creates a new Conversation item in the storage.
 *     responses:
@@ -51,8 +51,7 @@ conversationRouter.get('/',
 conversationRouter.post('/', 
 	    validator.body( createConversationSchema ),
 	    (req, res) => {
-	    	res.header("Access-Control-Allow-Origin", req.header.origins);
-	        db.insert(Object.assign(req.body))
+	    	db.insert(Object.assign(req.body))
 	        .then(() => {
 	            res.json(200, {message: "Successfully saved conversation."});
 	        })

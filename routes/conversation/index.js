@@ -53,7 +53,7 @@ conversationRouter.get('/',
 *       404:
  *        description: doc not found
 */
-conversationRouter.post('/:id', 
+conversationRouter.post('/', 
 	    validator.body( createConversationSchema ),
 	    (req, res) => {
 	    	res.header("Access-Control-Allow-Origin", req.header.origins);

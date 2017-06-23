@@ -22,11 +22,13 @@ const RestifyRouter = require('restify-routing');
     Load routes
 */
 const knowledgeRouter = require('./routes/knowledge');
+const conversationRouter = require('./routes/conversation');
 const botHandler = require('./bot.js');
 
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
-const db = dbcon.getConnection();
+const convDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_DB_NAME); 
+const knowledgeDB = dbcon.getConnection(process.env.cloudant_dbName);
 
 //=========================================================
 //swagger setup
@@ -54,7 +56,7 @@ const dialog = botComponents.getDialog();
 bot.dialog('/', dialog);
 
 // Use bot module to find response from KM.
-dialog.onDefault(botHandler(db));
+dialog.onDefault(botHandler(knowledgeDB));
 
 //=========================================================
 // Setup Server
@@ -84,7 +86,10 @@ rootRouter.get('/swagger.json', function(req, res) {
 rootRouter.post('/api/messages', botComponents.getConnector().listen());
 
 // Knowledge Management
-rootRouter.use('/knowledge', knowledgeRouter(db));
+rootRouter.use('/knowledge', knowledgeRouter(knowledgeDB));
+
+// conversation 
+rootRouter.use('/conversation', conversationRouter(convDB));
 
 // Apply routes
 rootRouter.applyRoutes(server);

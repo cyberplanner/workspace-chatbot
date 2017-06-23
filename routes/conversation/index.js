@@ -37,7 +37,7 @@ conversationRouter.get('/',
 
 /**
  * @swagger
- * /conversationRouter/:id:
+ * /conversation/:id:
  *   get:
  *     description: Returns the whole document for that id
  *     produces:

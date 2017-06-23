@@ -67,14 +67,9 @@ conversationRouter.get('/:id',
 
 /**
 * @swagger
-* /conversation/:id:
+* /conversation/
 *   post:
 *     description: Creates a new Conversation item in the storage.
-*     required:
-*      - id
-*     properties:
-*       id:
-*         type: string  
 *     responses:
 *       200:
 *         description: Successful Creation
@@ -83,15 +78,12 @@ conversationRouter.get('/:id',
 *       404:
  *        description: doc not found
 */
-conversationRouter.post('/:id', 
+conversationRouter.post('/', 
 	    validator.body( createConversationSchema ),
 	    (req, res) => {
-	    	res.header("Access-Control-Allow-Origin", req.header.origins);
-	        db.insert(Object.assign(req.body, {
-	            _id: req.params.id,
-	        }))
+	    	db.insert(Object.assign(req.body))
 	        .then(() => {
-	            res.json(200, {message: "Successfully saved knowledge."});
+	            res.json(200, {message: "Successfully saved conversation."});
 	        })
 	        .catch(error => {
 	            console.log(error);  

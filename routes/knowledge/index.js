@@ -31,19 +31,21 @@ const createKnowledgeSchema = require('./schemas/createKnowledge.json');
  *        description: doc not found
 */
 knowledgeRouter.post('/:id', 
-    validator.body( createKnowledgeSchema ),
-    (req, res) => {
-        db.insert(Object.assign(req.body, {
-            _id: req.params.id
-        }))
-        .then(() => {
-            res.json(200, {message: "Successfully saved knowledge."});
-        })
-        .catch(error => {
-            console.error(error);  
-            res.json(500, {error: error.reason});
-        });
-    });
+	    validator.body( createKnowledgeSchema ),
+	    (req, res) => {
+	    	res.header("Access-Control-Allow-Origin", req.header.origins);
+	        db.insert(Object.assign(req.body, {
+	            _id: req.params.id
+	        }))
+	        .then(() => {
+	            res.json(200, {message: "Successfully saved knowledge."});
+	        })
+	        .catch(error => {
+	            console.log(error);  
+	            res.json(500, {error: error.reason});
+	        });
+	    });
+
 
 
 /**

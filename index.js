@@ -69,9 +69,9 @@ const server = restify.createServer();
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
 server.use(restify.CORS({
-   origins: process.env.CROSS_SITE_ORIGINS.split(","),
-   credentials: false
- }));
+  origins: process.env.CROSS_SITE_ORIGINS.split(","),
+  credentials: false
+}));
 
 // Setup Restify Router
 const rootRouter = new RestifyRouter();

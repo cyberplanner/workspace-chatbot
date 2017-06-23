@@ -3,7 +3,6 @@ var Cloudant= require('cloudant');
 var cloudant;
 
 const dbCredentials = {
-	//dbName : process.env.cloudant_dbName,
     url : process.env.cloudant_url
 };
 
@@ -16,7 +15,7 @@ function initDBConnection() {
                              vcapServices: vcap, plugin:'promises'});
     } catch (error) {
         console.log("[CLOUDANT] " +  "ERROR Parsing VCAP");
-        console.error(error);
+        console.error("[CLOUDANT] " + error.message);
         cloudant = Cloudant({url: dbCredentials.url, plugin:'promises'});
         console.log("[CLOUDANT] " +  "Initialised cloudant from env variable: " + dbCredentials.url);
     }
@@ -40,7 +39,6 @@ function testConnection(){
 
 module.exports = {
 	getConnection: (db_name) => {
-        console.log("db nanme :" + db_name);
         dbCredentials.dbName = db_name;
         initDBConnection();
         return db;

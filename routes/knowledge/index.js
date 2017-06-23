@@ -33,7 +33,6 @@ const createKnowledgeSchema = require('./schemas/createKnowledge.json');
 knowledgeRouter.post('/:id', 
     validator.body( createKnowledgeSchema ),
     (req, res) => {
-        res.header("Access-Control-Allow-Origin", req.header.origins);
         db.insert(Object.assign(req.body, {
             _id: req.params.id
         }))

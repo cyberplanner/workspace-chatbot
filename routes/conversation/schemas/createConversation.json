@@ -1,0 +1,29 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "additionalProperties": false,
+    "properties":  {
+          "children" : {
+                "id": "/properties/children",
+                "items": {
+                    "id": "/properties/children/items",
+                    "type": "string"
+                },
+               "type": "array"
+          },
+          "fallback": {
+            "items": {
+                "id": "/properties/fallback/items",
+                "type": "string"
+            },
+            "type": "array"  
+          },
+          "message": {
+             "type": "string"
+          }
+
+    },
+    "required": [
+        "children"
+    ],
+    "type": "object"
+}

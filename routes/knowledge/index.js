@@ -27,6 +27,8 @@ const createKnowledgeSchema = require('./schemas/createKnowledge.json');
 *         description: Successful Creation
 *       500:
 *         description: Creation failed. Item may already exist in DB.
+*       404:
+ *        description: doc not found
 */
 knowledgeRouter.post('/:id', 
     validator.body( createKnowledgeSchema ),
@@ -48,14 +50,14 @@ knowledgeRouter.post('/:id',
  * @swagger
  * /knowledge/:id:
  *   get:
- *     description: Returns the whole document
+ *     description: Returns the whole document for that id
  *     produces:
  *       - application/json
- *     required:
- *      - id
  *     properties:
  *       id:
  *         type: string
+ *     required:
+*      - id
  *     responses:
  *       200:
  *         description: Successfully retrieved
@@ -63,7 +65,7 @@ knowledgeRouter.post('/:id',
  *          description: doc not found
  */
 knowledgeRouter.get('/:id', 
-    (req,res) => { 
+    (req,res) => {
         db.get(req.params.id)
         .then(doc => {
             res.json(doc);
@@ -74,6 +76,71 @@ knowledgeRouter.get('/:id',
         });
     });
 
+
+/**
+ * @swagger
+ * /knowledge:
+ *   get:
+ *     description: Returns all Knowledge Management items from the storage
+ *     produces:
+ *       - application/json
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: doc not found
+ */
+knowledgeRouter.get('/', 
+    (req,res) => {
+    		db.list({include_docs:true})
+	        .then(doc => {
+	            res.json(doc);
+	        })
+	        .catch(err => {
+	            console.log("Error :"+err)
+	            res.json(err.statusCode, {error: err.reason});
+	        });
+    });
+
+
+/**
+* @swagger
+* /knowledge/:id:
+*   put:
+*     description: Updates a new Knowledge Management item in storage.
+*     required:
+*      - id
+*     properties:
+*       id:
+*         type: string
+*     responses:
+*       200:
+*         description: Successful Update
+*       500:
+*         description: Update failed. Item may not exist in DB.
+*/
+ knowledgeRouter.put('/:id', 
+ validator.body( createKnowledgeSchema ),
+    (req, res) => {
+    	db.get(req.params.id)
+        .then(doc => {
+              db.insert(Object.assign(req.body, {
+  		            _rev: doc._rev,
+  		            _id:  req.params.id
+  		      }))
+  		      .then(() => {
+  		           res.json(200, {message: "Successfully updated knowledge."});
+  		      })
+  		      .catch(error => {
+  		            console.error(error);  
+  		            res.json(500, {error: error.reason});
+  		      });
+        })
+        .catch(err => {
+            console.log("Error :"+err)
+            res.json(err.statusCode, {error: err.reason});
+        });		      
+    });
 
 
 module.exports = (database) => {

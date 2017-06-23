@@ -17,6 +17,7 @@ const botComponents = require('./custom_modules/module_botComponents');
 const restify = require('restify');
 const dbcon = require('./custom_modules/module_dbConnection');
 const RestifyRouter = require('restify-routing');
+const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
 
 /*
     Load routes
@@ -51,7 +52,68 @@ var swaggerSpec = swaggerJSDoc(options);
 // Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
 const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
+
+// Setup root dialog
 bot.dialog('/', dialog);
+
+NeocaseAdapter.createNewCase({
+        "contact": {
+            "id": 0,
+            "identifier": "820899",
+            "email": "EDWARD.DE-MOTT@CAPGEMINI.COM",
+            "firstName": "Edward",
+            "lastName": "De Mott"
+        },
+        "question": "I'd like to change my base location to ",
+        "serviceOption": {
+            "id": 10444
+        },
+        "queue": {
+            "name": "Default"
+        }
+    })
+.then(response => console.log(response));
+
+// Setup custom matcher for advanced problem (creating cases)
+dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
+    // Confirm employee number
+    builder.Prompts.text(session, "Ok great, first can you confirm your employee number?");
+}, (session, args, next) => {
+    session.userData.employee = args.response;
+    // Identify the location of the new base
+    builder.Prompts.text(session, "Thank you. Now can you confirm the office you would like to be your new base location?");
+}, (session, args, next) => {
+    session.newBase = args.response;
+    let question = "I'd like to change my base location to " + session.newBase + ". My employee number is " + session.userData.employee;
+    // Call Neocase
+    NeocaseAdapter.createNewCase({
+        "contact": {
+            "identifier": "820899",
+            "email": "EDWARD.DE-MOTT@CAPGEMINI.COM",
+            "firstName": "Edward",
+            "lastName": "De Mott"
+        },
+        "question": question,
+        "serviceOption": {
+            "name": "UK-GENERAL REQUEST (W)"
+        },
+        "queue": {
+            "id": 2
+        }
+    }).then(response => {
+        if (!response[0] || !response[0].error) {
+            session.send("I've successfully created your case for you, here's your reference ID: #" + response.id + ".");
+            session.send("Is there anything else I can help with today?")
+        } else {
+            session.send(response[0].error_details);
+        }
+    })
+    .catch(error => {
+        
+    });
+    session.send("Thank you, I will raise the following ticket with HR: \n" + `"${question}"`);
+    
+}]);
 
 // Use bot module to find response from KM.
 dialog.onDefault(botHandler(db));

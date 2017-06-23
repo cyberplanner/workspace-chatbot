@@ -3,12 +3,14 @@
  */
 
 const http = require("http");
+const fetch = require("node-fetch");
 const neocaseHostName = process.env.NEOCASE_HOSTNAME;
 const neocasePort = process.env.NEOCASE_PORT;
 const neocaseAuthCredentials = {
     "userName": process.env.NEOCASE_USERNAME,
     "password": process.env.NEOCASE_PASSWORD
 };
+const endpoint = "http://" + neocaseHostName + ":" + neocasePort + "/RestAPI/";
 exports = {};
 
 const commonOptions = {
@@ -41,20 +43,19 @@ function sendRequest(requestOptions, requestBody) {
 }
 
 function authenticate() {
-    return new Promise((resolve, reject) => {
-        let options = Object.assign({
-            method: "POST",
-            path: "/authentication"
-        }, commonOptions);
-        sendRequest(options, neocaseAuthCredentials)
-            .then((data) => {
-                resolve(data);
-            })
-            .catch((statusCode) => {
-                reject(statusCode);
-            })
+    return fetch(endpoint + "authentication?language=English", {
+        body: JSON.stringify(neocaseAuthCredentials),
+        method: 'POST',
+        headers: {
+            "Content-Type": "application/json"
+        }
+    })
+    .then(function(response) {
+        return response.json();
     });
 }
+
+exports.authenticate = authenticate;
 
 exports.getAllCases = () => {
     return new Promise((resolve, reject) => {
@@ -82,27 +83,22 @@ exports.getAllCases = () => {
 };
 
 exports.createNewCase = (body) => {
-    return new Promise((resolve, reject) => {
-        authenticate()
-            .then((authenticationData) => {
-                let options = Object.assign({
-                    method: "POST",
-                    path: "/cases",
-                    headers: {
-                        "Authorization": authenticationData["token_type"] + " " + authenticationData["access_token"]
-                    }
-                }, commonOptions);
-                sendRequest(options, body)
-                    .then((data) => {
-                        resolve(data);
-                    })
-                    .catch((statusCode) => {
-                        reject(statusCode);
-                    })
-            })
-            .catch((authStatusCode) => {
-                reject(authStatusCode + ": Failed to authenticate!")
-            });
+    return authenticate()
+    .then((authenticationData) => {
+        return fetch(endpoint + "cases?language=English", {
+            body: JSON.stringify(body),
+            method: 'POST',
+            headers: {
+                "Content-Type": "application/json",
+                "Authorization": authenticationData["token_type"] + " " + authenticationData["access_token"]
+            }
+        })
+        .then(function(response) {
+            return response.json();
+        });
+    })
+    .catch((authStatusCode) => {
+        reject(authStatusCode + ": Failed to authenticate!")
     });
 };
 

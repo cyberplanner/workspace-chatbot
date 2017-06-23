@@ -36,6 +36,36 @@ conversationRouter.get('/',
     });
 
 /**
+ * @swagger
+ * /conversation/:id:
+ *   get:
+ *     description: Returns the whole document for that id
+ *     produces:
+ *       - application/json
+ *     properties:
+ *       id:
+ *         type: string
+ *     required:
+*      - id
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: doc not found
+ */
+conversationRouter.get('/:id', 
+    (req,res) => {
+        db.get(req.params.id)
+        .then(doc => {
+            res.json(doc);
+        })
+        .catch(err => {
+            console.log("Error :"+err)
+            res.json(err.statusCode, {error: err.reason});
+        });
+    });
+
+/**
 * @swagger
 * /conversation/:id:
 *   post:

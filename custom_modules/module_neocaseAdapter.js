@@ -2,7 +2,6 @@
     An module with async functions (through Promises) for calling Neocase's Rest API
  */
 
-const http = require("http");
 const fetch = require("node-fetch");
 const neocaseHostName = process.env.NEOCASE_HOSTNAME;
 const neocasePort = process.env.NEOCASE_PORT;
@@ -10,7 +9,7 @@ const neocaseAuthCredentials = {
     "userName": process.env.NEOCASE_USERNAME,
     "password": process.env.NEOCASE_PASSWORD
 };
-const endpoint = "http://" + neocaseHostName + ":" + neocasePort + "/RestAPI/";
+const endpoint = "http://" + neocaseHostName + ":" + neocasePort + "/RestAPI";
 exports = {};
 
 const commonOptions = {
@@ -21,29 +20,21 @@ const commonOptions = {
 // Abstracted function that contains the logic to actually make a http call.
 // Async - Due to http module and Promises.
 function sendRequest(requestOptions, requestBody) {
-    return new Promise((resolve, reject) => {
-        const req = http.request(requestOptions, (res) => {
-            if (res.statusCode !== 200) {
-                reject(res.statusCode);
+    return fetch(endpoint + requestOptions.path, {
+            body: JSON.stringify(requestBody),
+            method: requestOptions.method,
+            headers: requestOptions.headers
+        })
+        .then(function(response) {
+            if (response.status !== 200) {
+                throw new Error("Failed HTTP request");
             }
-            else {
-                let data;
-                res.setEncoding('utf8');
-                res.on('data', (chunk) => {
-                    data += chunk;
-                });
-                res.on('end', () => {
-                    resolve(data);
-                });
-            }
+            return response.json();
         });
-        requestBody === undefined ? console.log("No body in request") : req.write(requestBody);
-        req.end();
-    });
 }
 
 function authenticate() {
-    return fetch(endpoint + "authentication?language=English", {
+    return fetch(endpoint + "/authentication?language=English", {
         body: JSON.stringify(neocaseAuthCredentials),
         method: 'POST',
         headers: {
@@ -54,8 +45,6 @@ function authenticate() {
         return response.json();
     });
 }
-
-exports.authenticate = authenticate;
 
 exports.getAllCases = () => {
     return new Promise((resolve, reject) => {
@@ -85,7 +74,7 @@ exports.getAllCases = () => {
 exports.createNewCase = (body) => {
     return authenticate()
     .then((authenticationData) => {
-        return fetch(endpoint + "cases?language=English", {
+        return fetch(endpoint + "/cases?language=English", {
             body: JSON.stringify(body),
             method: 'POST',
             headers: {
@@ -98,7 +87,7 @@ exports.createNewCase = (body) => {
         });
     })
     .catch((authStatusCode) => {
-        reject(authStatusCode + ": Failed to authenticate!")
+        throw new Error(authStatusCode + ": Failed to authenticate!");
     });
 };
 

@@ -56,22 +56,7 @@ const dialog = botComponents.getDialog();
 // Setup root dialog
 bot.dialog('/', dialog);
 
-NeocaseAdapter.createNewCase({
-        "contact": {
-            "id": 0,
-            "identifier": "820899",
-            "email": "EDWARD.DE-MOTT@CAPGEMINI.COM",
-            "firstName": "Edward",
-            "lastName": "De Mott"
-        },
-        "question": "I'd like to change my base location to ",
-        "serviceOption": {
-            "id": 10444
-        },
-        "queue": {
-            "name": "Default"
-        }
-    })
+NeocaseAdapter.getAllCases()
 .then(response => console.log(response));
 
 // Setup custom matcher for advanced problem (creating cases)

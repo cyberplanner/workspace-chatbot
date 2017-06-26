@@ -18,7 +18,7 @@ const commonOptions = {
 };
 
 // Abstracted function that contains the logic to actually make a http call.
-// Async - Due to http module and Promises.
+// Async - due to Fetch returning Promises.
 function sendRequest(requestOptions, requestBody) {
     return fetch(endpoint + requestOptions.path, {
             body: JSON.stringify(requestBody),
@@ -34,16 +34,14 @@ function sendRequest(requestOptions, requestBody) {
 }
 
 function authenticate() {
-    return fetch(endpoint + "/authentication?language=English", {
-        body: JSON.stringify(neocaseAuthCredentials),
-        method: 'POST',
+    let options = Object.assign({
+        method: "POST",
+        path: "/authentication?language=English",
         headers: {
             "Content-Type": "application/json"
         }
-    })
-    .then(function(response) {
-        return response.json();
-    });
+    }, commonOptions);
+    return sendRequest(options, neocaseAuthCredentials);
 }
 
 exports.getAllCases = () => {

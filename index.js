@@ -56,9 +56,6 @@ const dialog = botComponents.getDialog();
 // Setup root dialog
 bot.dialog('/', dialog);
 
-NeocaseAdapter.getAllCases()
-.then(response => console.log(response));
-
 // Setup custom matcher for advanced problem (creating cases)
 dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
     // Confirm employee number

@@ -91,6 +91,46 @@ conversationRouter.post('/',
 	        });
 	    });
 
+/**
+* @swagger
+* /conversation/:nodeId:
+*   put:
+*     description: Updates the conversation item in the storage.
+*     required:
+*      - nodeId
+*     properties:
+*       nodeId:
+*         type: string
+*     responses:
+*       200:
+*         description: Successful Update
+*       500:
+*         description: Update failed. Item may not exist in DB.
+*/
+ conversationRouter.put('/:nodeId', 
+ validator.body( createConversationSchema ),
+    (req, res) => {
+    	db.get(req.params.nodeId)
+        .then(doc => {
+              db.insert(Object.assign(req.body, {
+  		            _rev: doc._rev,
+                    _id:  req.params.nodeId
+  		      }))
+  		      .then(() => {
+  		           res.json(200, {message: "Successfully updated conversation."});
+  		      })
+  		      .catch(error => {
+  		            console.error(error);  
+  		            res.json(500, {error: error.reason});
+  		      });
+        })
+        .catch(err => {
+            console.log("Error :"+err)
+            res.json(err.statusCode, {error: err.reason});
+        });		      
+    });
+
+
 module.exports = (database) => {
     db = database;
     return conversationRouter

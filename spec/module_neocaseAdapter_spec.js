@@ -48,11 +48,11 @@ describe("Test Authentication call", function() {
         };
 
         return Neocase.authenticate()
-            .then(response => {
-                expect(response).not.toEqual({});
-                expect(response).toEqual({token_type: "Neocase", access_token: "aabb123"});
-                done();
-            });
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({token_type: "Neocase", access_token: "aabb123"});
+            done();
+        });
     });
 });
 
@@ -76,17 +76,17 @@ describe("Test getAllCases call", function() {
         };
 
         return Neocase.getAllCases()
-            .then(response => {
-                expect(response).not.toEqual({});
-                expect(response).toEqual([{
-                        name: "case123",
-                        id: 1020202
-                    }, {
-                        name: "case495",
-                        id: 1020202123
-                    }]);
-                done();
-            });
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual([{
+                    name: "case123",
+                    id: 1020202
+                }, {
+                    name: "case495",
+                    id: 1020202123
+                }]);
+            done();
+        });
     });
 });
 
@@ -111,11 +111,11 @@ describe("Test createNewCase call", function() {
             caseID: 1230123,
             message: "I'd like to raise a ticket with HR for a base change"
         })
-            .then(response => {
-                expect(response).not.toEqual({});
-                expect(response).toEqual({ successfullyCreated: true });
-                done();
-            });
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ successfullyCreated: true });
+            done();
+        });
     });
 });
 
@@ -133,10 +133,40 @@ describe("Test getCase call", function() {
         };
 
         return Neocase.getCase("1234aaa")
-            .then(response => {
-                expect(response).not.toEqual({});
-                expect(response).toEqual({ caseID: 12301401, message: "I'd like to change base please." });
-                done();
-            });
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ caseID: 12301401, message: "I'd like to change base please." });
+            done();
+        });
+    });
+});
+
+describe("Test updateCase call", function() {
+	it("Tests that updateCase calls the correct endpoint - with the correct method, correct authentication header and Body.", function(done) {
+        const caseID = 1230;
+        /* 
+            Mock out fetch functions
+        */
+        functions.PUT["/cases/" + caseID] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            expect(options.body).toEqual(JSON.stringify({
+                caseID: caseID,
+                message: "I'd like to raise a ticket with HR for a flex change"
+            }));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ successfullyUpdated: true }))
+            };
+        };
+
+        return Neocase.updateCase(caseID, {
+            caseID: caseID,
+            message: "I'd like to raise a ticket with HR for a flex change"
+        })
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ successfullyUpdated: true });
+            done();
+        });
     });
 });

@@ -67,16 +67,16 @@ conversationRouter.get('/:id',
 
 /**
 * @swagger
-* /conversation/
+* /conversation/:
 *   post:
-*     description: Creates a new Conversation item in the storage.
+*     description: Creates a new Conversation item in storage.
 *     responses:
 *       200:
 *         description: Successful Creation
 *       500:
 *         description: Creation failed. Item may already exist in DB.
 *       404:
- *        description: doc not found
+*        description: doc not found
 */
 conversationRouter.post('/', 
 	    validator.body( createConversationSchema ),

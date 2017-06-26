@@ -170,3 +170,191 @@ describe("Test updateCase call", function() {
         });
     });
 });
+
+describe("Test updateCase call", function() {
+	it("Tests that updateCase calls the correct endpoint - with the correct method, correct authentication header and Body.", function(done) {
+        const caseID = 1230;
+        /* 
+            Mock out fetch functions
+        */
+        functions.PUT["/cases/" + caseID] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            expect(options.body).toEqual(JSON.stringify({
+                caseID: caseID,
+                message: "I'd like to raise a ticket with HR for a flex change"
+            }));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ successfullyUpdated: true }))
+            };
+        };
+
+        return Neocase.updateCase(caseID, {
+            caseID: caseID,
+            message: "I'd like to raise a ticket with HR for a flex change"
+        })
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ successfullyUpdated: true });
+            done();
+        });
+    });
+});
+
+describe("Test updateCaseDueDate call", function() {
+	it("Tests that updateCaseDueDate calls the correct endpoint - with the correct method, correct authentication header and Body.", function(done) {
+        const caseID = 12311;
+        /* 
+            Mock out fetch functions
+        */
+        functions.PUT["/cases/" + caseID + "/update/due_date"] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            expect(options.body).toEqual(JSON.stringify({
+                caseID: caseID,
+                dueDate: "10/12/18"
+            }));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ successfullyUpdatedDueDate: true }))
+            };
+        };
+
+        return Neocase.updateCaseDueDate(caseID, {
+            caseID: caseID,
+            dueDate: "10/12/18"
+        })
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ successfullyUpdatedDueDate: true });
+            done();
+        });
+    });
+});
+
+describe("Test updateCaseProperties call", function() {
+	it("Tests that updateCaseProperties calls the correct endpoint - with the correct method, correct authentication header and Body.", function(done) {
+        const caseID = 1999202;
+        /* 
+            Mock out fetch functions
+        */
+        functions.PUT["/cases/" + caseID + "/update/case_properties"] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            expect(options.body).toEqual(JSON.stringify({
+                caseID: caseID,
+                props: {
+                    queued: true
+                }
+            }));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ successfullyUpdatedCaseProps: true }))
+            };
+        };
+
+        return Neocase.updateCaseProperties(caseID, {
+            caseID: caseID,
+            props: {
+                queued: true
+            }
+        })
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ successfullyUpdatedCaseProps: true });
+            done();
+        });
+    });
+});
+
+describe("Test updateCustomFields call", function() {
+	it("Tests that updateCustomFields calls the correct endpoint - with the correct method, correct authentication header and Body.", function(done) {
+        const caseID = 1999202;
+        /* 
+            Mock out fetch functions
+        */
+        functions.PUT["/cases/" + caseID + "/update/case_customfields"] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            expect(options.body).toEqual(JSON.stringify({
+                caseID: caseID,
+                fields: {
+                    approver: "DC"
+                }
+            }));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ successfullyUpdatedCustomFields: true }))
+            };
+        };
+
+        return Neocase.updateCustomFields(caseID, {
+            caseID: caseID,
+            fields: {
+                approver: "DC"
+            }
+        })
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ successfullyUpdatedCustomFields: true });
+            done();
+        });
+    });
+});
+
+describe("Test attachFileToCase call", function() {
+	it("Tests that attachFileToCase calls the correct endpoint - with the correct method, correct authentication header and Body.", function(done) {
+        const caseID = 123009992;
+        /* 
+            Mock out fetch functions
+        */
+        functions.PUT["/cases/" + caseID + "/attach_file_to_case"] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            expect(options.body).toEqual(JSON.stringify({
+                caseID: caseID,
+                file: "url/to/file"
+            }));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ attachedFile: true }))
+            };
+        };
+
+        return Neocase.attachFileToCase(caseID, {
+            caseID: caseID,
+            file: "url/to/file"
+        })
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ attachedFile: true });
+            done();
+        });
+    });
+});
+
+describe("Test transferToTeam call", function() {
+	it("Tests that transferToTeam calls the correct endpoint - with the correct method, correct authentication header and Body.", function(done) {
+        const caseID = 8571230912;
+        /* 
+            Mock out fetch functions
+        */
+        functions.PUT["/cases/" + caseID + "/update/transfer_to_team"] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            expect(options.body).toEqual(JSON.stringify({
+                caseID: caseID,
+                teamID: "Team-123"
+            }));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ transferred: true }))
+            };
+        };
+
+        return Neocase.transferToTeam(caseID, {
+            caseID: caseID,
+            teamID: "Team-123"
+        })
+        .then(response => {
+            expect(response).not.toEqual({});
+            expect(response).toEqual({ transferred: true });
+            done();
+        });
+    });
+});

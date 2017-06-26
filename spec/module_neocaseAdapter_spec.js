@@ -40,17 +40,11 @@ describe("Test Authentication call", function() {
             Mock out fetch functions
         */
         functions.POST["/authentication?language=English"] = (options) => {
-            if (options.body && options.body === JSON.stringify(neocaseAuthCredentials)) {
-                return {
-                    status: 200,
-                    json: () => new Promise((resolve) => resolve({token_type: "Neocase", access_token: "aabb123"}))
-                };
-            } else {
-                return {
-                    status: 500,
-                    json: () => new Promise((resolve) => resolve({success: false}))
-                };
-            }
+            expect(options.body).toEqual(JSON.stringify(neocaseAuthCredentials));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({token_type: "Neocase", access_token: "aabb123"}))
+            };
         };
 
         return Neocase.authenticate()
@@ -68,18 +62,17 @@ describe("Test getAllCases call", function() {
             Mock out fetch functions
         */
         functions.GET["/cases"] = (options) => {
-            if (options.headers.Authorization === "Neocase aabb123") {
-                return {
-                    status: 200,
-                    json: () => new Promise((resolve) => resolve([{
-                        name: "case123",
-                        id: 1020202
-                    }, {
-                        name: "case495",
-                        id: 1020202123
-                    }]))
-                };
-            }
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve([{
+                    name: "case123",
+                    id: 1020202
+                }, {
+                    name: "case495",
+                    id: 1020202123
+                }]))
+            };
         };
 
         return Neocase.getAllCases()
@@ -92,6 +85,57 @@ describe("Test getAllCases call", function() {
                         name: "case495",
                         id: 1020202123
                     }]);
+                done();
+            });
+    });
+});
+
+describe("Test createNewCase call", function() {
+	it("Tests that createNewCase calls the correct endpoint - with the correct method and correct authentication header and Body.", function(done) {
+        /* 
+            Mock out fetch functions
+        */
+        functions.POST["/cases?language=English"] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            expect(options.body).toEqual(JSON.stringify({
+                caseID: 1230123,
+                message: "I'd like to raise a ticket with HR for a base change"
+            }));
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ successfullyCreated: true }))
+            };
+        };
+
+        return Neocase.createNewCase({
+            caseID: 1230123,
+            message: "I'd like to raise a ticket with HR for a base change"
+        })
+            .then(response => {
+                expect(response).not.toEqual({});
+                expect(response).toEqual({ successfullyCreated: true });
+                done();
+            });
+    });
+});
+
+describe("Test getCase call", function() {
+	it("Tests that getCase calls the correct endpoint - with the correct authentication header", function(done) {
+        /* 
+            Mock out fetch functions
+        */
+        functions.GET["/cases/1234aaa"] = (options) => {
+            expect(options.headers.Authorization).toEqual("Neocase aabb123");
+            return {
+                status: 200,
+                json: () => new Promise((resolve) => resolve({ caseID: 12301401, message: "I'd like to change base please." }))
+            };
+        };
+
+        return Neocase.getCase("1234aaa")
+            .then(response => {
+                expect(response).not.toEqual({});
+                expect(response).toEqual({ caseID: 12301401, message: "I'd like to change base please." });
                 done();
             });
     });

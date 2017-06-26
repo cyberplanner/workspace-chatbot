@@ -43,6 +43,7 @@ function authenticate() {
     }, commonOptions);
     return sendRequest(options, neocaseAuthCredentials);
 }
+exports.authenticate = authenticate;
 
 exports.getAllCases = () => {
     return new Promise((resolve, reject) => {

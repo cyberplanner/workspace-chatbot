@@ -63,7 +63,7 @@ describe("Test Authentication call", function() {
 });
 
 describe("Test getAllCases call", function() {
-	it("Tests that authentication sends a correctly formatted call", function(done) {
+	it("Tests that getAllCases calls the correct endpoint - with the correct method and correct authentication header.", function(done) {
         /* 
             Mock out fetch functions
         */

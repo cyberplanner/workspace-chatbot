@@ -42,11 +42,12 @@ superchargerRouter.get('/',
  *     description: Returns the whole document for that id
  *     produces:
  *       - application/json
- *     properties:
- *       id:
+ *     parameters:
+ *       - name: id
+ *         description: The Id for the particular cloudant document
+ *         in: path
  *         type: string
- *     required:
-*      - id
+ *         required: true
  *     responses:
  *       200:
  *         description: Successfully retrieved
@@ -72,6 +73,15 @@ superchargerRouter.get('/:id',
 * /supercharger/:
 *   post:
 *     description: Creates a new supercharger item in storage.
+*     produces:
+*       - application/json
+*     parameters:
+*       - name: post-schema
+*         description: The JSON body of the request
+*         in: body
+*         required: true
+*         schema:
+*           $ref: '#/schemas/createSupercharger'     
 *     responses:
 *       200:
 *         description: Successful Creation
@@ -98,11 +108,18 @@ superchargerRouter.post('/',
 * /supercharger/:Id:
 *   put:
 *     description: Updates the supercharger item in the storage.
-*     required:
-*      - id
-*     properties:
-*       id:
+*     parameters:
+*       - name: id
+*         description: The Id for the particular supercharger item you wish to update
+*         in: path
 *         type: string
+*         required: true
+*       - name: put-schema
+*         description: The JSON body of the request
+*         in: body
+*         required: true
+*         schema:
+*           $ref: '#/schemas/createSupercharger'
 *     responses:
 *       200:
 *         description: Successful Update

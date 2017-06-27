@@ -12,7 +12,7 @@ const setCurrentConversation = (id, session, args, next) => {
       session.userData.conversation = {
         current: conversation
       };
-      console.log(session.userData.conversation);
+      console.log("[CONVERSATION] Setting current");
       next();
     })
     .catch(error => {
@@ -37,16 +37,17 @@ const conversationManager = (session, args, next) => {
   let conversationData = session.userData.conversation;
 
   if (!conversationData) {
+    console.log("[CONVERSATION] RESETTING TO ROOT");
     setCurrentConversation('root', session, args, next);
   } else {
-
     if (conversationData.current.children.length < 1) {
-      setCurrentConversation('root', session, args, next)
-        .then(response => {
+      console.log("[CONVERSATION] RESETTING TO ROOT AND PROGRESSING");
+      setCurrentConversation('root', session, args, response => {
           conversationData = session.userData.conversation;
           progressConversation(session, args, next, conversationData);
         });
     } else {
+      console.log("[CONVERSATION] PROGRESSING BASED ON INTENT");
       progressConversation(session, args, next, conversationData);
     }
 
@@ -68,7 +69,6 @@ const respondFromKnowledge = (session, knowledgeID) => {
 const responder = (session, args, next) => {
   console.log("[RESPONDER] ENTERED RESPONDER");
   let conversationData = session.userData.conversation;
-
   if (conversationData.current) {
     respondFromKnowledge(session, conversationData.current.message);
   } else {

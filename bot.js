@@ -6,6 +6,14 @@ let databases = {
 let conversation;
 let defaultResponse = [];
 
+/**
+ * Sets the current node in the conversation to be equal to the node with given ID.
+ * 
+ * @param {String} id 
+ * @param {Object} session 
+ * @param {Object} args 
+ * @param {Function} next 
+ */
 const setCurrentConversation = (id, session, args, next) => {
   return databases.conversation.get(id)
     .then(conversation => {
@@ -21,6 +29,17 @@ const setCurrentConversation = (id, session, args, next) => {
     });
 }
 
+/**
+ * Identifies the next node in the conversation by comparing available 
+ * child paths against the conversation intent.
+ * 
+ * Then calls setCurrentConversation to update state to reflect the current node
+ * 
+ * @param {Object} session 
+ * @param {Object} args 
+ * @param {Function} next 
+ * @param {Object} conversationData 
+ */
 const progressConversation = (session, args, next, conversationData) => {
   let chosenOne = conversationData.current.children.find(child => child.intentId === args.intent);
   if (chosenOne) {
@@ -31,7 +50,13 @@ const progressConversation = (session, args, next, conversationData) => {
 }
 
 /**
- * Manage current position in conversation
+ * A middleware function to manage the current conversation state. Setting 
+ * the current position in the conversation to the root if not already 
+ * set. Then orchestrating the logic to advance through the conversation flow.
+ * 
+ * @param {Object} session 
+ * @param {Object} args 
+ * @param {Function} next 
  */
 const conversationManager = (session, args, next) => {
   let conversationData = session.userData.conversation;
@@ -54,6 +79,12 @@ const conversationManager = (session, args, next) => {
   }
 };
 
+/**
+ * Responds to the user by retrieving the knowledge for the given ID.
+ * 
+ * @param {Object} session 
+ * @param {String} knowledgeID 
+ */
 const respondFromKnowledge = (session, knowledgeID) => {
   databases.knowledge.get(knowledgeID)
       .then(result => {
@@ -66,6 +97,14 @@ const respondFromKnowledge = (session, knowledgeID) => {
       });
 }
 
+/**
+ * Identifies responses based on conversation data and responds with 
+ * an appropriate message from the knowledge item.
+ * 
+ * @param {Object} session 
+ * @param {Object} args 
+ * @param {Function} next 
+ */
 const responder = (session, args, next) => {
   console.log("[RESPONDER] ENTERED RESPONDER");
   let conversationData = session.userData.conversation;
@@ -77,19 +116,24 @@ const responder = (session, args, next) => {
   }
 };
 
-let bot = [conversationManager, responder];
+// Bot is a sequence of middleware functions to be executed on each message
+const bot = [conversationManager, responder];
+
 
 module.exports = (knowledgeDB, conversationDB) => {
+  // Setup databases
   databases.knowledge = knowledgeDB;
   databases.conversation = conversationDB;
+  // Get default message
   databases.knowledge.get("default")
-          .then(result => {
-              defaultResponse = result;
-          })
-          .catch(error => {
-              defaultResponse = {
-                responses: "I\'m not sure how to reply to that. Please ask me again or in a different way?"
-              };
-          });
+    .then(result => {
+        defaultResponse = result;
+    })
+    .catch(error => {
+        defaultResponse = {
+          responses: "I\'m not sure how to reply to that. Please ask me again or in a different way?"
+        };
+    });
+  // Return middleware functions
   return bot;
 }

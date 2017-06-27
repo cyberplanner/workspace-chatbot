@@ -24,12 +24,14 @@ const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
 */
 const knowledgeRouter = require('./routes/knowledge');
 const conversationRouter = require('./routes/conversation');
+const superchargerRouter = require('./routes/supercharger');
 const botHandler = require('./bot.js');
 
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
 const convDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_DB_NAME); 
 const knowledgeDB = dbcon.getConnection(process.env.cloudant_dbName);
+const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_NAME);
 
 //=========================================================
 //swagger setup
@@ -134,6 +136,9 @@ rootRouter.use('/knowledge', knowledgeRouter(knowledgeDB));
 
 // conversation 
 rootRouter.use('/conversation', conversationRouter(convDB));
+
+// supercharger
+rootRouter.use('/supercharger', superchargerRouter(superchargerDB));
 
 // Apply routes
 rootRouter.applyRoutes(server);

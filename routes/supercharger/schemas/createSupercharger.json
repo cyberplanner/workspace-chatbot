@@ -1,0 +1,35 @@
+{
+	"$schema": "http://json-schema.org/draft-04/schema#",
+    "properties": {
+        "arguments":{
+            "items":{
+                "properties":{
+                    "email":{
+                        "type": "string"
+                    },
+                    "employeeNumber": {
+                        "type": "string"
+                    },
+                    "newBase": {
+                        "type": "string"
+                    }
+                },
+                "required": [
+					"email",
+					"employeeNumber",
+                    "newBase"
+				],
+				"type": "object"
+            },
+            "type": "array"
+        },
+        "functionName": {
+			"type": "string"
+		}
+    },
+    "required": [
+		"functionName",
+        "arguments"        
+	],
+	"type": "object"
+}

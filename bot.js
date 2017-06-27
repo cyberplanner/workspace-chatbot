@@ -119,7 +119,6 @@ const responder = (session, args, next) => {
 // Bot is a sequence of middleware functions to be executed on each message
 const bot = [conversationManager, responder];
 
-
 module.exports = (knowledgeDB, conversationDB) => {
   // Setup databases
   databases.knowledge = knowledgeDB;

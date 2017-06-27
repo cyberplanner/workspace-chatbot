@@ -100,7 +100,7 @@ dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
 }]);
 
 // Use bot module to find response from KM.
-dialog.onDefault(botHandler(knowledgeDB));
+dialog.onDefault(botHandler(knowledgeDB, convDB));
 
 //=========================================================
 // Setup Server

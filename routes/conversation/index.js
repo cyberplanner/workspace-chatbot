@@ -81,7 +81,7 @@ conversationRouter.get('/:id',
 conversationRouter.post('/', 
 	    validator.body( createConversationSchema ),
 	    (req, res) => {
-	    	db.insert(Object.assign(req.body))
+	    	db.insert(req.body)
 	        .then((doc) => {
 	            res.json(200, {message: "Successfully saved conversation.", id: doc.id});
 	        })

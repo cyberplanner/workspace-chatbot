@@ -67,9 +67,9 @@ conversationRouter.get('/:id',
 
 /**
 * @swagger
-* /conversation/:
+* /supercharged/:
 *   post:
-*     description: Creates a new conversation item in storage.
+*     description: Creates a new supercharged item in storage.
 *     produces:
 *       - application/json
 *     parameters:
@@ -78,7 +78,7 @@ conversationRouter.get('/:id',
 *         in: body
 *         required: true
 *         schema:
-*           $ref: '#/schemas/createConversation'     
+*           $ref: '#/schemas/createSupercharged'     
 *     responses:
 *       200:
 *         description: Successful Creation

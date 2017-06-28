@@ -25,7 +25,6 @@ const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
 const knowledgeRouter = require('./routes/knowledge');
 const conversationRouter = require('./routes/conversation');
 const superchargerRouter = require('./routes/supercharger');
-const superchargedRouter = require('./routes/supercharged');
 const botHandler = require('./bot.js');
 
 const builder = botComponents.getBuilder();
@@ -140,9 +139,6 @@ rootRouter.use('/conversation', conversationRouter(convDB));
 
 // supercharger
 rootRouter.use('/supercharger', superchargerRouter(superchargerDB));
-
-// supercharged
-rootRouter.use('/supercharged', superchargedRouter(convDB));
 
 // Apply routes
 rootRouter.applyRoutes(server);

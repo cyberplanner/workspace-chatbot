@@ -63,10 +63,12 @@ bot.use({ botbuilder: liveChat.middleware(bot, builder)});
 // Setup root dialog
 bot.dialog('/', dialog);
 
-dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
-    session.send("Ok, we'll try connecting you with an agent.");
-    liveChat.handoverUser(session, args, next);
-}]);
+dialog.matches('MOVE_BASE_LOCATION', [
+    (session, args, next) => {
+        session.send("Ok, we'll try connecting you with an agent. Please wait.");
+        liveChat.handoverUser(session, args, next);
+    }
+]);
 
 // Setup custom matcher for advanced problem (creating cases)
 dialog.matches('MOVE_BASE_LOCATION_tmp', [(session, args, next) => {

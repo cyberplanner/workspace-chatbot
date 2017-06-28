@@ -83,7 +83,6 @@ conversationRouter.post('/',
 	    (req, res) => {
 	    	db.insert(Object.assign(req.body))
 	        .then((doc) => {
-				console.log(doc);
 	            res.json(200, {message: "Successfully saved conversation.", id: doc.id});
 	        })
 	        .catch(error => {

@@ -28,7 +28,7 @@ const createKnowledgeSchema = require('./schemas/createKnowledge.json');
 *       500:
 *         description: Creation failed. Item may already exist in DB.
 *       404:
- *        description: doc not found
+*        description: doc not found
 */
 knowledgeRouter.post('/:id', 
 	    validator.body( createKnowledgeSchema ),

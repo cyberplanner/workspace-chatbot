@@ -69,7 +69,16 @@ conversationRouter.get('/:id',
 * @swagger
 * /conversation/:
 *   post:
-*     description: Creates a new Conversation item in storage.
+*     description: Creates a new conversation item in storage.
+*     produces:
+*       - application/json
+*     parameters:
+*       - name: post-schema
+*         description: The JSON body of the request
+*         in: body
+*         required: true
+*         schema:
+*           $ref: '#/schemas/createConversation'     
 *     responses:
 *       200:
 *         description: Successful Creation
@@ -96,11 +105,18 @@ conversationRouter.post('/',
 * /conversation/:nodeId:
 *   put:
 *     description: Updates the conversation item in the storage.
-*     required:
-*      - nodeId
-*     properties:
-*       nodeId:
+*     parameters:
+*       - name: nodeId
+*         description: The nodeId for the particular conversation item you wish to update
+*         in: path
 *         type: string
+*         required: true
+*       - name: put-schema
+*         description: The JSON body of the request
+*         in: body
+*         required: true
+*         schema:
+*           $ref: '#/schemas/createConversation'
 *     responses:
 *       200:
 *         description: Successful Update

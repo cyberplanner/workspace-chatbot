@@ -19,6 +19,26 @@
 			},
 			"type": "array"
 		},
+        "supercharger" : {
+            "id": {
+              "type":"string"  
+            },
+            "arguments":{
+                "items":{
+                    "type": "object"
+                },
+                "type": "array"
+            },
+            "message": {
+                "type": "object"
+		    },
+            "required" : [
+                "id",
+                "arguments",
+                "message"
+            ],
+            "type": "object"
+        },
 		"fallback": {
 			"items": {
 				"type": "string"

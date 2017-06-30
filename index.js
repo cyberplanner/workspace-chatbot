@@ -18,6 +18,7 @@ const restify = require('restify');
 const dbcon = require('./custom_modules/module_dbConnection');
 const RestifyRouter = require('restify-routing');
 const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
+const liveChat = require('./custom_modules/module_liveChat');
 
 /*
     Load routes
@@ -57,8 +58,17 @@ var swaggerSpec = swaggerJSDoc(options);
 const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 
+bot.use({ botbuilder: liveChat.middleware(bot, builder)});
+
 // Setup root dialog
 bot.dialog('/', dialog);
+
+dialog.matches('LIVE_CHAT_HANDOVER', [
+    (session, args, next) => {
+        session.send("Ok, we'll try connecting you with an agent. Please wait.");
+        liveChat.handoverUser(session, args, next);
+    }
+]);
 
 // Setup custom matcher for advanced problem (creating cases)
 dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {

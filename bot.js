@@ -88,10 +88,13 @@ const conversationManager = (session, args, next) => {
 const respondFromKnowledge = (session, knowledgeID) => {
   databases.knowledge.get(knowledgeID)
       .then(result => {
+        result.responses.forEach(function(response) { 
+          session.send(response);
+        });
         console.log("[RESPONDER] RESPONDING - SUCCESS");
-        session.send(result.responses[0]);
       })
       .catch(error => {
+        console.log(error);
         console.log("[RESPONDER] RESPONDING - FAILED GETTING INTENT");
         session.send(defaultResponse.responses[0]);
       });

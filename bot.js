@@ -93,6 +93,8 @@ const respondFromKnowledge = (session, knowledgeID) => {
           result.responses.forEach(function(response) { 
             session.send(response);
           });
+        } else { 
+          session.send(defaultResponse.response[0]);
         }
       })
       .catch(error => {

@@ -59,14 +59,57 @@ const progressConversation = (session, args, next, conversationData) => {
  * @param {Object} conversationData 
  */
 const checkForFallbacks = (session, args, next, conversationData) => {
+  // Get the root of the conversation
   return databases.conversation.get('root')
     .then(conversation => {
+      // Check the root node for a fallback.
       console.log("[CONVERSATION] Retrieved fallback.");
       let chosenOne = conversation.children.find(child => child.intentId === args.intent);
       if (chosenOne) {
+        // We have a viable path from the root - use it.
         setCurrentConversation(chosenOne.nodeId, session, args, next);
       } else {
-        next();
+        /*
+          We we're unable to find a good option on the 'root' node. 
+          So let's inspect it's children for a good option.
+        */
+        let replied = false;
+        let responses = [];
+        
+        // Iterate through
+        conversation.children.forEach(child => {
+          // Push promise into array of responses
+          responses.push(new Promise((resolve, reject) => {
+            // Get child from DB
+            databases.conversation.get(child.nodeId)
+              .then(node => {
+                console.log("[CONVERSATION] Retrieved fallback.");
+                let chosenOne = node.children.find(child => child.intentId === args.intent);
+                if (chosenOne) {
+                  // If we have a response for the given intent.... USE IT.
+                  setCurrentConversation(chosenOne.nodeId, session, args, () => {
+                    resolve();
+                    next();
+                    replied = true;
+                  });
+                } else {
+                  // Otherwise - resolve
+                  resolve();
+                }
+              });
+          }));
+        });
+        // Once we've checked every child's potential paths
+        Promise.all(responses)
+          .then(() => {
+            // If we've not already replied - move on.
+            if (!replied) {
+              next();
+            }
+          }, () => {
+            // If we've not already replied - move on.
+            next();
+          })
       }
     })
     .catch(error => {

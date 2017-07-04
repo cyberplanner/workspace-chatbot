@@ -88,10 +88,12 @@ const conversationManager = (session, args, next) => {
 const respondFromKnowledge = (session, knowledgeID) => {
   databases.knowledge.get(knowledgeID)
       .then(result => {
-        result.responses.forEach(function(response) { 
-          session.send(response);
-        });
         console.log("[RESPONDER] RESPONDING - SUCCESS");
+        if (result.responses) { 
+          result.responses.forEach(function(response) { 
+            session.send(response);
+          });
+        }
       })
       .catch(error => {
         console.log(error);

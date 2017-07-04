@@ -59,15 +59,18 @@ const progressConversation = (session, args, next, conversationData) => {
  * @param {Object} conversationData 
  */
 const checkForFallbacks = (session, args, next, conversationData) => {
+  // Get the root of the conversation
   return databases.conversation.get('root')
     .then(conversation => {
+      // Check the root node for a fallback.
       console.log("[CONVERSATION] Retrieved fallback.");
       let chosenOne = conversation.children.find(child => child.intentId === args.intent);
       if (chosenOne) {
+        // We have a viable path from the root - use it.
         setCurrentConversation(chosenOne.nodeId, session, args, next);
       } else {
         /*
-          We were unable to find a good option on the 'root' node. 
+          We we're unable to find a good option on the 'root' node. 
           So let's inspect it's children for a good option.
         */
         let replied = false;

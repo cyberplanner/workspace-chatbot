@@ -116,7 +116,13 @@ const respondFromKnowledge = (session, knowledgeID) => {
   databases.knowledge.get(knowledgeID)
       .then(result => {
         console.log("[RESPONDER] RESPONDING - SUCCESS");
-        session.send(result.responses[0]);
+        if (result.responses) { 
+          result.responses.forEach(function(response) { 
+            session.send(response);
+          });
+        } else { 
+          session.send(defaultResponse.response[0]);
+        }
       })
       .catch(error => {
         console.log("[RESPONDER] RESPONDING - FAILED GETTING INTENT");

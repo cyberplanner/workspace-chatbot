@@ -45,8 +45,35 @@ const progressConversation = (session, args, next, conversationData) => {
   if (chosenOne) {
     setCurrentConversation(chosenOne.nodeId, session, args, next);
   } else {
-    next();
+    checkForFallbacks(session, args, next, conversationData);
   }
+}
+
+/**
+ * A function to allow retrieving the root node and checking for any potential 
+ * fallback routes - navigating through that option if possible.
+ * 
+ * @param {Object} session 
+ * @param {Object} args 
+ * @param {Function} next 
+ * @param {Object} conversationData 
+ */
+const checkForFallbacks = (session, args, next, conversationData) => {
+  return databases.conversation.get('root')
+    .then(conversation => {
+      console.log("[CONVERSATION] Retrieved fallback.");
+      let chosenOne = conversation.children.find(child => child.intentId === args.intent);
+      if (chosenOne) {
+        setCurrentConversation(chosenOne.nodeId, session, args, next);
+      } else {
+        next();
+      }
+    })
+    .catch(error => {
+      session.send(defaultResponse.responses[0]);
+      next();
+    });
+
 }
 
 /**
@@ -68,9 +95,9 @@ const conversationManager = (session, args, next) => {
     if (conversationData.current.children.length < 1) {
       console.log("[CONVERSATION] RESETTING TO ROOT AND PROGRESSING");
       setCurrentConversation('root', session, args, response => {
-          conversationData = session.userData.conversation;
-          progressConversation(session, args, next, conversationData);
-        });
+        conversationData = session.userData.conversation;
+        progressConversation(session, args, next, conversationData);
+      });
     } else {
       console.log("[CONVERSATION] PROGRESSING BASED ON INTENT");
       progressConversation(session, args, next, conversationData);

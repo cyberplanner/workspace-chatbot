@@ -96,7 +96,6 @@ const respondFromKnowledge = (session, knowledgeID) => {
         }
       })
       .catch(error => {
-        console.log(error);
         console.log("[RESPONDER] RESPONDING - FAILED GETTING INTENT");
         session.send(defaultResponse.responses[0]);
       });

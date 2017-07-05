@@ -107,4 +107,13 @@ describe("processResponse should replace {}", () => {
         }
         expect(utils.processResponse(sesh, testString)).toEqual("Hi - welcome - your surname is Cotton");
     });
+
+	it("Should fallback if summary unavailable", () => {
+        let testString = "Hi - welcome {forename} - your surname is {surname}";
+        let sesh =  {
+            userData: {
+            }
+        }
+        expect(utils.processResponse(sesh, testString)).toEqual("Hi - welcome - your surname is");
+    });
 });

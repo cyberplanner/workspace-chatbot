@@ -93,7 +93,7 @@ dialog.matches('RETRIEVE_TICKET', [(session, args, next) => {
     NeocaseAdapter.getAllCases().then(response => {
         if (!response[0].error || !response[0].error_details) { 
             let filteredReponse = response.filter(item => {
-                return item.contactId === employeeMap[session.userData.summary.email];
+                return item.contactId === employeeMap[session.userData.summary.email.toLowerCase()];
             });
             if (filteredReponse.length !== 0) {
                 session.send("Here are a list of your tickets:");

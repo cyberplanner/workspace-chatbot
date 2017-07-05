@@ -1,3 +1,4 @@
+let botUtils = require('./custom_modules/module_botUtils.js');
 
 let databases = {
     conversation: null,
@@ -149,6 +150,7 @@ const conversationManager = (session, args, next) => {
   }
 };
 
+
 /**
  * Responds to the user by retrieving the knowledge for the given ID.
  * 
@@ -161,15 +163,15 @@ const respondFromKnowledge = (session, knowledgeID) => {
         console.log("[RESPONDER] RESPONDING - SUCCESS");
         if (result.responses) { 
           result.responses.forEach(function(response) { 
-            session.send(response);
+            session.send(botUtils.processResponse(session, response));
           });
         } else { 
-          session.send(defaultResponse.response[0]);
+          session.send(botUtils.processResponse(session, defaultResponse.response[0]));
         }
       })
       .catch(error => {
         console.log("[RESPONDER] RESPONDING - FAILED GETTING INTENT");
-        session.send(defaultResponse.responses[0]);
+        session.send(botUtils.processResponse(session, defaultResponse.response[0]));
       });
 }
 
@@ -184,7 +186,15 @@ const respondFromKnowledge = (session, knowledgeID) => {
 const responder = (session, args, next) => {
   console.log("[RESPONDER] ENTERED RESPONDER");
   let conversationData = session.userData.conversation;
+  if (session.message.summary) {
+    try {
+      session.userData.summary = Object.assign({}, session.userData.summary, JSON.parse(session.message.summary));
+    } catch (error) {
+
+    }
+  }
   if (conversationData.current) {
+    console.log(session.message.summary);
     respondFromKnowledge(session, conversationData.current.message);
   } else {
     console.log("[RESPONDER] RESPONDING - NO INTENT");

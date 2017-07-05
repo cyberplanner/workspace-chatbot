@@ -58,6 +58,21 @@ var swaggerSpec = swaggerJSDoc(options);
 const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 
+//Neocase status mapping
+var statusMap = {
+    "ENC": "In Progress", 
+    "13": "Pending Manager Approval",
+    "7": "Pending Requestor Rework",
+    "14": "Pending Supervisor Approval",
+    "15": "Pending Supervisor Approval", 
+    "22": "SAP Failure", 
+    "19": "Pending Employee Signature", 
+    "17": "Pending Choice Employee", 
+    "23": "In Progress Data Admin Team",
+    "20": "Document Signed",
+    "16": "Document Created"
+}
+
 bot.use({ botbuilder: liveChat.middleware(bot, builder)});
 
 // Setup root dialog
@@ -69,6 +84,22 @@ dialog.matches('LIVE_CHAT_HANDOVER', [
         liveChat.handoverUser(session, args, next);
     }
 ]);
+
+dialog.matches('RETRIEVE_TICKET', [(session, args, next) => { 
+    NeocaseAdapter.getAllCases().then(response => { 
+        if (response) { 
+            session.send("Here are a list of tickets:");
+            response.forEach(item => {
+                session.send("Ticket ID: " + item.id + "  \n" + "Question: " + item.question + "  \n" + 
+                "Status: " + statusMap[item.statusId]);
+            });
+        } else { 
+            session.send("There are no tickets to show.");
+        }
+    }).catch(error => { 
+        session.send("An error occured while retrieving the tickts.");
+    });
+}]);
 
 // Setup custom matcher for advanced problem (creating cases)
 dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {

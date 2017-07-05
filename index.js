@@ -72,7 +72,6 @@ dialog.matches('LIVE_CHAT_HANDOVER', [
 
 // Setup custom matcher for advanced problem (creating cases)
 dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
-    console.log(session.userData.summary);
     if (session.userData.summary && session.userData.summary.email) {
         next();
     } else {
@@ -87,12 +86,10 @@ dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
             email: email
         });
     }
-    console.log(session.userData.summary);
     // Identify the location of the new base
     builder.Prompts.text(session, "Great. Now can you confirm the office you would like to be your new base location?");
 }, (session, args, next) => {
     session.newBase = args.response;
-    console.log(session.userData.summary);
     let question = "I'd like to change my base location to " + session.newBase + ". My email address is " + session.userData.summary.email;
     // Call Neocase
     NeocaseAdapter.createNewCase({

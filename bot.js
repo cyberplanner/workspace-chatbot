@@ -1,3 +1,4 @@
+let botUtils = require('./custom_modules/module_botUtils.js');
 
 let databases = {
     conversation: null,
@@ -5,10 +6,6 @@ let databases = {
 };
 let conversation;
 let defaultResponse = [];
-
-String.prototype.replaceBetween = function(start, end, what) {
-    return this.substring(0, start) + what + this.substring(end);
-};
 
 /**
  * Sets the current node in the conversation to be equal to the node with given ID.
@@ -154,28 +151,6 @@ const conversationManager = (session, args, next) => {
 };
 
 
-const processResponse = (session, message) => {
-  let summary = session.userData.summary;
-  let newMessage = "" + message;
-  let indexOf = newMessage.indexOf('{');
-  while (indexOf > 0) {
-    let end = newMessage.indexOf('}');
-    if (end >= 0) {
-      let key = newMessage.substring(indexOf + 1, end);
-      let val = "";
-      if (summary) {
-        val = " " + summary[key];
-      }
-      if (!summary || !summary[key]) {
-        val = "";
-      }
-      newMessage = newMessage.replaceBetween(indexOf - 1, end + 1, val);
-      indexOf = newMessage.indexOf('{');
-    }
-  }
-  return newMessage;
-}
-
 /**
  * Responds to the user by retrieving the knowledge for the given ID.
  * 
@@ -188,15 +163,15 @@ const respondFromKnowledge = (session, knowledgeID) => {
         console.log("[RESPONDER] RESPONDING - SUCCESS");
         if (result.responses) { 
           result.responses.forEach(function(response) { 
-            session.send(processResponse(session, response));
+            session.send(botUtils.processResponse(session, response));
           });
         } else { 
-          session.send(processResponse(session, defaultResponse.response[0]));
+          session.send(botUtils.processResponse(session, defaultResponse.response[0]));
         }
       })
       .catch(error => {
         console.log("[RESPONDER] RESPONDING - FAILED GETTING INTENT");
-        session.send(processResponse(session, defaultResponse.response[0]));
+        session.send(botUtils.processResponse(session, defaultResponse.response[0]));
       });
 }
 

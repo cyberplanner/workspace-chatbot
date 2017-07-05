@@ -72,22 +72,32 @@ dialog.matches('LIVE_CHAT_HANDOVER', [
 
 // Setup custom matcher for advanced problem (creating cases)
 dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
-    // Confirm employee number
-    builder.Prompts.text(session, "Ok great, first can you confirm your employee number?");
+    console.log(session.userData.summary);
+    if (session.userData.summary && session.userData.summary.email) {
+        next();
+    } else {
+        // Confirm email address
+        builder.Prompts.text(session, "Ok great, first can you confirm your email address?");
+    }
 }, (session, args, next) => {
-    session.userData.employee = args.response;
+    let email;
+    if (!session.userData.summary || !session.userData.summary.email) {
+        email = args.response;
+        session.userData.summary = Object.assign({}, session.userData.summary, {
+            email: email
+        });
+    }
+    console.log(session.userData.summary);
     // Identify the location of the new base
-    builder.Prompts.text(session, "Thank you. Now can you confirm the office you would like to be your new base location?");
+    builder.Prompts.text(session, "Great. Now can you confirm the office you would like to be your new base location?");
 }, (session, args, next) => {
     session.newBase = args.response;
-    let question = "I'd like to change my base location to " + session.newBase + ". My employee number is " + session.userData.employee;
+    console.log(session.userData.summary);
+    let question = "I'd like to change my base location to " + session.newBase + ". My email address is " + session.userData.summary.email;
     // Call Neocase
     NeocaseAdapter.createNewCase({
         "contact": {
-            "identifier": "820899",
-            "email": "EDWARD.DE-MOTT@CAPGEMINI.COM",
-            "firstName": "Edward",
-            "lastName": "De Mott"
+            "email": session.userData.summary.email,
         },
         "question": question,
         "serviceOption": {

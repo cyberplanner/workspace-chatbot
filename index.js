@@ -74,7 +74,17 @@ var statusMap = {
 }
 
 var employeeMap = { 
-    "ed.callow@capgemini.com": 43314
+    "ED.CALLOW@CAPGEMINI.COM": 44787,
+    "DAN.COTTON@CAPGEMINI.COM": 44875,
+    "EDWARD.DE-MOTT@CAPGEMINI.COM": 43314,
+    "GRAHAM.X.TAYLOR@CAPGEMINI.COM": 41224, 
+    "SANJAY.NAND@CAPGEMINI.COM": 43520,
+    "VICTORIA.PILE@CAPGEMINI.COM": 10441, 
+    "ALEXANDRA.HOME@CAPGEMINI.COM": 39766, 
+    "BINIAM.GEBREYESUS@CAPGEMINI.COM": 36980, 
+    "JOAO.VEIGA@CAPGEMINI.COM": 36404,
+    "MATT.SMITH@CAPGEMINI.COM": 44039, 
+    "JIGNA.SHAH@CAPGEMINI.COM": 36982
 }
 
 bot.use({ botbuilder: liveChat.middleware(bot, builder)});
@@ -93,7 +103,7 @@ dialog.matches('RETRIEVE_TICKET', [(session, args, next) => {
     NeocaseAdapter.getAllCases().then(response => {
         if (!response[0].error || !response[0].error_details) { 
             let filteredReponse = response.filter(item => {
-                return item.contactId === employeeMap[session.userData.summary.email.toLowerCase()];
+                return item.contactId === employeeMap[session.userData.summary.email.toUpperCase()];
             });
             if (filteredReponse.length !== 0) {
                 session.send("Here are a list of your tickets:");

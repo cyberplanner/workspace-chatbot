@@ -19,7 +19,7 @@ const processResponse = (session, message) => {
   let summary = session.userData.summary;
   let newMessage = "" + message;
   let indexOf = newMessage.indexOf('{');
-  while (indexOf > 0) {
+  while (indexOf >= 0) {
     let end = newMessage.indexOf('}');
     if (end >= 0) {
       let key = newMessage.substring(indexOf + 1, end);
@@ -34,7 +34,7 @@ const processResponse = (session, message) => {
       indexOf = newMessage.indexOf('{');
     }
   }
-  return newMessage;
+  return newMessage.trim();
 }
 
 module.exports = {

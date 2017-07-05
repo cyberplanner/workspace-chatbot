@@ -73,6 +73,10 @@ var statusMap = {
     "16": "Document Created"
 }
 
+var employeeMap = { 
+    "ed.callow@capgemini.com": 43314
+}
+
 bot.use({ botbuilder: liveChat.middleware(bot, builder)});
 
 // Setup root dialog
@@ -86,18 +90,25 @@ dialog.matches('LIVE_CHAT_HANDOVER', [
 ]);
 
 dialog.matches('RETRIEVE_TICKET', [(session, args, next) => { 
-    NeocaseAdapter.getAllCases().then(response => { 
-        if (response) { 
-            session.send("Here are a list of tickets:");
-            response.forEach(item => {
-                session.send("Ticket ID: " + item.id + "  \n" + "Question: " + item.question + "  \n" + 
-                "Status: " + statusMap[item.statusId]);
+    NeocaseAdapter.getAllCases().then(response => {
+        if (!response[0].error || !response[0].error_details) { 
+            let filteredReponse = response.filter(item => {
+                return item.contactId === employeeMap["ed.callow@capgemini.com"];
             });
-        } else { 
-            session.send("There are no tickets to show.");
+            if (filteredReponse.length !== 0) {
+                session.send("Here are a list of your tickets:");
+                filteredReponse.forEach(item => {
+                    session.send("Ticket ID: " + item.id + "  \nQuestion: " + item.question + "  \nStatus: " +
+                    statusMap[item.statusId] + "  \nCreation date: " + new Date(item.questionDate).toDateString());
+                });
+            } else { 
+                session.send("You have no open tickets to show.");
+            }
+        }  else { 
+            session.send("An error occured while retrieveing the tickets, " + response.error_details);
         }
-    }).catch(error => { 
-        session.send("An error occured while retrieving the tickts.");
+    }).catch(error => {
+        session.send("An unexpected error occured while retrieving the tickts.");
     });
 }]);
 

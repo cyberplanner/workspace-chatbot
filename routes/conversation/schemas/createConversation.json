@@ -16,12 +16,15 @@
 								"entityId": {
 									"type": "string"
 								},
+								"not": {
+									"type":"boolean"
+								},
 								"comparator": {
 									"type": "string",
 									"enum": [
 										"EQUALS",
 										"CONTAINS",
-										"NOT-EQUALS"
+										"REGEX_TEST"
 									]
 								},
 								"value": {
@@ -31,7 +34,8 @@
 							"required": [
 								"entityId",
 								"comparator",
-								"value"
+								"value",
+								"not"
 							],
 							"type": "object"
 						},

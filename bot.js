@@ -44,7 +44,11 @@ const setCurrentConversation = (id, session, args, next) => {
 const progressConversation = (session, args, next, conversationData) => {
   let chosenOne = conversationData.current.children.find(child => child.intentId === args.intent);
   if (chosenOne) {
-    setCurrentConversation(chosenOne.nodeId, session, args, next);
+    if (checkConditions(chosenOne, session, args, next)) {
+      setCurrentConversation(chosenOne.nodeId, session, args, next);
+    } else {
+      checkForFallbacks(session, args, next, conversationData);
+    }
   } else {
     checkForFallbacks(session, args, next, conversationData);
   }
@@ -67,8 +71,10 @@ const checkForFallbacks = (session, args, next, conversationData) => {
       console.log("[CONVERSATION] Retrieved fallback.");
       let chosenOne = conversation.children.find(child => child.intentId === args.intent);
       if (chosenOne) {
-        // We have a viable path from the root - use it.
-        setCurrentConversation(chosenOne.nodeId, session, args, next);
+        if (checkConditions(chosenOne, session, args, next)) {
+          // We have a viable path from the root - use it.
+          setCurrentConversation(chosenOne.nodeId, session, args, next);
+        }
       } else {
         /*
           We we're unable to find a good option on the 'root' node. 
@@ -87,12 +93,16 @@ const checkForFallbacks = (session, args, next, conversationData) => {
                 console.log("[CONVERSATION] Retrieved fallback.");
                 let chosenOne = node.children.find(child => child.intentId === args.intent);
                 if (chosenOne) {
-                  // If we have a response for the given intent.... USE IT.
-                  setCurrentConversation(chosenOne.nodeId, session, args, () => {
+                  if (checkConditions(chosenOne, session, args, next)) {
+                    // If we have a response for the given intent.... USE IT.
+                    setCurrentConversation(chosenOne.nodeId, session, args, () => {
+                      resolve();
+                      next();
+                      replied = true;
+                    });
+                  } else {
                     resolve();
-                    next();
-                    replied = true;
-                  });
+                  }
                 } else {
                   // Otherwise - resolve
                   resolve();
@@ -118,6 +128,54 @@ const checkForFallbacks = (session, args, next, conversationData) => {
       next();
     });
 
+}
+
+
+const checkConditions = (node, session, args, next) => {
+  console.log("args");
+  console.log(JSON.stringify(args));
+  if (node.conditions && node.conditions.length > 0) {
+    console.log("args");
+    console.log(JSON.stringify(args));
+    return node.conditions.reduce((condition, result) => {
+      if (result) {
+
+        let entity = args.entities.find(entity => {
+          return entity.type === condition.entityId;
+        });
+
+        let result = entity.resolution.values.reduce((value, result) => {
+          if (result) {
+            return true;
+          } else {
+            switch (condition.comparator) {
+              case "EQUALS":
+                return value === condition.value;
+              case "CONTAINS":
+                return value.contains(condition.value);
+              case "REGEX_MATCH":
+                return value.match(new RegExp(condition.value));
+              default:
+                return false;
+            }
+          }
+        }, false);
+
+        if (condition.not) {
+          return !result;
+        } else {
+          return result;
+        }
+        
+      } else {
+        // Give up - a condition hasn't been met
+        return false;
+      }
+    }, true);
+  } else {
+    // No conditions present - just return true.
+    return true;
+  }
 }
 
 /**

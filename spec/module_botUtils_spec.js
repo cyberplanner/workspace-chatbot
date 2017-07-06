@@ -121,6 +121,16 @@ describe("processResponse should replace {}", () => {
 
 describe("checkConditions", () => {
     
+	it("should return true if empty conditions present in node", () => {
+        let node = {
+            conditions: []
+        };
+        let session = {};
+        let args = {};
+        let next = () => {};
+        expect(utils.checkConditions(node, session, args, next)).toEqual(true);
+    });
+    
 	it("should return true if no conditions present in node", () => {
         let node = {};
         let session = {};

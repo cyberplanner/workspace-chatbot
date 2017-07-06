@@ -24,7 +24,7 @@
 									"enum": [
 										"EQUALS",
 										"CONTAINS",
-										"REGEX_TEST"
+										"REGEX_MATCH"
 									]
 								},
 								"value": {

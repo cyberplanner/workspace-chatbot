@@ -46,11 +46,13 @@ const processResponse = (session, message) => {
  * @param {*} next the next function in the chain
  */
 const checkConditions = (node, session, args, next) => {
+  console.log(JSON.stringify(node.conditions));
   if (node.conditions && node.conditions.length > 0) {
     return node.conditions.reduce((result, condition) => {
       if (result) {
 
         let entity = args.entities.find(entity => {
+          console.log(JSON.stringify(entity));
           return entity.type === condition.entityId;
         });
         if (!entity) {

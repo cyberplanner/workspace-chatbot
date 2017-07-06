@@ -69,12 +69,16 @@ const checkForFallbacks = (session, args, next, conversationData) => {
     .then(conversation => {
       // Check the root node for a fallback.
       console.log("[CONVERSATION] Retrieved fallback.");
-      let chosenOne = conversation.children.find(child => child.intentId === args.intent);
-      if (chosenOne) {
-        if (botUtils.checkConditions(chosenOne, session, args, next)) {
-          // We have a viable path from the root - use it.
-          setCurrentConversation(chosenOne.nodeId, session, args, next);
+      let chosenOne = conversation.children.find(child => {
+        if (child.intentId !== args.intent) {
+          return false;
+        } else {
+          return botUtils.checkConditions(child, session, args, next);
         }
+      });
+      if (chosenOne) {
+        // We have a viable path from the root - use it.
+        setCurrentConversation(chosenOne.nodeId, session, args, next);
       } else {
         /*
           We we're unable to find a good option on the 'root' node. 
@@ -91,18 +95,20 @@ const checkForFallbacks = (session, args, next, conversationData) => {
             databases.conversation.get(child.nodeId)
               .then(node => {
                 console.log("[CONVERSATION] Retrieved fallback.");
-                let chosenOne = node.children.find(child => child.intentId === args.intent);
-                if (chosenOne) {
-                  if (botUtils.checkConditions(chosenOne, session, args, next)) {
-                    // If we have a response for the given intent.... USE IT.
-                    setCurrentConversation(chosenOne.nodeId, session, args, () => {
-                      resolve();
-                      next();
-                      replied = true;
-                    });
+                let chosenOne = conversation.children.find(child => {
+                  if (child.intentId === args.intent) {
+                    return true;
                   } else {
-                    resolve();
+                    return botUtils.checkConditions(child, session, args, next);
                   }
+                });
+                if (chosenOne) {
+                  // If we have a response for the given intent.... USE IT.
+                  setCurrentConversation(chosenOne.nodeId, session, args, () => {
+                    resolve();
+                    next();
+                    replied = true;
+                  });
                 } else {
                   // Otherwise - resolve
                   resolve();

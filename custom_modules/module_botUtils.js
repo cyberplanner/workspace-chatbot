@@ -36,7 +36,15 @@ const processResponse = (session, message) => {
   }
   return newMessage.trim();
 }
-
+/**
+ * Checks the current message against any conditions specified in the 
+ * node provided.
+ * 
+ * @param {*} node the node to check assertions on
+ * @param {*} session the conversation session
+ * @param {*} args the "arguments" passed by LUIS, including entities
+ * @param {*} next the next function in the chain
+ */
 const checkConditions = (node, session, args, next) => {
   if (node.conditions && node.conditions.length > 0) {
     return node.conditions.reduce((result, condition) => {

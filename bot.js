@@ -44,7 +44,11 @@ const setCurrentConversation = (id, session, args, next) => {
 const progressConversation = (session, args, next, conversationData) => {
   let chosenOne = conversationData.current.children.find(child => child.intentId === args.intent);
   if (chosenOne) {
-    setCurrentConversation(chosenOne.nodeId, session, args, next);
+    if (botUtils.checkConditions(chosenOne, session, args, next)) {
+      setCurrentConversation(chosenOne.nodeId, session, args, next);
+    } else {
+      checkForFallbacks(session, args, next, conversationData);
+    }
   } else {
     checkForFallbacks(session, args, next, conversationData);
   }
@@ -67,8 +71,10 @@ const checkForFallbacks = (session, args, next, conversationData) => {
       console.log("[CONVERSATION] Retrieved fallback.");
       let chosenOne = conversation.children.find(child => child.intentId === args.intent);
       if (chosenOne) {
-        // We have a viable path from the root - use it.
-        setCurrentConversation(chosenOne.nodeId, session, args, next);
+        if (botUtils.checkConditions(chosenOne, session, args, next)) {
+          // We have a viable path from the root - use it.
+          setCurrentConversation(chosenOne.nodeId, session, args, next);
+        }
       } else {
         /*
           We we're unable to find a good option on the 'root' node. 
@@ -87,12 +93,16 @@ const checkForFallbacks = (session, args, next, conversationData) => {
                 console.log("[CONVERSATION] Retrieved fallback.");
                 let chosenOne = node.children.find(child => child.intentId === args.intent);
                 if (chosenOne) {
-                  // If we have a response for the given intent.... USE IT.
-                  setCurrentConversation(chosenOne.nodeId, session, args, () => {
+                  if (botUtils.checkConditions(chosenOne, session, args, next)) {
+                    // If we have a response for the given intent.... USE IT.
+                    setCurrentConversation(chosenOne.nodeId, session, args, () => {
+                      resolve();
+                      next();
+                      replied = true;
+                    });
+                  } else {
                     resolve();
-                    next();
-                    replied = true;
-                  });
+                  }
                 } else {
                   // Otherwise - resolve
                   resolve();

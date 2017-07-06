@@ -1,4 +1,5 @@
 let botUtils = require('./custom_modules/module_botUtils.js');
+let superchargers = require('./superchargers.js')();
 
 let databases = {
     conversation: null,
@@ -215,10 +216,11 @@ const responder = (session, args, next) => {
 // Bot is a sequence of middleware functions to be executed on each message
 const bot = [conversationManager, responder];
 
-module.exports = (knowledgeDB, conversationDB) => {
+module.exports = (knowledgeDB, conversationDB, builder) => {
   // Setup databases
   databases.knowledge = knowledgeDB;
   databases.conversation = conversationDB;
+  superchargers.init(builder);
   // Get default message
   databases.knowledge.get("default")
     .then(result => {

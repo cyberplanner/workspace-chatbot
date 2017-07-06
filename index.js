@@ -58,6 +58,35 @@ var swaggerSpec = swaggerJSDoc(options);
 const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 
+//Neocase status mapping
+var statusMap = {
+    "ENC": "In Progress", 
+    "13": "Pending Manager Approval",
+    "7": "Pending Requestor Rework",
+    "14": "Pending Supervisor Approval",
+    "15": "Pending Supervisor Approval", 
+    "22": "SAP Failure", 
+    "19": "Pending Employee Signature", 
+    "17": "Pending Choice Employee", 
+    "23": "In Progress Data Admin Team",
+    "20": "Document Signed",
+    "16": "Document Created"
+}
+
+var employeeMap = { 
+    "ED.CALLOW@CAPGEMINI.COM": 44787,
+    "DAN.COTTON@CAPGEMINI.COM": 44875,
+    "EDWARD.DE-MOTT@CAPGEMINI.COM": 43314,
+    "GRAHAM.X.TAYLOR@CAPGEMINI.COM": 41224, 
+    "SANJAY.NAND@CAPGEMINI.COM": 43520,
+    "VICTORIA.PILE@CAPGEMINI.COM": 10441, 
+    "ALEXANDRA.HOME@CAPGEMINI.COM": 39766, 
+    "BINIAM.GEBREYESUS@CAPGEMINI.COM": 36980, 
+    "JOAO.VEIGA@CAPGEMINI.COM": 36404,
+    "MATT.SMITH@CAPGEMINI.COM": 44039, 
+    "JIGNA.SHAH@CAPGEMINI.COM": 36982
+}
+
 bot.use({ botbuilder: liveChat.middleware(bot, builder)});
 
 // Setup root dialog
@@ -70,24 +99,54 @@ dialog.matches('LIVE_CHAT_HANDOVER', [
     }
 ]);
 
+dialog.matches('RETRIEVE_TICKET', [(session, args, next) => { 
+    NeocaseAdapter.getAllCases().then(response => {
+        if (!response[0].error || !response[0].error_details) { 
+            let filteredReponse = response.filter(item => {
+                return item.contactId === employeeMap[session.userData.summary.email.toUpperCase()];
+            });
+            if (filteredReponse.length !== 0) {
+                session.send("Here are a list of your tickets:");
+                filteredReponse.forEach(item => {
+                    session.send("Ticket ID: " + item.id + "  \nQuestion: " + item.question + "  \nStatus: " +
+                    statusMap[item.statusId] + "  \nCreation date: " + new Date(item.questionDate).toDateString());
+                });
+            } else { 
+                session.send("You have no open tickets to show.");
+            }
+        }  else { 
+            session.send("An error occured while retrieveing the tickets, " + response.error_details);
+        }
+    }).catch(error => {
+        session.send("An unexpected error occured while retrieving the tickts.");
+    });
+}]);
+
 // Setup custom matcher for advanced problem (creating cases)
 dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
-    // Confirm employee number
-    builder.Prompts.text(session, "Ok great, first can you confirm your employee number?");
+    if (session.userData.summary && session.userData.summary.email) {
+        next();
+    } else {
+        // Confirm email address
+        builder.Prompts.text(session, "Ok great, first can you confirm your email address?");
+    }
 }, (session, args, next) => {
-    session.userData.employee = args.response;
+    let email;
+    if (!session.userData.summary || !session.userData.summary.email) {
+        email = args.response;
+        session.userData.summary = Object.assign({}, session.userData.summary, {
+            email: email
+        });
+    }
     // Identify the location of the new base
-    builder.Prompts.text(session, "Thank you. Now can you confirm the office you would like to be your new base location?");
+    builder.Prompts.text(session, "Great. Now can you confirm the office you would like to be your new base location?");
 }, (session, args, next) => {
     session.newBase = args.response;
-    let question = "I'd like to change my base location to " + session.newBase + ". My employee number is " + session.userData.employee;
+    let question = "I'd like to change my base location to " + session.newBase + ". My email address is " + session.userData.summary.email;
     // Call Neocase
     NeocaseAdapter.createNewCase({
         "contact": {
-            "identifier": "820899",
-            "email": "EDWARD.DE-MOTT@CAPGEMINI.COM",
-            "firstName": "Edward",
-            "lastName": "De Mott"
+            "email": session.userData.summary.email,
         },
         "question": question,
         "serviceOption": {

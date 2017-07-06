@@ -9,6 +9,37 @@
 					},
 					"nodeId": {
 						"type": "string"
+					},
+					"conditions": {
+						"items": {
+							"properties": {
+								"entityId": {
+									"type": "string"
+								},
+								"not": {
+									"type":"boolean"
+								},
+								"comparator": {
+									"type": "string",
+									"enum": [
+										"EQUALS",
+										"CONTAINS",
+										"REGEX_MATCH"
+									]
+								},
+								"value": {
+									"type": "string"
+								}
+							},
+							"required": [
+								"entityId",
+								"comparator",
+								"value",
+								"not"
+							],
+							"type": "object"
+						},
+						"type": "array"
 					}
 				},
 				"required": [

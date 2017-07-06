@@ -1,3 +1,4 @@
+let botUtils = require('./custom_modules/module_botUtils.js');
 
 let databases = {
     conversation: null,
@@ -43,7 +44,11 @@ const setCurrentConversation = (id, session, args, next) => {
 const progressConversation = (session, args, next, conversationData) => {
   let chosenOne = conversationData.current.children.find(child => child.intentId === args.intent);
   if (chosenOne) {
-    setCurrentConversation(chosenOne.nodeId, session, args, next);
+    if (botUtils.checkConditions(chosenOne, session, args, next)) {
+      setCurrentConversation(chosenOne.nodeId, session, args, next);
+    } else {
+      checkForFallbacks(session, args, next, conversationData);
+    }
   } else {
     checkForFallbacks(session, args, next, conversationData);
   }
@@ -59,14 +64,63 @@ const progressConversation = (session, args, next, conversationData) => {
  * @param {Object} conversationData 
  */
 const checkForFallbacks = (session, args, next, conversationData) => {
+  // Get the root of the conversation
   return databases.conversation.get('root')
     .then(conversation => {
+      // Check the root node for a fallback.
       console.log("[CONVERSATION] Retrieved fallback.");
       let chosenOne = conversation.children.find(child => child.intentId === args.intent);
       if (chosenOne) {
-        setCurrentConversation(chosenOne.nodeId, session, args, next);
+        if (botUtils.checkConditions(chosenOne, session, args, next)) {
+          // We have a viable path from the root - use it.
+          setCurrentConversation(chosenOne.nodeId, session, args, next);
+        }
       } else {
-        next();
+        /*
+          We we're unable to find a good option on the 'root' node. 
+          So let's inspect it's children for a good option.
+        */
+        let replied = false;
+        let responses = [];
+        
+        // Iterate through
+        conversation.children.forEach(child => {
+          // Push promise into array of responses
+          responses.push(new Promise((resolve, reject) => {
+            // Get child from DB
+            databases.conversation.get(child.nodeId)
+              .then(node => {
+                console.log("[CONVERSATION] Retrieved fallback.");
+                let chosenOne = node.children.find(child => child.intentId === args.intent);
+                if (chosenOne) {
+                  if (botUtils.checkConditions(chosenOne, session, args, next)) {
+                    // If we have a response for the given intent.... USE IT.
+                    setCurrentConversation(chosenOne.nodeId, session, args, () => {
+                      resolve();
+                      next();
+                      replied = true;
+                    });
+                  } else {
+                    resolve();
+                  }
+                } else {
+                  // Otherwise - resolve
+                  resolve();
+                }
+              });
+          }));
+        });
+        // Once we've checked every child's potential paths
+        Promise.all(responses)
+          .then(() => {
+            // If we've not already replied - move on.
+            if (!replied) {
+              next();
+            }
+          }, () => {
+            // If we've not already replied - move on.
+            next();
+          })
       }
     })
     .catch(error => {
@@ -106,6 +160,7 @@ const conversationManager = (session, args, next) => {
   }
 };
 
+
 /**
  * Responds to the user by retrieving the knowledge for the given ID.
  * 
@@ -116,11 +171,17 @@ const respondFromKnowledge = (session, knowledgeID) => {
   databases.knowledge.get(knowledgeID)
       .then(result => {
         console.log("[RESPONDER] RESPONDING - SUCCESS");
-        session.send(result.responses[0]);
+        if (result.responses) { 
+          result.responses.forEach(function(response) { 
+            session.send(botUtils.processResponse(session, response));
+          });
+        } else { 
+          session.send(botUtils.processResponse(session, defaultResponse.response[0]));
+        }
       })
       .catch(error => {
         console.log("[RESPONDER] RESPONDING - FAILED GETTING INTENT");
-        session.send(defaultResponse.responses[0]);
+        session.send(botUtils.processResponse(session, defaultResponse.response[0]));
       });
 }
 
@@ -135,7 +196,15 @@ const respondFromKnowledge = (session, knowledgeID) => {
 const responder = (session, args, next) => {
   console.log("[RESPONDER] ENTERED RESPONDER");
   let conversationData = session.userData.conversation;
+  if (session.message.summary) {
+    try {
+      session.userData.summary = Object.assign({}, session.userData.summary, JSON.parse(session.message.summary));
+    } catch (error) {
+
+    }
+  }
   if (conversationData.current) {
+    console.log(session.message.summary);
     respondFromKnowledge(session, conversationData.current.message);
   } else {
     console.log("[RESPONDER] RESPONDING - NO INTENT");

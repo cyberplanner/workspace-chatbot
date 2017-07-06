@@ -2,6 +2,7 @@ let botUtils = require('./custom_modules/module_botUtils.js');
 
 let databases = {
     conversation: null,
+    conversationHistory: null,
     knowledge: null
 };
 let conversation;
@@ -218,8 +219,46 @@ const responder = (session, args, next) => {
   }
 };
 
+/**
+ * 
+ * @param {Object} session
+ * @param {Object} args
+ * @param {Function} next
+ */
+const conversationLogger = (session, args, next) => { 
+  console.log("[LOGGER] LOGGING CONVERSATION");
+  console.log(session.message.text);
+  console.log(session.conversation);
+  let conversationHistory = session.conversation.conversationHistory;
+  if (conversationHistory) { 
+    databases.conversationHistory.get(conversationHistory.id)
+      .then(result => { 
+        result.conversationHistory.push(session.message.text);
+        databases.conversationHistory.put(conversationHistory.id, result)
+          .then(result => { 
+            if (!result.error) { 
+              conversationHistory = result;
+              console.log("[LOGGER] Sucessfully updated Conversation History");
+            } else { 
+              console.log("[LOGGER] There was an error updating the Conversation History, " + result.error );
+            }
+          }).catch(error => { 
+            console.log("[LOGGER] There was an unexpected error updating the Conversation History, " + error);
+          })
+      }).catch(error => { 
+        console.log("[Logger] There was an unexpected error retrieveing the Conversation History, " + error);
+      })
+  } else { 
+    databases.conversationHistory.post({})
+      .then(result => { 
+        if (result.id) { 
+          conversationHistory = result.id;
+        }
+      })
+  }
+}
 // Bot is a sequence of middleware functions to be executed on each message
-const bot = [conversationManager, responder];
+const bot = [conversationLogger, conversationManager, responder];
 
 module.exports = (knowledgeDB, conversationDB) => {
   // Setup databases

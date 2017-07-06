@@ -39,14 +39,18 @@ const processResponse = (session, message) => {
 
 const checkConditions = (node, session, args, next) => {
   if (node.conditions && node.conditions.length > 0) {
-    return node.conditions.reduce((condition, result) => {
+    return node.conditions.reduce((result, condition) => {
       if (result) {
 
         let entity = args.entities.find(entity => {
           return entity.type === condition.entityId;
         });
-
-        let result = entity.resolution.values.reduce((value, result) => {
+        if (!entity) {
+          // No result, return false;
+          return false;
+        }
+        // Great - we've got a result, carry on.
+        let result = entity.resolution.values.reduce((result, value) => {
           if (result) {
             return true;
           } else {
@@ -54,9 +58,9 @@ const checkConditions = (node, session, args, next) => {
               case "EQUALS":
                 return value === condition.value;
               case "CONTAINS":
-                return value.contains(condition.value);
+                return value.includes(condition.value);
               case "REGEX_MATCH":
-                return value.match(new RegExp(condition.value));
+                return new RegExp(condition.value).test(value);
               default:
                 return false;
             }

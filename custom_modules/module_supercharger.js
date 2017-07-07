@@ -46,7 +46,7 @@ class Detail {
       },
       body: JSON.stringify(req)
     })
-      .then(result => result.json());
+    .then(result => result.json());
   }
 
 }
@@ -83,6 +83,7 @@ const execute = (session, args, next, conversationDoc) => {
     })
     .reduce((result, argument) => {
       result[argument.key] = argument.value;
+      return result;
     }, {});
   let supercharger = superchargers[conversationDoc.supercharger.id];
   supercharger(session, args, next, customArguments);
@@ -94,7 +95,7 @@ module.exports = {
   register: detail => {
     console.log("Registering...");
     detail.addToDB();
-    superchargers[detail._id] = detail._function;
+    superchargers[detail.id] = detail.function;
   },
   execute: execute,
   Detail: Detail,

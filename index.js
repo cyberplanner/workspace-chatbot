@@ -89,7 +89,9 @@ var employeeMap = {
     "JIGNA.SHAH@CAPGEMINI.COM": 36982
 }
 
-bot.use({ botbuilder: liveChat.middleware(bot, builder)});
+bot.use({ botbuilder: liveChat.middleware(bot, builder), send: function(event, next) { 
+    console.log(event);
+} });
 
 // Setup root dialog
 bot.dialog('/', dialog);
@@ -173,7 +175,7 @@ dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
 }]);
 
 // Use bot module to find response from KM.
-dialog.onDefault(botHandler(knowledgeDB, convDB));
+dialog.onDefault(botHandler(knowledgeDB, convDB, conversationHistoryDB));
 
 //=========================================================
 // Setup Server
@@ -210,6 +212,9 @@ rootRouter.use('/conversation', conversationRouter(convDB));
 
 // supercharger
 rootRouter.use('/supercharger', superchargerRouter(superchargerDB));
+
+//conversationHistory
+rootRouter.use('/conversationHistory', conversationHistoryRouter(conversationHistoryDB))
 
 // Apply routes
 rootRouter.applyRoutes(server);

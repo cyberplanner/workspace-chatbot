@@ -229,51 +229,56 @@ const responder = (session, args, next) => {
  */
 const conversationLogger = (session, args, next) => { 
   console.log("[LOGGER] LOGGING CONVERSATION");
-  if (session.conversationData.conversationHistory) { 
-    updateConversationHistory(session.conversationData.conversationHistory, session.message.text);
-  } else { 
-    createNewConversationHistory(session);
-  }
+  let conversationId = session.message.address.conversation.id;
+  let text = session.message.text;
+  updateConversationHistory(conversationId, text);
   next();
+}
+
+/**
+ * Update the conversation history with a string of text.
+ * @param {*} conversationId the id of the conversation and hense the conversation history object.
+ * @param {*} text the text to be added to the conversation history.
+ */
+var updateConversationHistory = (conversationId, text) => { 
+  databases.conversationHistory.get(conversationId)
+    .then(result => {
+      result.conversationHistory.push(text);
+      console.log(result);
+      databases.conversationHistory.insert(result)
+        .then(result => {
+          console.log("[LOGGER] Sucessfully updated Conversation History");
+        }).catch(error => {
+          console.log("[LOGGER] There was an unexpected error updating the Conversation History, " + error);
+        });
+    }).catch(error => {
+      if (!error.error === "not_found") {
+        // Unexpected error, log it.
+        console.log("[LOGGER] There was an unexpected error retrieveing the Conversation History, " + error);
+      }
+      // Entry doesn't exist, create it.
+      createNewConversationHistory(conversationId, text);
+    });
 }
 
 /**
  * Creates a new conversation history and stores the id in the session.
  */
-const createNewConversationHistory = (session) => { 
-  databases.conversationHistory.insert({conversationHistory:[session.message.text]})
+const createNewConversationHistory = (conversationId, text) => { 
+  databases.conversationHistory.insert({_id: conversationId, conversationHistory:[text]})
       .then(result => { 
         console.log("[LOGGER] Conversation History created.");
-        session.conversationData.conversationHistory = result.id;
       }).catch(error => {
         console.log("[LOGGER] There was an error creating the Conversation History, " + error);
-      });
-}
-/**
- * Updates the conversation history entry in the DB by pushing the message text to the array.
- */
-const updateConversationHistory = (conversationHistory, text) => { 
-  databases.conversationHistory.get(conversationHistory)
-      .then(result => { 
-        result.conversationHistory.push(text);
-        console.log(result);
-        databases.conversationHistory.insert(result)
-          .then(result => {  
-            conversationHistory = result;
-            console.log("[LOGGER] Sucessfully updated Conversation History");
-          }).catch(error => { 
-            console.log("[LOGGER] There was an unexpected error updating the Conversation History, " + error);
-          });
-      }).catch(error => { 
-        console.log("[LOGGER] There was an unexpected error retrieveing the Conversation History, " + error);
       });
 }
 
 // Bot is a sequence of middleware functions to be executed on each message
 const bot = [conversationLogger, conversationManager, responder];
 
-module.exports = (knowledgeDB, conversationDB, conversationHistoryDB) => {
+module.exports = {
   // Setup databases
+  bot: (knowledgeDB, conversationDB, conversationHistoryDB) => {
   databases.knowledge = knowledgeDB;
   databases.conversation = conversationDB;
   databases.conversationHistory = conversationHistoryDB;
@@ -287,6 +292,8 @@ module.exports = (knowledgeDB, conversationDB, conversationHistoryDB) => {
           responses: "I\'m not sure how to reply to that. Please ask me again or in a different way?"
         };
     });
+    return bot;
+  },
   // Return middleware functions
-  return bot;
+  updateConversationHistory: updateConversationHistory
 }

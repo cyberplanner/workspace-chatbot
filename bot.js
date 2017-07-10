@@ -230,7 +230,7 @@ const responder = (session, args, next) => {
 const conversationLogger = (session, args, next) => { 
   console.log("[LOGGER] LOGGING CONVERSATION");
   if (session.conversationData.conversationHistory) { 
-    updateConversationHistory(session.conversationData.conversationHistory, session.mee);
+    updateConversationHistory(session.conversationData.conversationHistory, session.message.text);
   } else { 
     createNewConversationHistory(session);
   }

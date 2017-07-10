@@ -89,9 +89,7 @@ var employeeMap = {
     "JIGNA.SHAH@CAPGEMINI.COM": 36982
 }
 
-bot.use({ botbuilder: liveChat.middleware(bot, builder), send: function(event, next) { 
-    console.log(event);
-} });
+bot.use({ botbuilder: liveChat.middleware(bot, builder)});
 
 // Setup root dialog
 bot.dialog('/', dialog);

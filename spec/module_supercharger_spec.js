@@ -63,6 +63,7 @@ let supercharger = require('../custom_modules/module_supercharger');
 
 describe("Supercharger", function() {
 	it("should execute successfully with an entity based argument", function(done) {
+    // Register callback for completion
     cb = done;
     /* 
         Mock out fetch functions

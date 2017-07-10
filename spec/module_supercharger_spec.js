@@ -103,4 +103,51 @@ describe("Supercharger", function() {
     }, () => {}, node);
       
   });
+
+	it("should execute successfully with an previous entity stored argument", function(done) {
+    // Register callback for completion
+    cb = done;
+    /* 
+        Mock out fetch functions
+    */
+    let builder = {
+      EntityRecognizer: {
+        findEntity: (entities, id) => {
+          return null;
+        }
+      }
+    };
+
+    let node  = {
+      supercharger: {
+        arguments: {
+          "TEST_PARAM": "$WEBSITE_ENTITY"
+        },
+        id: "test-id"
+      }
+    };
+
+    supercharger.init(builder);
+
+    supercharger.register(
+      new supercharger.Detail([
+        new supercharger.Parameter("TEST_PARAM", "A parameter used in testing", "string")
+      ], "Test_Supercharger", (session, args, next, customArguments) => {
+        expect(customArguments.TEST_PARAM).toEqual("PAYROLL");
+      })
+    );
+    
+    supercharger.execute({
+      userData: {
+        summary: {
+          WEBSITE_ENTITY: "PAYROLL"
+        }
+      }
+    }, {
+      intent: {
+        entities: []
+      }
+    }, () => {}, node);
+      
+  });
 });

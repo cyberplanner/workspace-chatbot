@@ -68,10 +68,18 @@ const execute = (session, args, next, conversationDoc) => {
     .map(key => {
       let value = conversationDoc.supercharger.arguments[key];
       if (value.indexOf("$") == 0) {
-        // It's an entity
-        return {
-          key: key,
-          value: botBuilder.EntityRecognizer.findEntity(args.intent.entities, value.substring(1))
+        // It's an entity - check the userData.
+        if (session.userData && session.userData.summary && session.userData.summary[value.substring(1)]) {
+          return {
+            key: key,
+            value: session.userData.summary[value.substring(1)]
+          };
+        } else {
+          //If not in userdata - lookup to see if it was in an entity passed now.
+          return {
+            key: key,
+            value: botBuilder.EntityRecognizer.findEntity(args.intent.entities, value.substring(1))
+          }
         }
       } else {
         // It's a hardcoded parameter...

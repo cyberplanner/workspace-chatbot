@@ -30,9 +30,55 @@ superchargerRouter.get('/',
 	            res.json(doc);
 	        })
 	        .catch(err => {
-	            console.log("Error :"+err)
+	            console.log("Error :"+JSON.stringify(err))
 	            res.json(err.statusCode, {error: err.reason});
 	        });
+    });
+
+/**
+ * @swagger
+ * /supercharger/all:
+ *   delete:
+ *     description: Returns the whole document for that id
+ *     produces:
+ *       - application/json
+ *     parameters:
+ *       - name: id
+ *         description: The Id for the particular cloudant document
+ *         in: path
+ *         type: string
+ *         required: true
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: doc not found
+ */
+superchargerRouter.delete('/all', 
+    (req,res) => {
+        db.list()
+		.then((body) => {
+            let req = body.rows.map(row => {
+				return Object.assign(row, {
+					_deleted: true,
+					_id: row.id,
+					_rev: row.value.rev
+				});
+			});
+			console.log(JSON.stringify(req));
+			return db.bulk({
+				docs: req
+			});
+		})
+        .then(() => {
+            res.json({
+				success: true
+			});
+        })
+        .catch(err => {
+            console.log("Error :" + JSON.stringify(err))
+            res.json(err.statusCode, {error: err.reason});
+        });
     });
 
 /**
@@ -61,7 +107,7 @@ superchargerRouter.get('/:id',
             res.json(doc);
         })
         .catch(err => {
-            console.log("Error :"+err)
+            console.log("Error :"+JSON.stringify(err))
             res.json(err.statusCode, {error: err.reason});
         });
     });
@@ -144,7 +190,7 @@ superchargerRouter.post('/',
   		      });
         })
         .catch(err => {
-            console.log("Error :"+err)
+            console.log("Error :"+JSON.stringify(err))
             res.json(err.statusCode, {error: err.reason});
         });		      
     });

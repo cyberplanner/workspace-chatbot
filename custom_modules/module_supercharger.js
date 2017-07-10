@@ -98,6 +98,12 @@ const execute = (session, args, next, conversationDoc) => {
   
 };
 
+const clear = () => {
+  return fetch(`http://localhost:${PORT}/supercharger/all`, {
+    method: "DELETE"
+  });
+}
+
 module.exports = {
   init: builder => botBuilder = builder,
   register: detail => {
@@ -105,6 +111,7 @@ module.exports = {
     detail.addToDB();
     superchargers[detail.id] = detail.function;
   },
+  clear: clear,
   execute: execute,
   Detail: Detail,
   Parameter: Parameter

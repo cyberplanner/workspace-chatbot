@@ -64,6 +64,7 @@ class Parameter {
 }
 
 const execute = (session, args, next, conversationDoc) => {
+  console.log(conversationDoc);
   let customArguments = Object.keys(conversationDoc.supercharger.arguments)
     .map(key => {
       let value = conversationDoc.supercharger.arguments[key];

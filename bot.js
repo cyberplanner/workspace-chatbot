@@ -210,9 +210,12 @@ const responder = (session, args, next) => {
     }
   }
   if (conversationData.current) {
+    console.log(conversationData);
     if (conversationData.current.supercharger && conversationData.current.supercharger) {
+      console.log("[RESPONDER] Calling Supercharger.");
       superchargers.execute(session, args, next, conversationData.current);
     } else {
+      console.log("[RESPONDER] Responding from knowledge");
       respondFromKnowledge(session, conversationData.current.message);
     }
   } else {

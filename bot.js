@@ -131,7 +131,6 @@ const checkForFallbacks = (session, args, next, conversationData) => {
     })
     .catch(error => {
       console.log("[ERROR] Loading root node for fallback.");
-      botUtils.processResponse(session, defaultResponse.responses[0])
       next();
     });
 

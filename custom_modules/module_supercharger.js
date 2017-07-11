@@ -1,4 +1,3 @@
-const uuidv1 = require('uuid/v1');
 const fetch = require("node-fetch");
 
 const PORT = process.env.PORT || "3978";
@@ -24,12 +23,13 @@ class Detail {
    * @param {*} args an array of supercharger parameters
    * @param {*} displayName 
    * @param {*} fn The supercharger function (We'll pass these params: session, args, next, customArguments)
+   * @param {*} id This needs to be both unique and consistent. Shouldn't change for this function - otherwise, we will break the conversation.
    */
-  constructor(args, displayName, fn) {
+  constructor(args, displayName, fn, id) {
     this.arguments = args;
     this.displayName = displayName;
     this.function = fn;
-    this._id = uuidv1();
+    this._id = id;
   }
   addToDB() {
     let req = {

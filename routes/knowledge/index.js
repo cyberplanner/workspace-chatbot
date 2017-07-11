@@ -134,7 +134,7 @@ knowledgeRouter.get('/:id',
         res.json(doc);
       })
       .catch(err => {
-        console.log("Error :" + err)
+        console.log("Error :" + JSON.stringify(err))
         res.json(err.statusCode, { error: err.reason });
       });
   });
@@ -160,7 +160,7 @@ knowledgeRouter.get('/',
         res.json(doc);
       })
       .catch(err => {
-        console.log("Error :" + err)
+        console.log("Error :" + JSON.stringify(err))
         res.json(err.statusCode, { error: err.reason });
       });
   });
@@ -200,7 +200,7 @@ knowledgeRouter.put('/:id',
           });
       })
       .catch(err => {
-        console.log("Error :" + err)
+        console.log("Error :" + JSON.stringify(err))
         res.json(err.statusCode, { error: err.reason });
       });
   });

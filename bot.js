@@ -1,4 +1,5 @@
 let botUtils = require('./custom_modules/module_botUtils.js');
+let superchargers = require('./superchargers.js')();
 
 let databases = {
     conversation: null,
@@ -8,6 +9,11 @@ let conversation;
 let defaultResponse = {
   response: ["Hi, I'm a HR Bot. How can I help?"]
 };
+
+process.on('unhandledRejection', function(reason, p){
+    console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+    // application specific logging here
+});
 
 /**
  * Sets the current node in the conversation to be equal to the node with given ID.
@@ -210,7 +216,13 @@ const responder = (session, args, next) => {
     }
   }
   if (conversationData.current) {
-    respondFromKnowledge(session, conversationData.current.message);
+    if (conversationData.current.supercharger && conversationData.current.supercharger) {
+      console.log("[RESPONDER] Calling Supercharger.");
+      superchargers.execute(session, args, next, conversationData.current);
+    } else {
+      console.log("[RESPONDER] Responding from knowledge");
+      respondFromKnowledge(session, conversationData.current.message);
+    }
   } else {
     console.log("[RESPONDER] RESPONDING - NO INTENT");
     session.send(defaultResponse.responses[0]);
@@ -220,10 +232,11 @@ const responder = (session, args, next) => {
 // Bot is a sequence of middleware functions to be executed on each message
 const bot = [conversationManager, responder];
 
-module.exports = (knowledgeDB, conversationDB) => {
+module.exports = (knowledgeDB, conversationDB, builder) => {
   // Setup databases
   databases.knowledge = knowledgeDB;
   databases.conversation = conversationDB;
+  superchargers.init(builder);
   // Get default message
   databases.knowledge.get("default")
     .then(result => {

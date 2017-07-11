@@ -1,14 +1,43 @@
 {
 	"$schema": "http://json-schema.org/draft-04/schema#",
     "properties": {
-        "arguments":[],
+        "arguments": {
+            "items": {
+                "properties": {
+                    "name": {
+
+                    },
+                    "description": {
+                        "type":"string"
+                    },
+                    "dataType": {
+                        "type": "string",
+                        "enum": [
+                            "array",
+                            "boolean",
+                            "integer",
+                            "null",
+                            "number",
+                            "object",
+                            "string"
+                        ]
+                    }
+                },
+                "type": "object"
+            },
+            "type": "array"
+        },
+        "displayName": {
+            "type": "string"
+        },
         "functionName": {
 			"type": "string"
 		}
     },
     "required": [
-		"functionName",
-        "arguments"        
+        "arguments",
+        "displayName",
+		"functionName"  
 	],
 	"type": "object"
 }

@@ -12,7 +12,7 @@ const init = () => {
           new supercharger.Parameter("TEST_PARAM", "A parameter used in testing", "string")
         ], "Test_Supercharger", (session, args, next, customArguments) => {
           session.send(customArguments.TEST_PARAM);
-        })
+        }, "testFunction")
       );
 
     })

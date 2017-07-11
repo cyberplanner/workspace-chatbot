@@ -205,8 +205,11 @@ const responder = (session, args, next) => {
     }
   }
   if (conversationData.current) {
-    console.log(session.message.summary);
-    respondFromKnowledge(session, conversationData.current.message);
+    if (conversationData.current.supercharger && conversationData.current.supercharger) {
+      superchargers.execute(session, args, next, conversationData.current);
+    } else {
+      respondFromKnowledge(session, conversationData.current.message);
+    }
   } else {
     console.log("[RESPONDER] RESPONDING - NO INTENT");
     session.send(defaultResponse.responses[0]);

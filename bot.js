@@ -216,7 +216,6 @@ const responder = (session, args, next) => {
     }
   }
   if (conversationData.current) {
-    console.log(conversationData);
     if (conversationData.current.supercharger && conversationData.current.supercharger) {
       console.log("[RESPONDER] Calling Supercharger.");
       superchargers.execute(session, args, next, conversationData.current);

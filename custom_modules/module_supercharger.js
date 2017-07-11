@@ -18,7 +18,6 @@ const VALID_TYPES = ["string",
                     "object"];
 
 class Detail {
-
   /**
    * Allows you to create a new supercharger
    * 
@@ -30,13 +29,14 @@ class Detail {
     this.arguments = args;
     this.displayName = displayName;
     this.function = fn;
-    this.id = uuidv1();
+    this._id = uuidv1();
   }
   addToDB() {
     let req = {
       "arguments": this.arguments,
       "displayName": this.displayName,
-      "functionName": this.id
+      "functionName": this._id,
+      "_id": this._id
     };
 
     return fetch(`http://localhost:${PORT}/supercharger`, {
@@ -47,6 +47,14 @@ class Detail {
       body: JSON.stringify(req)
     })
     .then(result => result.json());
+  }
+
+  set id(id) {
+    this._id = id;
+  }
+
+  get id() {
+    return this._id;
   }
 
 }
@@ -95,7 +103,13 @@ const execute = (session, args, next, conversationDoc) => {
       return result;
     }, {});
   let supercharger = superchargers[conversationDoc.supercharger.id];
-  supercharger(session, args, next, customArguments);
+  console.log("[SUPERCHARGER] Retrieving supercharger with ID: " + conversationDoc.supercharger.id);
+  if (typeof supercharger === "function") {
+    console.log("[SUPERCHARGER] Executing.");
+    supercharger(session, args, next, customArguments);
+  } else {
+    console.log("[SUPERCHARGER] Failed to execute. No function available.");
+  }
   
 };
 

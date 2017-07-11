@@ -8,6 +8,11 @@ let databases = {
 let conversation;
 let defaultResponse = [];
 
+process.on('unhandledRejection', function(reason, p){
+    console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+    // application specific logging here
+});
+
 /**
  * Sets the current node in the conversation to be equal to the node with given ID.
  * 
@@ -94,7 +99,7 @@ const checkForFallbacks = (session, args, next, conversationData) => {
                 console.log("[CONVERSATION] Retrieved fallback.");
                 let chosenOne = node.children.find(child => child.intentId === args.intent);
                 if (chosenOne) {
-                  if (botUtils.checkConditions(chosenOne, session, args, next)) {
+                  if (!replied && botUtils.checkConditions(chosenOne, session, args, next)) {
                     // If we have a response for the given intent.... USE IT.
                     setCurrentConversation(chosenOne.nodeId, session, args, () => {
                       resolve();

@@ -20,7 +20,6 @@ let defaultResponse = {
 const setCurrentConversation = (id, session, args, next) => {
   return databases.conversation.get(id)
     .then(conversation => {
-      console.log(conversation);
       session.userData.conversation = {
         current: conversation
       };
@@ -73,15 +72,10 @@ const checkForFallbacks = (session, args, next, conversationData) => {
     .then(conversation => {
       // Check the root node for a fallback.
       let chosenOne = conversation.children.find(child => {
-        if (child.intentId !== args.intent) {
-          return false;
-        } else {
-          return botUtils.checkConditions(child, session, args, next);
-        }
+        return (child.intentId === args.intent) && botUtils.checkConditions(child, session, args, next);
       });
       if (chosenOne) {
         console.log("[CONVERSATION] Retrieved fallback.");
-        console.log(chosenOne);
         // We have a viable path from the root - use it.
         setCurrentConversation(chosenOne.nodeId, session, args, next);
       } else {
@@ -100,14 +94,10 @@ const checkForFallbacks = (session, args, next, conversationData) => {
             databases.conversation.get(child.nodeId)
               .then(node => {
                 let chosenOne = conversation.children.find(child => {
-                  if (child.intentId === args.intent) {
-                    return true;
-                  } else {
-                    return botUtils.checkConditions(child, session, args, next);
-                  }
+                  return (child.intentId === args.intent) && botUtils.checkConditions(child, session, args, next); 
                 });
                 if (chosenOne && !replied) {
-                  console.log("[CONVERSATION] Retrieved fallback.");
+                  console.log("[CONVERSATION] Retrieved fallback by children.");
                   replied = true;
                   // If we have a response for the given intent.... USE IT.
                   setCurrentConversation(chosenOne.nodeId, session, args, () => {

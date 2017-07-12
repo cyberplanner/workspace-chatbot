@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+let botUtils = require('./module_botUtils.js');
 
 const PORT = process.env.PORT || "3978";
 
@@ -85,6 +86,10 @@ const execute = (session, args, next, conversationDoc) => {
           };
         } else {
           //If not in userdata - lookup to see if it was in an entity passed now.
+          if (!session.userData.summary) {
+            session.userData.summary = {};
+          }
+          session.userData.summary[value.substring(1)] = botBuilder.EntityRecognizer.findEntity(args.intent.entities, value.substring(1));
           return {
             key: key,
             value: botBuilder.EntityRecognizer.findEntity(args.intent.entities, value.substring(1))
@@ -94,7 +99,7 @@ const execute = (session, args, next, conversationDoc) => {
         // It's a hardcoded parameter...
         return {
           key: key,
-          value: value
+          value: botUtils.processResponse(session, value)
         }
       }
     })

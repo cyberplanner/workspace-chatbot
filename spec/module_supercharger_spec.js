@@ -25,8 +25,7 @@ const functions = {
                   dataType: "string"
                 }
               ],
-              displayName: "Test_Supercharger",
-              functionName: "test-id"
+              displayName: "Test_Supercharger"
             })
           });
           return {
@@ -96,7 +95,52 @@ describe("Supercharger", function() {
       })
     );
     
-    supercharger.execute({}, {
+    supercharger.execute({
+      userData: {}
+    }, {
+      intent: {
+        entities: []
+      }
+    }, () => {}, node);
+      
+  });
+	it("should execute successfully with an mixed argument", function(done) {
+    // Register callback for completion
+    cb = done;
+    /* 
+        Mock out fetch functions
+    */
+    let builder = {
+      EntityRecognizer: {
+        findEntity: (entities, id) => {
+          expect(id).toEqual("WEBSITE_ENTITY");
+          return "FLEX_BENEFITS";
+        }
+      }
+    };
+
+    let node  = {
+      supercharger: {
+        arguments: {
+          "TEST_PARAM": "Hi there {WEBSITE_ENTITY} how are you?"
+        },
+        id: "test-id"
+      }
+    };
+
+    supercharger.init(builder);
+
+    supercharger.register(
+      new supercharger.Detail([
+        new supercharger.Parameter("TEST_PARAM", "A parameter used in testing", "string")
+      ], "Test_Supercharger", (session, args, next, customArguments) => {
+        expect(customArguments.TEST_PARAM).toEqual("Hi there FLEX_BENEFITS how are you?");
+      })
+    );
+    
+    supercharger.execute({
+      userData: {}
+    }, {
       intent: {
         entities: []
       }

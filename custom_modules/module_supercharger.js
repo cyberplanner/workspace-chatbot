@@ -72,7 +72,7 @@ class Parameter {
   }
 }
 
-const execute = (session, args, next, conversationDoc) => {
+const execute = (session, args, next, conversationDoc, skip) => {
   console.log(conversationDoc);
   let customArguments = Object.keys(conversationDoc.supercharger.arguments)
     .map(key => {
@@ -111,7 +111,7 @@ const execute = (session, args, next, conversationDoc) => {
   console.log("[SUPERCHARGER] Retrieving supercharger with ID: " + conversationDoc.supercharger.id);
   if (typeof supercharger === "function") {
     console.log("[SUPERCHARGER] Executing.");
-    supercharger(session, args, next, customArguments);
+    supercharger(session, args, next, customArguments, skip);
   } else {
     console.log("[SUPERCHARGER] Failed to execute. No function available.");
   }

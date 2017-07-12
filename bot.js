@@ -200,6 +200,20 @@ const respondFromKnowledge = (session, knowledgeID) => {
 }
 
 /**
+ * Skip the current node.
+ * 
+ * @param {*} session 
+ * @param {*} args 
+ * @param {*} next 
+ */
+const skip = (session, args, next) => {
+  console.log("[SKIP] Requested.");
+  progressConversation(session, args, () => {
+    responder(session, args, next);
+  }, session.userData.conversation);
+} 
+
+/**
  * Identifies responses based on conversation data and responds with 
  * an appropriate message from the knowledge item.
  * 
@@ -220,7 +234,7 @@ const responder = (session, args, next) => {
   if (conversationData.current) {
     if (conversationData.current.supercharger && conversationData.current.supercharger) {
       console.log("[RESPONDER] Calling Supercharger.");
-      superchargers.execute(session, args, next, conversationData.current);
+      superchargers.execute(session, args, next, conversationData.current, skip, conversationData);
     } else {
       console.log("[RESPONDER] Responding from knowledge");
       respondFromKnowledge(session, conversationData.current.message);

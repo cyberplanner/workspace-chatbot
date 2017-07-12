@@ -1,4 +1,5 @@
 const fetch = require("node-fetch");
+let botUtils = require('./module_botUtils.js');
 
 const PORT = process.env.PORT || "3978";
 
@@ -71,7 +72,7 @@ class Parameter {
   }
 }
 
-const execute = (session, args, next, conversationDoc) => {
+const execute = (session, args, next, conversationDoc, skip) => {
   console.log(conversationDoc);
   let customArguments = Object.keys(conversationDoc.supercharger.arguments)
     .map(key => {
@@ -85,6 +86,10 @@ const execute = (session, args, next, conversationDoc) => {
           };
         } else {
           //If not in userdata - lookup to see if it was in an entity passed now.
+          if (!session.userData.summary) {
+            session.userData.summary = {};
+          }
+          session.userData.summary[value.substring(1)] = botBuilder.EntityRecognizer.findEntity(args.intent.entities, value.substring(1));
           return {
             key: key,
             value: botBuilder.EntityRecognizer.findEntity(args.intent.entities, value.substring(1))
@@ -94,7 +99,7 @@ const execute = (session, args, next, conversationDoc) => {
         // It's a hardcoded parameter...
         return {
           key: key,
-          value: value
+          value: botUtils.processResponse(session, value)
         }
       }
     })
@@ -106,7 +111,7 @@ const execute = (session, args, next, conversationDoc) => {
   console.log("[SUPERCHARGER] Retrieving supercharger with ID: " + conversationDoc.supercharger.id);
   if (typeof supercharger === "function") {
     console.log("[SUPERCHARGER] Executing.");
-    supercharger(session, args, next, customArguments);
+    supercharger(session, args, next, customArguments, skip);
   } else {
     console.log("[SUPERCHARGER] Failed to execute. No function available.");
   }

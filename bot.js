@@ -51,7 +51,7 @@ const setCurrentConversation = (id, session, args, next) => {
  */
 const progressConversation = (session, args, next, conversationData) => {
   console.log("[PROGRESSION] INTENT: " + args.intent);
-  let chosenOne = conversationData.current.children.find(child => (child.intentId === args.intent && botUtils.checkConditions(child, session, args, next)));
+  let chosenOne = conversationData.current.children.find(child => child.intentId === "*" || (child.intentId === args.intent && botUtils.checkConditions(child, session, args, next)));
   if (chosenOne) {
     console.log("[PROGRESSION] Valid node present.");
     setCurrentConversation(chosenOne.nodeId, session, args, next);
@@ -153,7 +153,9 @@ const checkForFallbacks = (session, args, next, conversationData) => {
  */
 const conversationManager = (session, args, next) => {
   let conversationData = session.userData.conversation;
-
+  if (!session.userData.summary) {
+    session.userData.summary = {};
+  }
   if (!conversationData) {
     console.log("[CONVERSATION] RESETTING TO ROOT");
     setCurrentConversation('root', session, args, next);
@@ -198,6 +200,20 @@ const respondFromKnowledge = (session, knowledgeID) => {
 }
 
 /**
+ * Skip the current node.
+ * 
+ * @param {*} session 
+ * @param {*} args 
+ * @param {*} next 
+ */
+const skip = (session, args, next) => {
+  console.log("[SKIP] Requested.");
+  progressConversation(session, args, () => {
+    responder(session, args, next);
+  }, session.userData.conversation);
+} 
+
+/**
  * Identifies responses based on conversation data and responds with 
  * an appropriate message from the knowledge item.
  * 
@@ -218,7 +234,7 @@ const responder = (session, args, next) => {
   if (conversationData.current) {
     if (conversationData.current.supercharger && conversationData.current.supercharger) {
       console.log("[RESPONDER] Calling Supercharger.");
-      superchargers.execute(session, args, next, conversationData.current);
+      superchargers.execute(session, args, next, conversationData.current, skip, conversationData);
     } else {
       console.log("[RESPONDER] Responding from knowledge");
       respondFromKnowledge(session, conversationData.current.message);

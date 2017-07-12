@@ -60,13 +60,9 @@
                 },
                 "type": "array"
             },
-            "message": {
-                "type": "object"
-		    },
             "required" : [
                 "id",
-                "arguments",
-                "message"
+                "arguments"
             ],
             "type": "object"
         },

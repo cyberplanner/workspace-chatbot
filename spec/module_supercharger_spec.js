@@ -6,8 +6,6 @@ const mock = require('mock-require');
 const PORT = process.env.PORT || "3978";
 const endpoint = `http://localhost:${PORT}/`;
 
-let cb;
-
 // Setup mock functions
 const functions = {
     POST: {
@@ -25,13 +23,11 @@ const functions = {
                   dataType: "string"
                 }
               ],
-              displayName: "Test_Supercharger",
-              functionName: "test-id"
+              displayName: "Test_Supercharger"
             })
           });
           return {
             json:  () => new Promise((resolve) => {
-              cb();
               resolve({
                 tst: true
               });
@@ -62,9 +58,7 @@ mock('node-fetch', (url, options) => {
 let supercharger = require('../custom_modules/module_supercharger');
 
 describe("Supercharger", function() {
-	it("should execute successfully with an entity based argument", function(done) {
-    // Register callback for completion
-    cb = done;
+	it("should execute successfully with an entity based argument", function() {
     /* 
         Mock out fetch functions
     */
@@ -96,7 +90,50 @@ describe("Supercharger", function() {
       })
     );
     
-    supercharger.execute({}, {
+    supercharger.execute({
+      userData: {}
+    }, {
+      intent: {
+        entities: []
+      }
+    }, () => {}, node);
+      
+  });
+	it("should execute successfully with an mixed argument", function() {
+    /* 
+        Mock out fetch functions
+    */
+    let builder = {
+      EntityRecognizer: {
+        findEntity: (entities, id) => {
+          expect(id).toEqual("WEBSITE_ENTITY");
+          return "FLEX_BENEFITS";
+        }
+      }
+    };
+
+    let node  = {
+      supercharger: {
+        arguments: {
+          "TEST_PARAM": "Hi there {WEBSITE_ENTITY} how are you?"
+        },
+        id: "test-id"
+      }
+    };
+
+    supercharger.init(builder);
+
+    supercharger.register(
+      new supercharger.Detail([
+        new supercharger.Parameter("TEST_PARAM", "A parameter used in testing", "string")
+      ], "Test_Supercharger", (session, args, next, customArguments) => {
+        expect(customArguments.TEST_PARAM).toEqual("Hi there FLEX_BENEFITS how are you?");
+      })
+    );
+    
+    supercharger.execute({
+      userData: {}
+    }, {
       intent: {
         entities: []
       }
@@ -104,9 +141,7 @@ describe("Supercharger", function() {
       
   });
 
-	it("should execute successfully with an previous entity stored argument", function(done) {
-    // Register callback for completion
-    cb = done;
+	it("should execute successfully with a previous entity stored argument", function() {
     /* 
         Mock out fetch functions
     */
@@ -134,6 +169,51 @@ describe("Supercharger", function() {
         new supercharger.Parameter("TEST_PARAM", "A parameter used in testing", "string")
       ], "Test_Supercharger", (session, args, next, customArguments) => {
         expect(customArguments.TEST_PARAM).toEqual("PAYROLL");
+      })
+    );
+    
+    supercharger.execute({
+      userData: {
+        summary: {
+          WEBSITE_ENTITY: "PAYROLL"
+        }
+      }
+    }, {
+      intent: {
+        entities: []
+      }
+    }, () => {}, node);
+      
+  });
+
+	it("should execute successfully with a mixed previous entity stored argument", function() {
+    /* 
+        Mock out fetch functions
+    */
+    let builder = {
+      EntityRecognizer: {
+        findEntity: (entities, id) => {
+          return null;
+        }
+      }
+    };
+
+    let node  = {
+      supercharger: {
+        arguments: {
+          "TEST_PARAM": "Hi there $WEBSITE_ENTITY - how's it going?"
+        },
+        id: "test-id"
+      }
+    };
+
+    supercharger.init(builder);
+
+    supercharger.register(
+      new supercharger.Detail([
+        new supercharger.Parameter("TEST_PARAM", "A parameter used in testing", "string")
+      ], "Test_Supercharger", (session, args, next, customArguments) => {
+        expect(customArguments.TEST_PARAM).toEqual("Hi there PAYROLL - how's it going?");
       })
     );
     

@@ -148,7 +148,7 @@ describe("Supercharger", function() {
       
   });
 
-	it("should execute successfully with an previous entity stored argument", function(done) {
+	it("should execute successfully with a previous entity stored argument", function(done) {
     // Register callback for completion
     cb = done;
     /* 
@@ -178,6 +178,53 @@ describe("Supercharger", function() {
         new supercharger.Parameter("TEST_PARAM", "A parameter used in testing", "string")
       ], "Test_Supercharger", (session, args, next, customArguments) => {
         expect(customArguments.TEST_PARAM).toEqual("PAYROLL");
+      })
+    );
+    
+    supercharger.execute({
+      userData: {
+        summary: {
+          WEBSITE_ENTITY: "PAYROLL"
+        }
+      }
+    }, {
+      intent: {
+        entities: []
+      }
+    }, () => {}, node);
+      
+  });
+
+	it("should execute successfully with a mixed previous entity stored argument", function(done) {
+    // Register callback for completion
+    cb = done;
+    /* 
+        Mock out fetch functions
+    */
+    let builder = {
+      EntityRecognizer: {
+        findEntity: (entities, id) => {
+          return null;
+        }
+      }
+    };
+
+    let node  = {
+      supercharger: {
+        arguments: {
+          "TEST_PARAM": "Hi there $WEBSITE_ENTITY - how's it going?"
+        },
+        id: "test-id"
+      }
+    };
+
+    supercharger.init(builder);
+
+    supercharger.register(
+      new supercharger.Detail([
+        new supercharger.Parameter("TEST_PARAM", "A parameter used in testing", "string")
+      ], "Test_Supercharger", (session, args, next, customArguments) => {
+        expect(customArguments.TEST_PARAM).toEqual("Hi there PAYROLL - how's it going?");
       })
     );
     

@@ -50,15 +50,13 @@ const setCurrentConversation = (id, session, args, next) => {
  * @param {Object} conversationData 
  */
 const progressConversation = (session, args, next, conversationData) => {
-  console.log("INTENT: " + args.intent);
-  let chosenOne = conversationData.current.children.find(child => child.intentId === args.intent);
+  console.log("[PROGRESSION] INTENT: " + args.intent);
+  let chosenOne = conversationData.current.children.find(child => (child.intentId === args.intent && botUtils.checkConditions(child, session, args, next)));
   if (chosenOne) {
-    if (botUtils.checkConditions(chosenOne, session, args, next)) {
-      setCurrentConversation(chosenOne.nodeId, session, args, next);
-    } else {
-      checkForFallbacks(session, args, next, conversationData);
-    }
+    console.log("[PROGRESSION] Valid node present.");
+    setCurrentConversation(chosenOne.nodeId, session, args, next);
   } else {
+    console.log("[PROGRESSION] No valid node present.");
     checkForFallbacks(session, args, next, conversationData);
   }
 }
@@ -76,15 +74,17 @@ const checkForFallbacks = (session, args, next, conversationData) => {
   // Get the root of the conversation
   return databases.conversation.get('root')
     .then(conversation => {
+      console.log("[FALLBACK] Retrieved root.");
       // Check the root node for a fallback.
       let chosenOne = conversation.children.find(child => {
         return (child.intentId === args.intent) && botUtils.checkConditions(child, session, args, next);
       });
       if (chosenOne) {
-        console.log("[CONVERSATION] Retrieved fallback.");
+        console.log("[FALLBACK] Direct child of root is valid. Using.");
         // We have a viable path from the root - use it.
         setCurrentConversation(chosenOne.nodeId, session, args, next);
       } else {
+        console.log("[FALLBACK] Direct child of root is NOT valid.");
         /*
           We we're unable to find a good option on the 'root' node. 
           So let's inspect it's children for a good option.
@@ -99,7 +99,7 @@ const checkForFallbacks = (session, args, next, conversationData) => {
             // Get child from DB
             databases.conversation.get(child.nodeId)
               .then(node => {
-                let chosenOne = conversation.children.find(child => {
+                let chosenOne = node.children.find(child => {
                   return (child.intentId === args.intent) && botUtils.checkConditions(child, session, args, next); 
                 });
                 if (chosenOne && !replied) {

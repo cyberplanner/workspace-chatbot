@@ -15,7 +15,6 @@ const storeAnswer = (session, args, next, customArguments, skip) => {
   } else {
     session.userData.summary[customArguments.KEY] = session.message.text;
   }
-  session.send(session.userData.summary[customArguments.KEY]);
   session.send(customArguments.MESSAGE);
   skip(session, args, next);
 };

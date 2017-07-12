@@ -6,8 +6,6 @@ const mock = require('mock-require');
 const PORT = process.env.PORT || "3978";
 const endpoint = `http://localhost:${PORT}/`;
 
-let cb;
-
 // Setup mock functions
 const functions = {
     POST: {
@@ -30,7 +28,6 @@ const functions = {
           });
           return {
             json:  () => new Promise((resolve) => {
-              cb();
               resolve({
                 tst: true
               });
@@ -61,9 +58,7 @@ mock('node-fetch', (url, options) => {
 let supercharger = require('../custom_modules/module_supercharger');
 
 describe("Supercharger", function() {
-	it("should execute successfully with an entity based argument", function(done) {
-    // Register callback for completion
-    cb = done;
+	it("should execute successfully with an entity based argument", function() {
     /* 
         Mock out fetch functions
     */
@@ -104,9 +99,7 @@ describe("Supercharger", function() {
     }, () => {}, node);
       
   });
-	it("should execute successfully with an mixed argument", function(done) {
-    // Register callback for completion
-    cb = done;
+	it("should execute successfully with an mixed argument", function() {
     /* 
         Mock out fetch functions
     */
@@ -148,9 +141,7 @@ describe("Supercharger", function() {
       
   });
 
-	it("should execute successfully with a previous entity stored argument", function(done) {
-    // Register callback for completion
-    cb = done;
+	it("should execute successfully with a previous entity stored argument", function() {
     /* 
         Mock out fetch functions
     */
@@ -195,9 +186,7 @@ describe("Supercharger", function() {
       
   });
 
-	it("should execute successfully with a mixed previous entity stored argument", function(done) {
-    // Register callback for completion
-    cb = done;
+	it("should execute successfully with a mixed previous entity stored argument", function() {
     /* 
         Mock out fetch functions
     */

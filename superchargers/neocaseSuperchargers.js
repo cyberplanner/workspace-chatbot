@@ -27,6 +27,7 @@ const createCase = (session, args, next, customArguments) => {
         }
     })
     .catch(error => {
+        console.log("[NEOCASE] Request threw error.");
         session.send("We had a problem trying to create your ticket. Please try again.");
     });
     session.send("Thank you, I will raise the following ticket with HR: \n" + `"${question}"`);

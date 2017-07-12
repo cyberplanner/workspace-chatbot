@@ -1,4 +1,4 @@
-const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
+const NeocaseAdapter = require('../custom_modules/module_neocaseAdapter');
 
 const createCase = (session, args, next, customArguments) => {
     let question = customArguments.MESSAGE;
@@ -16,10 +16,13 @@ const createCase = (session, args, next, customArguments) => {
           "id": 2
       }
     }).then(response => {
+        console.log("[NEOCASE] Response.");
         if (!response[0] || !response[0].error) {
+            console.log("[NEOCASE] Success.");
             session.send("I've successfully created your case for you, here's your reference ID: #" + response.id + ".");
             session.send("Is there anything else I can help with today?")
         } else {
+            console.log("[NEOCASE] Error.");
             session.send(response[0].error_details);
         }
     })

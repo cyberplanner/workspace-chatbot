@@ -51,7 +51,7 @@ const setCurrentConversation = (id, session, args, next) => {
  */
 const progressConversation = (session, args, next, conversationData) => {
   console.log("[PROGRESSION] INTENT: " + args.intent);
-  let chosenOne = conversationData.current.children.find(child => (child.intentId === args.intent && botUtils.checkConditions(child, session, args, next)));
+  let chosenOne = conversationData.current.children.find(child => child.intentId === "*" || (child.intentId === args.intent && botUtils.checkConditions(child, session, args, next)));
   if (chosenOne) {
     console.log("[PROGRESSION] Valid node present.");
     setCurrentConversation(chosenOne.nodeId, session, args, next);
@@ -153,7 +153,9 @@ const checkForFallbacks = (session, args, next, conversationData) => {
  */
 const conversationManager = (session, args, next) => {
   let conversationData = session.userData.conversation;
-
+  if (!session.userData.summary) {
+    session.userData.summary = {};
+  }
   if (!conversationData) {
     console.log("[CONVERSATION] RESETTING TO ROOT");
     setCurrentConversation('root', session, args, next);

@@ -4,17 +4,17 @@ const createCase = (session, args, next, customArguments) => {
     let question = customArguments.MESSAGE;
     // Call Neocase
     NeocaseAdapter.createNewCase({
-        "contact": {
-            "email": customArguments.email,
-        },
-        "question": question,
-        "serviceOption": {
-          //UK-EMPLOYMENT CHANGES
-            "name": customArguments.SERVICE_OPTION_NAME
-        },
-        "queue": {
-            "id": 2
-        }
+      "contact": {
+        "email": customArguments.EMAIL_ADDRESS,
+      },
+      "question": question,
+      "serviceOption": {
+        //UK-EMPLOYMENT CHANGES
+        "name": customArguments.SERVICE_OPTION_NAME
+      },
+      "queue": {
+          "id": 2
+      }
     }).then(response => {
         if (!response[0] || !response[0].error) {
             session.send("I've successfully created your case for you, here's your reference ID: #" + response.id + ".");

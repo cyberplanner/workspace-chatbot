@@ -139,6 +139,40 @@ knowledgeRouter.get('/:id',
       });
   });
 
+/**
+ * @swagger
+ * /knowledge/:id:
+ *   get:
+ *     description: Returns the whole document for that id
+ *     produces:
+ *       - application/json
+ *     properties:
+ *       id:
+ *         type: string
+ *     required:
+*      - id
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: doc not found
+ */
+knowledgeRouter.delete('/:id',
+  (req, res) => {
+    db.get(req.params.id)
+      .then(doc => {
+        return db.destroy(doc._id, doc._rev)
+      })
+      .then(result => {
+        res.json({
+          deleted: true
+        });
+      })
+      .catch(err => {
+        console.log("Error :" + JSON.stringify(err))
+        res.json(err.statusCode, { error: err.reason });
+      });
+  });
 
 /**
  * @swagger

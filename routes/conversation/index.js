@@ -146,6 +146,40 @@ conversationRouter.post('/',
         });		      
     });
 
+/**
+ * @swagger
+ * /conversation/:id:
+ *   get:
+ *     description: Returns the whole document for that id
+ *     produces:
+ *       - application/json
+ *     properties:
+ *       id:
+ *         type: string
+ *     required:
+*      - id
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: doc not found
+ */
+conversationRouter.delete('/:id', 
+    (req,res) => {
+        db.get(req.params.id)
+        .then(doc => {
+			return db.destroy(doc._id, doc._rev);
+		})
+		.then(complete => {
+			res.json({
+				deleted: true
+			});
+		})
+        .catch(err => {
+            console.log("Error :"+JSON.stringify(err))
+            res.json(err.statusCode, {error: err.reason});
+        });
+    });
 
 module.exports = (database) => {
     db = database;

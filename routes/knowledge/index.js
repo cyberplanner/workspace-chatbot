@@ -142,8 +142,8 @@ knowledgeRouter.get('/:id',
 /**
  * @swagger
  * /knowledge/:id:
- *   get:
- *     description: Returns the whole document for that id
+ *   delete:
+ *     description: Deletes knowledge with the given ID
  *     produces:
  *       - application/json
  *     properties:

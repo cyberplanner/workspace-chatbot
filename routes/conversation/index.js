@@ -149,8 +149,8 @@ conversationRouter.post('/',
 /**
  * @swagger
  * /conversation/:id:
- *   get:
- *     description: Returns the whole document for that id
+ *   delete:
+ *     description: Deletes conversation node with the given ID
  *     produces:
  *       - application/json
  *     properties:

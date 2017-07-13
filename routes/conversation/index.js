@@ -160,7 +160,7 @@ conversationRouter.post('/',
 *      - id
  *     responses:
  *       200:
- *         description: Successfully retrieved
+ *         description: Successfully deleted
  *       404:
  *          description: doc not found
  */

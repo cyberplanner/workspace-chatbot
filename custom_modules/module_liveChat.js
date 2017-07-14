@@ -60,10 +60,11 @@ const connectAgent = (session, next, message, conversation) => {
   if (queue.length > 0) {
     let user = queue.shift();
     session.send("You are connected to: " + user.name);
+    session.send("Click here to view their conversation history: " + `<a href="#/?id=${user.conversationId}">Here</a>`);
     session.conversationData.agentData = {
       user: user
     }
-    agents[user.id] = new User(session.message.user.id, session.message.address, session.message.user.name);
+    agents[user.id] = new User(session.message.user.id, session.message.address, session.message.user.name, session.message.address.conversation.id);
     return;
   } else {
     session.send("No users in the queue, please message to retry.");
@@ -72,7 +73,7 @@ const connectAgent = (session, next, message, conversation) => {
 }
 
 const handoverUser = (session, args, next) => {
-  queue.push(new User(session.message.user.id, session.message.address, session.message.user.name));
+  queue.push(new User(session.message.user.id, session.message.address, session.userData.summary.forename, session.message.address.conversation.id));
   session.send("You're in the queue, an agent will be with you shortly.");
   session.conversationData.inQueue = true;
 }

@@ -43,15 +43,15 @@ const updateConversationHistory = (conversationId, text, user) => {
         console.log("[LOGGER] There was an unexpected error retrieveing the Conversation History, " + error);
       }
       // Entry doesn't exist, create it.
-      createNewConversationHistory(conversationId, text);
+      createNewConversationHistory(conversationId, text, "user");
     });
 }
 
 /**
  * Creates a new conversation history and stores the id in the session.
  */
-const createNewConversationHistory = (conversationId, text) => { 
-  databases.conversationHistory.insert({_id: conversationId, conversationHistory:[text]})
+const createNewConversationHistory = (conversationId, text, user) => { 
+  databases.conversationHistory.insert({_id: conversationId, conversationHistory:[{text, user}]})
       .then(result => { 
         console.log("[LOGGER] Conversation History created.");
       }).catch(error => {

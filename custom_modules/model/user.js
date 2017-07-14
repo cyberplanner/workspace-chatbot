@@ -1,8 +1,9 @@
 module.exports = class User {
-  constructor(id, address, name) {
+  constructor(id, address, name, conversationId) {
     this._id = id;
     this._address = address;
     this._name = name;
+    this._conversationId = conversationId;
   }
   get id() {
     return this._id;
@@ -12,5 +13,8 @@ module.exports = class User {
   }
   get name() {
     return this._name;
+  }
+  get conversationId() {
+    return this._conversationId;
   }
 }

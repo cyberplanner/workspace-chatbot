@@ -30,7 +30,7 @@ conversationRouter.get('/',
 	            res.json(doc);
 	        })
 	        .catch(err => {
-	            console.log("Error :"+err)
+	            console.log("Error :"+JSON.stringify(err))
 	            res.json(err.statusCode, {error: err.reason});
 	        });
     });
@@ -60,7 +60,7 @@ conversationRouter.get('/:id',
             res.json(doc);
         })
         .catch(err => {
-            console.log("Error :"+err)
+            console.log("Error :"+JSON.stringify(err))
             res.json(err.statusCode, {error: err.reason});
         });
     });
@@ -141,11 +141,45 @@ conversationRouter.post('/',
   		      });
         })
         .catch(err => {
-            console.log("Error :"+err)
+            console.log("Error :"+JSON.stringify(err))
             res.json(err.statusCode, {error: err.reason});
         });		      
     });
 
+/**
+ * @swagger
+ * /conversation/:id:
+ *   delete:
+ *     description: Deletes conversation node with the given ID
+ *     produces:
+ *       - application/json
+ *     properties:
+ *       id:
+ *         type: string
+ *     required:
+*      - id
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ *       404:
+ *          description: doc not found
+ */
+conversationRouter.delete('/:id', 
+    (req,res) => {
+        db.get(req.params.id)
+        .then(doc => {
+			return db.destroy(doc._id, doc._rev);
+		})
+		.then(complete => {
+			res.json({
+				deleted: true
+			});
+		})
+        .catch(err => {
+            console.log("Error :"+JSON.stringify(err))
+            res.json(err.statusCode, {error: err.reason});
+        });
+    });
 
 module.exports = (database) => {
     db = database;

@@ -127,56 +127,8 @@ dialog.matches('RETRIEVE_TICKET', [(session, args, next) => {
     });
 }]);
 
-// Setup custom matcher for advanced problem (creating cases)
-dialog.matches('MOVE_BASE_LOCATION', [(session, args, next) => {
-    if (session.userData.summary && session.userData.summary.email) {
-        next();
-    } else {
-        // Confirm email address
-        builder.Prompts.text(session, "Ok great, first can you confirm your email address?");
-    }
-}, (session, args, next) => {
-    let email;
-    if (!session.userData.summary || !session.userData.summary.email) {
-        email = args.response;
-        session.userData.summary = Object.assign({}, session.userData.summary, {
-            email: email
-        });
-    }
-    // Identify the location of the new base
-    builder.Prompts.text(session, "Great. Now can you confirm the office you would like to be your new base location?");
-}, (session, args, next) => {
-    session.newBase = args.response;
-    let question = "I'd like to change my base location to " + session.newBase + ". My email address is " + session.userData.summary.email;
-    // Call Neocase
-    NeocaseAdapter.createNewCase({
-        "contact": {
-            "email": session.userData.summary.email,
-        },
-        "question": question,
-        "serviceOption": {
-            "name": "UK-EMPLOYMENT CHANGES"
-        },
-        "queue": {
-            "id": 2
-        }
-    }).then(response => {
-        if (!response[0] || !response[0].error) {
-            session.send("I've successfully created your case for you, here's your reference ID: #" + response.id + ".");
-            session.send("Is there anything else I can help with today?")
-        } else {
-            session.send(response[0].error_details);
-        }
-    })
-    .catch(error => {
-        
-    });
-    session.send("Thank you, I will raise the following ticket with HR: \n" + `"${question}"`);
-    
-}]);
-
 // Use bot module to find response from KM.
-dialog.onDefault(botHandler.bot(knowledgeDB, convDB, conversationHistoryDB));
+dialog.onDefault(botHandler.bot(knowledgeDB, convDB, conversationHistoryDB, builder));
 
 //=========================================================
 // Setup Server

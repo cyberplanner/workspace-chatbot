@@ -134,11 +134,45 @@ knowledgeRouter.get('/:id',
         res.json(doc);
       })
       .catch(err => {
-        console.log("Error :" + err)
+        console.log("Error :" + JSON.stringify(err))
         res.json(err.statusCode, { error: err.reason });
       });
   });
 
+/**
+ * @swagger
+ * /knowledge/:id:
+ *   delete:
+ *     description: Deletes knowledge with the given ID
+ *     produces:
+ *       - application/json
+ *     properties:
+ *       id:
+ *         type: string
+ *     required:
+*      - id
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ *       404:
+ *          description: doc not found
+ */
+knowledgeRouter.delete('/:id',
+  (req, res) => {
+    db.get(req.params.id)
+      .then(doc => {
+        return db.destroy(doc._id, doc._rev)
+      })
+      .then(result => {
+        res.json({
+          deleted: true
+        });
+      })
+      .catch(err => {
+        console.log("Error :" + JSON.stringify(err))
+        res.json(err.statusCode, { error: err.reason });
+      });
+  });
 
 /**
  * @swagger
@@ -160,7 +194,7 @@ knowledgeRouter.get('/',
         res.json(doc);
       })
       .catch(err => {
-        console.log("Error :" + err)
+        console.log("Error :" + JSON.stringify(err))
         res.json(err.statusCode, { error: err.reason });
       });
   });
@@ -200,7 +234,7 @@ knowledgeRouter.put('/:id',
           });
       })
       .catch(err => {
-        console.log("Error :" + err)
+        console.log("Error :" + JSON.stringify(err))
         res.json(err.statusCode, { error: err.reason });
       });
   });

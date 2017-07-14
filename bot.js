@@ -1,4 +1,5 @@
 let botUtils = require('./custom_modules/module_botUtils.js');
+let superchargers = require('./superchargers.js')();
 
 let databases = {
     conversation: null,
@@ -6,7 +7,14 @@ let databases = {
     knowledge: null
 };
 let conversation;
-let defaultResponse = [];
+let defaultResponse = {
+  response: ["Hi, I'm a HR Bot. How can I help?"]
+};
+
+process.on('unhandledRejection', function(reason, p){
+    console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+    // application specific logging here
+});
 
 /**
  * Sets the current node in the conversation to be equal to the node with given ID.
@@ -26,7 +34,7 @@ const setCurrentConversation = (id, session, args, next) => {
       next();
     })
     .catch(error => {
-      session.send(defaultResponse.responses[0]);
+      console.log("[CONVERSATION] Failed to set current");
       next();
     });
 }
@@ -43,14 +51,13 @@ const setCurrentConversation = (id, session, args, next) => {
  * @param {Object} conversationData 
  */
 const progressConversation = (session, args, next, conversationData) => {
-  let chosenOne = conversationData.current.children.find(child => child.intentId === args.intent);
+  console.log("[PROGRESSION] INTENT: " + args.intent);
+  let chosenOne = conversationData.current.children.find(child => child.intentId === "*" || (child.intentId === args.intent && botUtils.checkConditions(child, session, args, next)));
   if (chosenOne) {
-    if (botUtils.checkConditions(chosenOne, session, args, next)) {
-      setCurrentConversation(chosenOne.nodeId, session, args, next);
-    } else {
-      checkForFallbacks(session, args, next, conversationData);
-    }
+    console.log("[PROGRESSION] Valid node present.");
+    setCurrentConversation(chosenOne.nodeId, session, args, next);
   } else {
+    console.log("[PROGRESSION] No valid node present.");
     checkForFallbacks(session, args, next, conversationData);
   }
 }
@@ -68,19 +75,17 @@ const checkForFallbacks = (session, args, next, conversationData) => {
   // Get the root of the conversation
   return databases.conversation.get('root')
     .then(conversation => {
+      console.log("[FALLBACK] Retrieved root.");
       // Check the root node for a fallback.
-      console.log("[CONVERSATION] Retrieved fallback.");
       let chosenOne = conversation.children.find(child => {
-        if (child.intentId !== args.intent) {
-          return false;
-        } else {
-          return botUtils.checkConditions(child, session, args, next);
-        }
+        return (child.intentId === args.intent) && botUtils.checkConditions(child, session, args, next);
       });
       if (chosenOne) {
+        console.log("[FALLBACK] Direct child of root is valid. Using.");
         // We have a viable path from the root - use it.
         setCurrentConversation(chosenOne.nodeId, session, args, next);
       } else {
+        console.log("[FALLBACK] Direct child of root is NOT valid.");
         /*
           We we're unable to find a good option on the 'root' node. 
           So let's inspect it's children for a good option.
@@ -95,25 +100,25 @@ const checkForFallbacks = (session, args, next, conversationData) => {
             // Get child from DB
             databases.conversation.get(child.nodeId)
               .then(node => {
-                console.log("[CONVERSATION] Retrieved fallback.");
-                let chosenOne = conversation.children.find(child => {
-                  if (child.intentId === args.intent) {
-                    return true;
-                  } else {
-                    return botUtils.checkConditions(child, session, args, next);
-                  }
+                let chosenOne = node.children.find(child => {
+                  return (child.intentId === args.intent) && botUtils.checkConditions(child, session, args, next); 
                 });
-                if (chosenOne) {
+                if (chosenOne && !replied) {
+                  console.log("[CONVERSATION] Retrieved fallback by children.");
+                  replied = true;
                   // If we have a response for the given intent.... USE IT.
                   setCurrentConversation(chosenOne.nodeId, session, args, () => {
                     resolve();
                     next();
-                    replied = true;
                   });
                 } else {
                   // Otherwise - resolve
                   resolve();
                 }
+              })
+              .catch(err => {
+                console.log("[ERROR] Loading child fallback node.");
+                resolve();
               });
           }));
         });
@@ -125,13 +130,14 @@ const checkForFallbacks = (session, args, next, conversationData) => {
               next();
             }
           }, () => {
+            console.log("Check for fallbacks rejected.");
             // If we've not already replied - move on.
             next();
           })
       }
     })
     .catch(error => {
-      session.send(defaultResponse.responses[0]);
+      console.log("[ERROR] Loading root node for fallback.");
       next();
     });
 
@@ -148,7 +154,9 @@ const checkForFallbacks = (session, args, next, conversationData) => {
  */
 const conversationManager = (session, args, next) => {
   let conversationData = session.userData.conversation;
-
+  if (!session.userData.summary) {
+    session.userData.summary = {};
+  }
   if (!conversationData) {
     console.log("[CONVERSATION] RESETTING TO ROOT");
     setCurrentConversation('root', session, args, next);
@@ -183,14 +191,28 @@ const respondFromKnowledge = (session, knowledgeID) => {
             session.send(botUtils.processResponse(session, response));
           });
         } else { 
-          session.send(botUtils.processResponse(session, defaultResponse.response[0]));
+          session.send(botUtils.processResponse(session, defaultResponse.responses[0]));
         }
       })
       .catch(error => {
-        console.log("[RESPONDER] RESPONDING - FAILED GETTING INTENT");
-        session.send(botUtils.processResponse(session, defaultResponse.response[0]));
+        console.log("[RESPONDER] RESPONDING - FAILED GETTING KNOWLEDGE FROM DB");
+        session.send(botUtils.processResponse(session, defaultResponse.responses[0]));
       });
 }
+
+/**
+ * Skip the current node.
+ * 
+ * @param {*} session 
+ * @param {*} args 
+ * @param {*} next 
+ */
+const skip = (session, args, next) => {
+  console.log("[SKIP] Requested.");
+  progressConversation(session, args, () => {
+    responder(session, args, next);
+  }, session.userData.conversation);
+} 
 
 /**
  * Identifies responses based on conversation data and responds with 
@@ -211,8 +233,13 @@ const responder = (session, args, next) => {
     }
   }
   if (conversationData.current) {
-    console.log(session.message.summary);
-    respondFromKnowledge(session, conversationData.current.message);
+    if (conversationData.current.supercharger && conversationData.current.supercharger) {
+      console.log("[RESPONDER] Calling Supercharger.");
+      superchargers.execute(session, args, next, conversationData.current, skip, conversationData);
+    } else {
+      console.log("[RESPONDER] Responding from knowledge");
+      respondFromKnowledge(session, conversationData.current.message);
+    }
   } else {
     console.log("[RESPONDER] RESPONDING - NO INTENT");
     session.send(defaultResponse.responses[0]);
@@ -278,10 +305,11 @@ const bot = [conversationLogger, conversationManager, responder];
 
 module.exports = {
   // Setup databases
-  bot: (knowledgeDB, conversationDB, conversationHistoryDB) => {
+  bot: (knowledgeDB, conversationDB, conversationHistoryDB, builder) => {
   databases.knowledge = knowledgeDB;
   databases.conversation = conversationDB;
   databases.conversationHistory = conversationHistoryDB;
+  superchargers.init(builder);
   // Get default message
   databases.knowledge.get("default")
     .then(result => {

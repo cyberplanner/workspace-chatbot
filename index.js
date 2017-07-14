@@ -26,6 +26,7 @@ const liveChat = require('./custom_modules/module_liveChat');
 const knowledgeRouter = require('./routes/knowledge');
 const conversationRouter = require('./routes/conversation');
 const superchargerRouter = require('./routes/supercharger');
+const luisRouter = require('./routes/luis');
 const botHandler = require('./bot.js');
 
 const builder = botComponents.getBuilder();
@@ -46,7 +47,7 @@ var swaggerDefinition = config.swagger;
 // Options for the swagger docs
 var options = {
   swaggerDefinition: swaggerDefinition,   // Import swaggerDefinitions
-  apis: ['./routes/knowledge/index.js','./routes/conversation/index.js','./routes/supercharger/index.js'],  // Path to the API docs
+  apis: ['./routes/knowledge/index.js','./routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],  // Path to the API docs
 };
 
 var swaggerSpec = swaggerJSDoc(options);
@@ -160,6 +161,9 @@ rootRouter.use('/conversation', conversationRouter(convDB));
 
 // supercharger
 rootRouter.use('/supercharger', superchargerRouter(superchargerDB));
+
+// luis
+rootRouter.use('/luis', luisRouter());
 
 // Apply routes
 rootRouter.applyRoutes(server);

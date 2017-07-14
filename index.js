@@ -19,6 +19,7 @@ const dbcon = require('./custom_modules/module_dbConnection');
 const RestifyRouter = require('restify-routing');
 const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
 const liveChat = require('./custom_modules/module_liveChat');
+const botHandler = require('./bot.js');
 
 /*
     Load routes
@@ -27,7 +28,6 @@ const knowledgeRouter = require('./routes/knowledge');
 const conversationRouter = require('./routes/conversation');
 const superchargerRouter = require('./routes/supercharger');
 const conversationHistoryRouter = require('./routes/conversationHistory');
-const botHandler = require('./bot.js');
 
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
@@ -35,6 +35,9 @@ const convDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_DB_NAME);
 const knowledgeDB = dbcon.getConnection(process.env.cloudant_dbName);
 const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_NAME);
 const conversationHistoryDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_HISTORY_DB_NAME);
+
+// Setup Logger
+const chatLogger = require('./custom_modules/module_botLogger')(conversationHistoryDB);
 
 //=========================================================
 //swagger setup
@@ -89,8 +92,8 @@ var employeeMap = {
     "JIGNA.SHAH@CAPGEMINI.COM": 36982
 }
 
-bot.use({ botbuilder: liveChat.middleware(bot, builder), send: function(event, next) { 
-    botHandler.updateConversationHistory(event.address.conversation.id, event.text);
+bot.use({ botbuilder: liveChat.middleware(bot, builder), send: (event, next)  => { 
+    chatLogger.updateConversationHistory(event.address.conversation.id, event.text, "bot");
     next();
 }});
 
@@ -127,8 +130,9 @@ dialog.matches('RETRIEVE_TICKET', [(session, args, next) => {
     });
 }]);
 
-// Use bot module to find response from KM.
-dialog.onDefault(botHandler.bot(knowledgeDB, convDB, conversationHistoryDB, builder));
+let botmiddleware = [chatLogger.conversationLogger];
+// Use bot module to find response from conversation tree.
+dialog.onDefault(botHandler.bot(knowledgeDB, convDB, builder, botmiddleware));
 
 //=========================================================
 // Setup Server

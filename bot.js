@@ -3,7 +3,6 @@ let superchargers = require('./superchargers.js')();
 
 let databases = {
     conversation: null,
-    conversationHistory: null,
     knowledge: null
 };
 let conversation;
@@ -246,82 +245,24 @@ const responder = (session, args, next) => {
   }
 };
 
-/**
- * Stores the history of the conversation. 
- * If the conversation history id is present in the session then the entry will be updated.
- * If the conversation history id is not present in the session then a new conversation history will be created 
- * @param {Object} session
- * @param {Object} args
- * @param {Function} next
- */
-const conversationLogger = (session, args, next) => { 
-  console.log("[LOGGER] LOGGING CONVERSATION");
-  let conversationId = session.message.address.conversation.id;
-  let text = session.message.text;
-  updateConversationHistory(conversationId, text);
-  next(args);
-}
-
-/**
- * Update the conversation history with a string of text.
- * @param {*} conversationId the id of the conversation and hense the conversation history object.
- * @param {*} text the text to be added to the conversation history.
- */
-var updateConversationHistory = (conversationId, text) => { 
-  databases.conversationHistory.get(conversationId)
-    .then(result => {
-      result.conversationHistory.push(text);
-      console.log(result);
-      databases.conversationHistory.insert(result)
-        .then(result => {
-          console.log("[LOGGER] Sucessfully updated Conversation History");
-        }).catch(error => {
-          console.log("[LOGGER] There was an unexpected error updating the Conversation History, " + error);
-        });
-    }).catch(error => {
-      if (!error.error === "not_found") {
-        // Unexpected error, log it.
-        console.log("[LOGGER] There was an unexpected error retrieveing the Conversation History, " + error);
-      }
-      // Entry doesn't exist, create it.
-      createNewConversationHistory(conversationId, text);
-    });
-}
-
-/**
- * Creates a new conversation history and stores the id in the session.
- */
-const createNewConversationHistory = (conversationId, text) => { 
-  databases.conversationHistory.insert({_id: conversationId, conversationHistory:[text]})
-      .then(result => { 
-        console.log("[LOGGER] Conversation History created.");
-      }).catch(error => {
-        console.log("[LOGGER] There was an error creating the Conversation History, " + error);
-      });
-}
-
 // Bot is a sequence of middleware functions to be executed on each message
-const bot = [conversationLogger, conversationManager, responder];
 
 module.exports = {
   // Setup databases
-  bot: (knowledgeDB, conversationDB, conversationHistoryDB, builder) => {
-  databases.knowledge = knowledgeDB;
-  databases.conversation = conversationDB;
-  databases.conversationHistory = conversationHistoryDB;
-  superchargers.init(builder);
-  // Get default message
-  databases.knowledge.get("default")
-    .then(result => {
-        defaultResponse = result;
-    })
-    .catch(error => {
-        defaultResponse = {
-          responses: "I\'m not sure how to reply to that. Please ask me again or in a different way?"
-        };
-    });
-    return bot;
-  },
-  // Return middleware functions
-  updateConversationHistory: updateConversationHistory
+  bot: (knowledgeDB, conversationDB, builder, middleware) => {
+    databases.knowledge = knowledgeDB;
+    databases.conversation = conversationDB;
+    superchargers.init(builder);
+    // Get default message
+    databases.knowledge.get("default")
+      .then(result => {
+          defaultResponse = result;
+      })
+      .catch(error => {
+          defaultResponse = {
+            responses: "I\'m not sure how to reply to that. Please ask me again or in a different way?"
+          };
+      });
+    return [].concat(middleware, [conversationManager, responder]);
+  }
 }

@@ -18,19 +18,9 @@ const luisAuthCredentials = {
 };
 
 const publishData = {
-    "BotFramework": {
-        "Enabled": true,
-        "AppId": luisAuthCredentials.appId,
-        "SubscriptionKey": luisAuthCredentials.subscriptionKey,
-        "Endpoint": luisAuthCredentials.endpoint
-    },
-    "Slack": {
-        "Enabled": false,
-        "ClientId": "",
-        "ClientSecret": "",
-        "RedirectUri": ""
-    }
-};
+   "versionId": "0.1",
+   "isStaging": false
+}
 
 function sendRequest(requestOptions, endpoint) {
     console.log("url :"+endpoint+requestOptions.path)
@@ -372,7 +362,7 @@ luisRouter.post('/publish', (req,res) => {
             }
     });    
     
-    sendRequest(options,luisAuthCredentials.endpoint)
+    sendRequest(options,luisAuthCredentials.endpointV2)
     .then(data => {
         res.json(data);
     }).catch(error => {

@@ -13,7 +13,7 @@ const luisAuthCredentials = {
     "endpoint":process.env.LUIS_ENDPOINT,
     "endpointV2":process.env.LUIS_ENDPOINT_V2,
     "appId": process.env.LUIS_APP_ID,
-    "pragramaticApiKey": process.env.LUIS_PROGRAMMATIC_API_KEY,
+    "programmaticApiKey": process.env.LUIS_PROGRAMMATIC_API_KEY,
     "appVersion": process.env.LUIS_APP_VERSION
 };
 
@@ -56,7 +56,7 @@ luisRouter.get('/intents', (req,res) => {
             method: "GET",
             path: luisAuthCredentials.appId + "/intents",
             headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
             }
     });    
     
@@ -88,7 +88,7 @@ luisRouter.post('/intents', validator.body(createIntentSchema),
           path: luisAuthCredentials.appId + "/intents",
           headers: {
               "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
           }
     }); 
         
@@ -117,7 +117,7 @@ luisRouter.get('/entities', (req,res) => {
             method: "GET",
             path: luisAuthCredentials.appId + "/entities",
             headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
             }
     });    
     
@@ -149,7 +149,7 @@ luisRouter.post('/entityExtractor', validator.body(createEntityExtractorSchema),
           path: luisAuthCredentials.appId+/versions/+luisAuthCredentials.appVersion+"/entities",
           headers: {
               "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
           }
     }); 
         
@@ -181,7 +181,7 @@ luisRouter.post('/closedListEntity', validator.body(createClosedListEntitySchema
           path: luisAuthCredentials.appId+/versions/+luisAuthCredentials.appVersion+"/closedlists",
           headers: {
               "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
           }
     }); 
         
@@ -218,7 +218,7 @@ luisRouter.put('/closedListEntity/:id', validator.body(createClosedListEntitySch
           path: luisAuthCredentials.appId+/versions/+luisAuthCredentials.appVersion+"/closedlists/"+req.params.id,
           headers: {
               "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
           }
     }); 
         
@@ -250,7 +250,7 @@ luisRouter.post('/utterance', validator.body(createUtteranceSchema),
           path: luisAuthCredentials.appId + "/example",
           headers: {
               "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
           }
     }); 
         
@@ -280,7 +280,7 @@ luisRouter.get('/models', (req,res) => {
             method: "GET",
             path: luisAuthCredentials.appId + "/models",
             headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
             }
     });    
     
@@ -305,7 +305,7 @@ luisRouter.post('/train', (req,res) => {
             path: luisAuthCredentials.appId + "/train",
             headers: {
                 "Content-Type": "application/json",
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
             }
     });    
     
@@ -334,7 +334,7 @@ luisRouter.get('/train', (req,res) => {
             method: "GET",
             path: luisAuthCredentials.appId + "/train",
             headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
             }
     });    
     
@@ -360,7 +360,7 @@ luisRouter.post('/publish', (req,res) => {
             path: luisAuthCredentials.appId + "/publish",
             headers: {
                 "Content-Type": "application/json",
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.pragramaticApiKey
+                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
             }
     });    
     

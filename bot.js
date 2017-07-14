@@ -246,23 +246,23 @@ const responder = (session, args, next) => {
 };
 
 // Bot is a sequence of middleware functions to be executed on each message
-const bot = [conversationManager, responder];
 
-module.exports = (knowledgeDB, conversationDB, builder) => {
+module.exports = {
   // Setup databases
-  databases.knowledge = knowledgeDB;
-  databases.conversation = conversationDB;
-  superchargers.init(builder);
-  // Get default message
-  databases.knowledge.get("default")
-    .then(result => {
-        defaultResponse = result;
-    })
-    .catch(error => {
-        defaultResponse = {
-          responses: "I\'m not sure how to reply to that. Please ask me again or in a different way?"
-        };
-    });
-  // Return middleware functions
-  return bot;
+  bot: (knowledgeDB, conversationDB, builder, middleware) => {
+    databases.knowledge = knowledgeDB;
+    databases.conversation = conversationDB;
+    superchargers.init(builder);
+    // Get default message
+    databases.knowledge.get("default")
+      .then(result => {
+          defaultResponse = result;
+      })
+      .catch(error => {
+          defaultResponse = {
+            responses: "I\'m not sure how to reply to that. Please ask me again or in a different way?"
+          };
+      });
+    return [].concat(middleware, [conversationManager, responder]);
+  }
 }

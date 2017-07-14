@@ -19,6 +19,7 @@ const dbcon = require('./custom_modules/module_dbConnection');
 const RestifyRouter = require('restify-routing');
 const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
 const liveChat = require('./custom_modules/module_liveChat');
+const botHandler = require('./bot.js');
 
 /*
     Load routes
@@ -26,14 +27,18 @@ const liveChat = require('./custom_modules/module_liveChat');
 const knowledgeRouter = require('./routes/knowledge');
 const conversationRouter = require('./routes/conversation');
 const superchargerRouter = require('./routes/supercharger');
+const conversationHistoryRouter = require('./routes/conversationHistory');
 const luisRouter = require('./routes/luis');
-const botHandler = require('./bot.js');
 
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
 const convDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_DB_NAME); 
 const knowledgeDB = dbcon.getConnection(process.env.cloudant_dbName);
 const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_NAME);
+const conversationHistoryDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_HISTORY_DB_NAME);
+
+// Setup Logger
+const chatLogger = require('./custom_modules/module_botLogger')(conversationHistoryDB);
 
 //=========================================================
 //swagger setup
@@ -74,21 +79,12 @@ var statusMap = {
     "16": "Document Created"
 }
 
-var employeeMap = { 
-    "ED.CALLOW@CAPGEMINI.COM": 44787,
-    "DAN.COTTON@CAPGEMINI.COM": 44875,
-    "EDWARD.DE-MOTT@CAPGEMINI.COM": 43314,
-    "GRAHAM.X.TAYLOR@CAPGEMINI.COM": 41224, 
-    "SANJAY.NAND@CAPGEMINI.COM": 43520,
-    "VICTORIA.PILE@CAPGEMINI.COM": 10441, 
-    "ALEXANDRA.HOME@CAPGEMINI.COM": 39766, 
-    "BINIAM.GEBREYESUS@CAPGEMINI.COM": 36980, 
-    "JOAO.VEIGA@CAPGEMINI.COM": 36404,
-    "MATT.SMITH@CAPGEMINI.COM": 44039, 
-    "JIGNA.SHAH@CAPGEMINI.COM": 36982
-}
+var employeeMap = JSON.parse(process.env.NEOCASE_EMPLOYEE_MAP);
 
-bot.use({ botbuilder: liveChat.middleware(bot, builder)});
+bot.use({ botbuilder: liveChat.middleware(bot, builder), send: (event, next)  => { 
+    chatLogger.updateConversationHistory(event.address.conversation.id, event.text, "bot");
+    next();
+}});
 
 // Setup root dialog
 bot.dialog('/', dialog);
@@ -123,8 +119,9 @@ dialog.matches('RETRIEVE_TICKET', [(session, args, next) => {
     });
 }]);
 
-// Use bot module to find response from KM.
-dialog.onDefault(botHandler(knowledgeDB, convDB, builder));
+let botmiddleware = [chatLogger.conversationLogger];
+// Use bot module to find response from conversation tree.
+dialog.onDefault(botHandler.bot(knowledgeDB, convDB, builder, botmiddleware));
 
 //=========================================================
 // Setup Server
@@ -161,6 +158,9 @@ rootRouter.use('/conversation', conversationRouter(convDB));
 
 // supercharger
 rootRouter.use('/supercharger', superchargerRouter(superchargerDB));
+
+//conversationHistory
+rootRouter.use('/conversationHistory', conversationHistoryRouter(conversationHistoryDB))
 
 // luis
 rootRouter.use('/luis', luisRouter());

@@ -78,19 +78,7 @@ var statusMap = {
     "16": "Document Created"
 }
 
-var employeeMap = { 
-    "ED.CALLOW@CAPGEMINI.COM": 44787,
-    "DAN.COTTON@CAPGEMINI.COM": 44875,
-    "EDWARD.DE-MOTT@CAPGEMINI.COM": 43314,
-    "GRAHAM.X.TAYLOR@CAPGEMINI.COM": 41224, 
-    "SANJAY.NAND@CAPGEMINI.COM": 43520,
-    "VICTORIA.PILE@CAPGEMINI.COM": 10441, 
-    "ALEXANDRA.HOME@CAPGEMINI.COM": 39766, 
-    "BINIAM.GEBREYESUS@CAPGEMINI.COM": 36980, 
-    "JOAO.VEIGA@CAPGEMINI.COM": 36404,
-    "MATT.SMITH@CAPGEMINI.COM": 44039, 
-    "JIGNA.SHAH@CAPGEMINI.COM": 36982
-}
+var employeeMap = JSON.parse(process.env.NEOCASE_EMPLOYEE_MAP);
 
 bot.use({ botbuilder: liveChat.middleware(bot, builder), send: (event, next)  => { 
     chatLogger.updateConversationHistory(event.address.conversation.id, event.text, "bot");

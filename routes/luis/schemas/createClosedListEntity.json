@@ -1,0 +1,27 @@
+{
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "SubLists": {
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "CanonicalForm": {
+            "type": "string"
+          },
+          "List": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array"
+          }
+        }
+      },
+      "type": "array"
+    },
+    "Name": {
+      "type": "string"
+    }
+  }
+}

@@ -27,7 +27,12 @@ const botHandler = require('./bot.js');
 const knowledgeRouter = require('./routes/knowledge');
 const conversationRouter = require('./routes/conversation');
 const superchargerRouter = require('./routes/supercharger');
+<<<<<<< HEAD
 const conversationHistoryRouter = require('./routes/conversationHistory');
+=======
+const luisRouter = require('./routes/luis');
+const botHandler = require('./bot.js');
+>>>>>>> master
 
 const builder = botComponents.getBuilder();
 const bot = botComponents.getBot();
@@ -51,7 +56,7 @@ var swaggerDefinition = config.swagger;
 // Options for the swagger docs
 var options = {
   swaggerDefinition: swaggerDefinition,   // Import swaggerDefinitions
-  apis: ['./routes/knowledge/index.js','./routes/conversation/index.js','./routes/supercharger/index.js'],  // Path to the API docs
+  apis: ['./routes/knowledge/index.js','./routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],  // Path to the API docs
 };
 
 var swaggerSpec = swaggerJSDoc(options);
@@ -158,8 +163,13 @@ rootRouter.use('/conversation', conversationRouter(convDB));
 // supercharger
 rootRouter.use('/supercharger', superchargerRouter(superchargerDB));
 
+<<<<<<< HEAD
 //conversationHistory
 rootRouter.use('/conversationHistory', conversationHistoryRouter(conversationHistoryDB))
+=======
+// luis
+rootRouter.use('/luis', luisRouter());
+>>>>>>> master
 
 // Apply routes
 rootRouter.applyRoutes(server);

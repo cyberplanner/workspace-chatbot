@@ -304,6 +304,7 @@ luisRouter.post('/train', (req,res) => {
             method: "POST",
             path: luisAuthCredentials.appId + "/train",
             headers: {
+                "Content-Type": "application/json",
                 "Ocp-Apim-Subscription-Key": luisAuthCredentials.subscriptionKey
             }
     });    
@@ -358,6 +359,7 @@ luisRouter.post('/publish', (req,res) => {
             method: "POST",
             path: luisAuthCredentials.appId + "/publish",
             headers: {
+                "Content-Type": "application/json",
                 "Ocp-Apim-Subscription-Key": luisAuthCredentials.subscriptionKey
             }
     });    

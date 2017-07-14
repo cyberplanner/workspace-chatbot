@@ -259,7 +259,7 @@ const conversationLogger = (session, args, next) => {
   let conversationId = session.message.address.conversation.id;
   let text = session.message.text;
   updateConversationHistory(conversationId, text);
-  next();
+  next(args);
 }
 
 /**

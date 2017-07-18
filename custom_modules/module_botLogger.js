@@ -35,12 +35,12 @@ const updateConversationHistory = (conversationId, text, user) => {
         .then(result => {
           console.log("[LOGGER] Sucessfully updated Conversation History");
         }).catch(error => {
-          console.log("[LOGGER] There was an unexpected error updating the Conversation History, " + error);
+          console.error("[LOGGER] There was an unexpected error updating the Conversation History, ", error);
         });
     }).catch(error => {
       if (!error.error === "not_found") {
         // Unexpected error, log it.
-        console.log("[LOGGER] There was an unexpected error retrieveing the Conversation History, " + error);
+        console.error("[LOGGER] There was an unexpected error retrieveing the Conversation History, ", error);
       }
       // Entry doesn't exist, create it.
       createNewConversationHistory(conversationId, text, "user");
@@ -55,7 +55,7 @@ const createNewConversationHistory = (conversationId, text, user) => {
       .then(result => { 
         console.log("[LOGGER] Conversation History created.");
       }).catch(error => {
-        console.log("[LOGGER] There was an error creating the Conversation History, " + error);
+        console.error("[LOGGER] There was an error creating the Conversation History, ", error);
       });
 }
 

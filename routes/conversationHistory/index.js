@@ -72,7 +72,7 @@ conversationHistoryRouter.post('/',
         res.json(200, { message: "Successfully saved Conversation History.", id: db._id });
       })
       .catch(error => {
-        console.log(error);
+        console.error(error);
         res.json(500, { error: error.reason });
       });
   });
@@ -103,7 +103,7 @@ conversationHistoryRouter.get('/:id',
         res.json(doc);
       })
       .catch(err => {
-        console.log("Error :" + err)
+        console.error("Error :", err)
         res.json(err.statusCode, { error: err.reason });
       });
   });
@@ -129,7 +129,7 @@ conversationHistoryRouter.get('/',
         res.json(doc);
       })
       .catch(err => {
-        console.log("Error :" + err)
+        console.error("Error :", err)
         res.json(err.statusCode, { error: err.reason });
       });
   });

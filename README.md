@@ -1,6 +1,6 @@
 # Ubiquitous Octo Pancake
 
-[![CircleCI](https://circleci.com/gh/Capgemini-AIE/ubiquitous-octo-pancake.svg?style=svg)](https://circleci.com/gh/Capgemini-AIE/ubiquitous-octo-pancake) 
+[![CircleCI](https://circleci.com/gh/Capgemini-AIE/ubiquitous-octo-pancake.svg?style=svg&circle-token=0708550252d95317487062bb62014c79e4eb9ff9)](https://circleci.com/gh/Capgemini-AIE/ubiquitous-octo-pancake) 
 
 This project lets you build a chatbot, without having to write the boilerplate.
 

@@ -10,32 +10,43 @@
 
 -----------------------------------------------------------------------------*/
 
-const config = require('config');
+//=========================================================
+// Import NPM modules
+//=========================================================
 require('dotenv').config();
-const botComponents = require('./custom_modules/module_botComponents');
+
+const config = require('config');
 const restify = require('restify');
-const dbcon = require('./custom_modules/module_dbConnection');
 const RestifyRouter = require('restify-routing');
-const botHandler = require('./bot.js');
 const swaggerJSDoc = require('swagger-jsdoc');
 
-/*
-    Load routes
-*/
+//=========================================================
+// Import Custom Modules
+//=========================================================
+
+const botComponents = require('./custom_modules/module_botComponents');
+const dbcon = require('./custom_modules/module_dbConnection');
+const botHandler = require('./bot.js');
+const chatLogger = require('./custom_modules/module_botLogger')(conversationHistoryDB);
+
+//=========================================================
+// Import Subroutes
+//=========================================================
+
 const knowledgeRouter = require('./routes/knowledge');
 const conversationRouter = require('./routes/conversation');
 const superchargerRouter = require('./routes/supercharger');
 const conversationHistoryRouter = require('./routes/conversationHistory');
 const luisRouter = require('./routes/luis');
 
-const builder = botComponents.getBuilder();
-const bot = botComponents.getBot();
+//=========================================================
+// Setup Database Connections
+//=========================================================
+
 const convDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_DB_NAME); 
 const knowledgeDB = dbcon.getConnection(process.env.cloudant_dbName);
 const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_NAME);
 const conversationHistoryDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_HISTORY_DB_NAME);
-
-const chatLogger = require('./custom_modules/module_botLogger')(conversationHistoryDB);
 
 //=========================================================
 // Swagger JS Doc
@@ -45,7 +56,7 @@ const options = {
   swaggerDefinition: Object.assign({}, config.swagger, {
       host: process.env.HOST
   }),
-  apis: ['./routes/knowledge/index.js','./routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],
+  apis: ['./routes/knowledge/index.js', './routes/conversationHistory/index.js', './routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],
 };
 
 const swaggerSpec = swaggerJSDoc(options);
@@ -86,6 +97,8 @@ let botMiddleware = [
 // Bots Dialogs
 //=========================================================
 
+const builder = botComponents.getBuilder();
+const bot = botComponents.getBot();
 const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 

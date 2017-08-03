@@ -1,4 +1,3 @@
-const neocaseSuperchargers = require('./superchargers/neocaseSuperchargers');
 const genericSuperchargers = require('./superchargers/genericSuperchargers');
 
 /*

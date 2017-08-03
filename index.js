@@ -1,5 +1,4 @@
 /*-----------------------------------------------------------------------------
-sample setup to get this started
 
 # RUN THE BOT LOCALLY:
 
@@ -20,6 +19,7 @@ const RestifyRouter = require('restify-routing');
 const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
 const liveChat = require('./custom_modules/module_liveChat');
 const botHandler = require('./bot.js');
+const swaggerJSDoc = require('swagger-jsdoc');
 
 /*
     Load routes
@@ -37,25 +37,48 @@ const knowledgeDB = dbcon.getConnection(process.env.cloudant_dbName);
 const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_NAME);
 const conversationHistoryDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_HISTORY_DB_NAME);
 
-// Setup Logger
 const chatLogger = require('./custom_modules/module_botLogger')(conversationHistoryDB);
 
 //=========================================================
-//swagger setup
+// Swagger JS Doc
 //=========================================================
-var swaggerJSDoc = require('swagger-jsdoc');
 
-// Swagger definition
-config.swagger.host = process.env.HOST;
-var swaggerDefinition = config.swagger;
-
-// Options for the swagger docs
-var options = {
-  swaggerDefinition: swaggerDefinition,   // Import swaggerDefinitions
-  apis: ['./routes/knowledge/index.js','./routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],  // Path to the API docs
+const options = {
+  swaggerDefinition: Object.assign({}, config.swagger, {
+      host: process.env.HOST
+  }),
+  apis: ['./routes/knowledge/index.js','./routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],
 };
 
-var swaggerSpec = swaggerJSDoc(options);
+const swaggerSpec = swaggerJSDoc(options);
+
+//=========================================================
+// Define Bot Middleware
+//=========================================================
+
+// {
+//     recieve: true,
+//     send: false,
+//     middleware: chatLogger.conversationLogger
+// }
+const botMiddleware = [
+    {
+        recieve: false,
+        send: true,
+        middleware: (event, next) => {
+            console.log("[SEND] " + event.text);
+            next();
+        }
+    },
+    {
+        recieve: true,
+        send: false,
+        middleware: (event, next) => {
+            console.log("[RECIEVE] " + event.message.text);
+            next();
+        }
+    },
+];
 
 //=========================================================
 // Bots Dialogs
@@ -64,73 +87,63 @@ var swaggerSpec = swaggerJSDoc(options);
 const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 
-//Neocase status mapping
-var statusMap = {
-    "ENC": "In Progress", 
-    "13": "Pending Manager Approval",
-    "7": "Pending Requestor Rework",
-    "14": "Pending Supervisor Approval",
-    "15": "Pending Supervisor Approval", 
-    "22": "SAP Failure", 
-    "19": "Pending Employee Signature", 
-    "17": "Pending Choice Employee", 
-    "23": "In Progress Data Admin Team",
-    "20": "Document Signed",
-    "16": "Document Created"
-}
 
-var employeeMap = JSON.parse(process.env.NEOCASE_EMPLOYEE_MAP);
-
-bot.use({ botbuilder: liveChat.middleware(bot, builder), send: (event, next)  => { 
-    chatLogger.updateConversationHistory(event.address.conversation.id, event.text, "bot");
-    next();
-}});
+bot.use({
+    botbuilder: (event, next) => {
+        liveChat.middleware(bot, builder)(event, next);
+        let current = -1;
+        // Execute all registered "recieve" middleware.
+        const executor = () => {
+            current++;
+            if (botMiddleware && botMiddleware[current] && botMiddleware[current].recieve) {
+                botMiddleware[current].middleware(event, executor);
+            } else if (!botMiddleware || !botMiddleware[current]) {
+                next();
+            } else {
+                executor();
+            }
+        }
+        executor();
+        // botMiddleware.filter(item => item.recieve).forEach(middleware => {
+        //     middleware(event, next);
+        // });
+    },
+    send: (event, next)  => { 
+        // Execute all registered "send" middleware.
+        let current = -1;
+        const executor = () => {
+            current++;
+            if (botMiddleware && botMiddleware[current] && botMiddleware[current].send) {
+                botMiddleware[current].middleware(event, executor);
+            } else if (!botMiddleware || !botMiddleware[current]) {
+                next();
+            } else {
+                executor();
+            }
+        }
+        executor();
+        //chatLogger.updateConversationHistory(event.address.conversation.id, event.text, "bot");
+        //next();
+    }
+});
 
 // Setup root dialog
 bot.dialog('/', dialog);
 
-dialog.matches('LIVE_CHAT_HANDOVER', [
-    (session, args, next) => {
-        session.send("Ok, we'll try connecting you with an agent. Please wait.");
-        liveChat.handoverUser(session, args, next);
-    }
-]);
-
-dialog.matches('RETRIEVE_TICKET', [(session, args, next) => { 
-    NeocaseAdapter.getAllCases().then(response => {
-        if (!response[0].error || !response[0].error_details) { 
-            let filteredReponse = response.filter(item => {
-                return item.contactId === employeeMap[session.userData.summary.email.toUpperCase()];
-            });
-            if (filteredReponse.length !== 0) {
-                session.send("Here are a list of your tickets:");
-                filteredReponse.forEach(item => {
-                    session.send("Ticket ID: " + item.id + "  \nQuestion: " + item.question + "  \nStatus: " +
-                    statusMap[item.statusId] + "  \nCreation date: " + new Date(item.questionDate).toDateString());
-                });
-            } else { 
-                session.send("You have no open tickets to show.");
-            }
-        }  else { 
-            session.send("An error occured while retrieveing the tickets, " + response.error_details);
-        }
-    }).catch(error => {
-        session.send("An unexpected error occured while retrieving the tickts.");
-    });
-}]);
-
-let botmiddleware = [chatLogger.conversationLogger];
 // Use bot module to find response from conversation tree.
-dialog.onDefault(botHandler.bot(knowledgeDB, convDB, builder, botmiddleware));
+dialog.onDefault(botHandler.bot(knowledgeDB, convDB, builder, []));
 
 //=========================================================
-// Setup Server
+// Setup Restify
 //=========================================================
 
-// Setup Restify Router
 const server = restify.createServer();
+const rootRouter = new RestifyRouter();
 
-// Add middleware
+//=========================================================
+// Setup Restify Middleware
+//=========================================================
+
 server.use(restify.queryParser());
 server.use(restify.bodyParser());
 server.use(restify.CORS({
@@ -138,8 +151,9 @@ server.use(restify.CORS({
   credentials: false
 }));
 
-// Setup Restify Router
-const rootRouter = new RestifyRouter();
+//=========================================================
+// Setup Swagger + Bot Framework Endpoints
+//=========================================================
 
 // Serve swagger docs
 rootRouter.get('/swagger.json', function(req, res) {
@@ -150,6 +164,10 @@ rootRouter.get('/swagger.json', function(req, res) {
 // Bot Framework Endpoint
 rootRouter.post('/api/messages', botComponents.getConnector().listen());
 
+//=========================================================
+// Setup Subroutes
+//=========================================================
+
 // Knowledge Management
 rootRouter.use('/knowledge', knowledgeRouter(knowledgeDB));
 
@@ -159,16 +177,22 @@ rootRouter.use('/conversation', conversationRouter(convDB));
 // supercharger
 rootRouter.use('/supercharger', superchargerRouter(superchargerDB));
 
-//conversationHistory
+// Conversation History Subroute
 rootRouter.use('/conversationHistory', conversationHistoryRouter(conversationHistoryDB))
 
-// luis
+// LUIS Proxy
 rootRouter.use('/luis', luisRouter());
 
-// Apply routes
+//=========================================================
+// Apply Routes to server
+//=========================================================
+
 rootRouter.applyRoutes(server);
 
-// Listen on port
+//=========================================================
+// Start Server Listening
+//=========================================================
+
 server.listen(process.env.port || process.env.PORT || 3978, function () {
     console.log('%s listening to %s', server.name, server.url);
 });

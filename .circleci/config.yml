@@ -19,8 +19,6 @@ jobs:
     steps:
       - checkout
 
-      - run: mkdir -p $CIRCLE_TEST_REPORTS/reports
-
       # Download and cache dependencies
       - restore_cache:
           keys:
@@ -35,6 +33,8 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
         
-      - run: yarn test -- --output $CIRCLE_TEST_REPORTS/reports
+      - run: yarn test -- --output ~/repo/reports
 
-
+      - store_artifacts:
+        path: ~/repo/reports/*
+        prefix: tests

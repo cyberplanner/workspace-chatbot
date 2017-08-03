@@ -36,5 +36,5 @@ jobs:
       - run: yarn test -- --output ~/repo/reports
 
       - store_artifacts:
-        path: ~/repo/reports/*
-        prefix: tests
+          path: ~/repo/reports/*
+          prefix: tests

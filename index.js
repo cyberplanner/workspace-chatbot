@@ -27,7 +27,7 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const botComponents = require('./custom_modules/module_botComponents');
 const dbcon = require('./custom_modules/module_dbConnection');
 const botHandler = require('./bot.js');
-const chatLogger = require('./custom_modules/module_botLogger')(conversationHistoryDB);
+let botLogger = require('./custom_modules/module_botLogger');
 
 //=========================================================
 // Import Subroutes
@@ -49,6 +49,12 @@ const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_
 const conversationHistoryDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_HISTORY_DB_NAME);
 
 //=========================================================
+// Setup Chat Logger by providing History DB
+//=========================================================
+
+const chatLogger = botLogger(conversationHistoryDB);
+
+//=========================================================
 // Swagger JS Doc
 //=========================================================
 
@@ -58,7 +64,6 @@ const options = {
   }),
   apis: ['./routes/knowledge/index.js', './routes/conversationHistory/index.js', './routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],
 };
-
 const swaggerSpec = swaggerJSDoc(options);
 
 //=========================================================

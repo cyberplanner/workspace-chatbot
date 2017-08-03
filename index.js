@@ -17,7 +17,6 @@ const restify = require('restify');
 const dbcon = require('./custom_modules/module_dbConnection');
 const RestifyRouter = require('restify-routing');
 const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
-const liveChat = require('./custom_modules/module_liveChat');
 const botHandler = require('./bot.js');
 const swaggerJSDoc = require('swagger-jsdoc');
 
@@ -56,12 +55,16 @@ const swaggerSpec = swaggerJSDoc(options);
 // Define Bot Middleware
 //=========================================================
 
+// Structure of a middleware item.
+//
 // {
 //     recieve: true,
 //     send: false,
 //     middleware: chatLogger.conversationLogger
 // }
-const botMiddleware = [
+//
+
+let botMiddleware = [
     {
         recieve: false,
         send: true,
@@ -83,14 +86,12 @@ const botMiddleware = [
 //=========================================================
 // Bots Dialogs
 //=========================================================
-// Create LUIS recognizer that points at our model and add it as the root '/' dialog for our Cortana Bot.
+
 const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 
-
 bot.use({
     botbuilder: (event, next) => {
-        liveChat.middleware(bot, builder)(event, next);
         let current = -1;
         // Execute all registered "recieve" middleware.
         const executor = () => {
@@ -104,9 +105,6 @@ bot.use({
             }
         }
         executor();
-        // botMiddleware.filter(item => item.recieve).forEach(middleware => {
-        //     middleware(event, next);
-        // });
     },
     send: (event, next)  => { 
         // Execute all registered "send" middleware.
@@ -122,8 +120,6 @@ bot.use({
             }
         }
         executor();
-        //chatLogger.updateConversationHistory(event.address.conversation.id, event.text, "bot");
-        //next();
     }
 });
 

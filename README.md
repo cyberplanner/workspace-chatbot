@@ -16,9 +16,10 @@ We depend on a few technologies, please make sure you have the below prerequisit
 ## Quickstart:
 
   * Install above prerequisites
+  * Install Dependencies (Yarn)
   * Install Bot Framework Emulator
   * Install ngrok found at https://ngrok.com/.
-  * Run the bot from the command line using "index app.js".
-  * In Emulator enter "http://localhost:3978/api/messages" as endpoint and connect.
-  * say "Hello"
+  * Run the bot from the command line using "yarn start".
+  * In Bot Framework Emulator enter "http://localhost:3978/api/messages" as endpoint and connect.
+  * Say "Hi"
 

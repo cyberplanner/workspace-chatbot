@@ -8,17 +8,6 @@ const init = () => {
   let supercharger = require('./custom_modules/module_supercharger');
   supercharger.clear()
     .then(() => {
-      // Register neocase superchargers
-      supercharger.register(
-        new supercharger.Detail([
-          new supercharger.Parameter("EMAIL_ADDRESS", "The email address of the employee", "string"),
-          new supercharger.Parameter("SERVICE_OPTION_NAME", "The service option to be used on case creation.", "string"),
-          new supercharger.Parameter("MESSAGE", "The message to be attached to the case", "string"),
-        ],
-        "Create Neocase Case",
-        neocaseSuperchargers.createCase,
-        "neocase__case_create")
-      );
 
       // Register Generic superchargers
       supercharger.register(

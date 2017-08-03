@@ -1,5 +1,0 @@
-test:
-  pre:
-    - mkdir -p $CIRCLE_TEST_REPORTS/reports
-  override:
-    - npm test -- --output $CIRCLE_TEST_REPORTS/reports

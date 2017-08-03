@@ -16,7 +16,6 @@ const botComponents = require('./custom_modules/module_botComponents');
 const restify = require('restify');
 const dbcon = require('./custom_modules/module_dbConnection');
 const RestifyRouter = require('restify-routing');
-const NeocaseAdapter = require('./custom_modules/module_neocaseAdapter');
 const botHandler = require('./bot.js');
 const swaggerJSDoc = require('swagger-jsdoc');
 

@@ -31,8 +31,8 @@ const luisRouter = require('./routes/luis');
 // Setup Database Connections
 //=========================================================
 
+const knowledgeDB = dbcon.getConnection(process.env.CLOUDANT_KNOWLEDGE_DB_NAME);
 const convDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_DB_NAME); 
-const knowledgeDB = dbcon.getConnection(process.env.cloudant_dbName);
 const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_NAME);
 const conversationHistoryDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_HISTORY_DB_NAME);
 
@@ -48,7 +48,7 @@ const chatLogger = botLogger(conversationHistoryDB);
 
 const options = {
   swaggerDefinition: Object.assign({}, config.swagger, {
-      host: process.env.HOST
+      host: process.env.SWAGGER_HOST
   }),
   apis: ['./routes/knowledge/index.js', './routes/conversationHistory/index.js', './routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],
 };

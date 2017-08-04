@@ -3,7 +3,7 @@ var Cloudant= require('cloudant');
 var cloudant;
 
 const dbCredentials = {
-    url : process.env.cloudant_url
+    url : process.env.CLOUDANT_BASIC_AUTH_URL
 };
 
 function initDBConnection() {

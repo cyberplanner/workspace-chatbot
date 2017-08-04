@@ -1,14 +1,10 @@
 {
-  "Endpoints": {
-    
-  },
   "swagger": {
     "info": {
-      "title": "HR chatbot Service",
-      "version": "1.0.0",
-      "description": " HR chatbot RESTful API Documentation with Swagger "
+      "title": "Ubiquitous Octo Pancake",
+      "version": "0.0.1",
+      "description": " Ubiquitous Octo Pancake RESTful API Documentation with Swagger "
     },
-    "host": "",
     "basePath": "/"
   }
 }

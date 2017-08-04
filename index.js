@@ -31,8 +31,8 @@ const luisRouter = require('./routes/luis');
 // Setup Database Connections
 //=========================================================
 
+const knowledgeDB = dbcon.getConnection(process.env.CLOUDANT_KNOWLEDGE_DB_NAME);
 const convDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_DB_NAME); 
-const knowledgeDB = dbcon.getConnection(process.env.cloudant_dbName);
 const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_NAME);
 const conversationHistoryDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_HISTORY_DB_NAME);
 

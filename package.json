@@ -1,7 +1,7 @@
 {
-  "name": "hr-chatbot",
-  "version": "1.0.0",
-  "description": "HR ChatBot with MSBot framework",
+  "name": "Ubiquitous-Octo-Pancake",
+  "version": "0.0.1",
+  "description": "Build a chatbot without the boilerplate.",
   "main": "index.js",
   "scripts": {
     "test": "./node_modules/.bin/jasmine-node spec --junitreport",
@@ -9,19 +9,20 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Capgemini-AIE/hr-chatbot.git"
+    "url": "git+https://github.com/Capgemini-AIE/ubiquitous-octo-pancake.git"
   },
   "keywords": [
     "chatbot",
-    "msbot",
-    "HR"
+    "microsoft bot framework",
+    "cloudant",
+    "couch",
+    "LUIS.ai"
   ],
-  "author": "Capgemini",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/Capgemini-AIE/hr-chatbot/issues"
+    "url": "https://github.com/Capgemini-AIE/ubiquitous-octo-pancake/issues"
   },
-  "homepage": "https://github.com/Capgemini-AIE/hr-chatbot#readme",
+  "homepage": "https://github.com/Capgemini-AIE/ubiquitous-octo-pancake#readme",
   "dependencies": {
     "botbuilder": "^3.8.3",
     "cloudant": "^1.8.0",
@@ -40,5 +41,27 @@
   },
   "engines": {
     "node": "7.x"
-  }
+  },
+  "contributors": [
+    {
+      "name": "Dan Cotton",
+      "url": "https://github.com/daniel-cotton"
+    },
+    {
+      "name": "Jigna Shah",
+      "url": "https://github.com/jigna-shah"
+    },
+    {
+      "name": "Biniam Gebreyesus",
+      "url": "https://github.com/biniam23"
+    },
+    {
+      "name": "Harmelodic (Matt Smith)",
+      "url": "https://github.com/Harmelodic"
+    },
+    {
+      "name": "Ed Callow",
+      "url": "https://github.com/edcallow96"
+    }
+  ]
 }

@@ -121,4 +121,34 @@ describe("Generic Superchargers", () => {
     
   });
 
+	it("Optional Question should NOT set value of skip if userData exists for KEY", () => {
+
+    let optional = genericSuperchargers.optionalQuestion;
+    let skip = jasmine.createSpy("skip");
+
+    let mockSession = {
+      userData: {
+        summary: {
+          "email": "dancotton@test.com"
+        }
+      },
+      conversationData: {
+        
+      },
+      send: jasmine.createSpy("send")
+    };
+
+    let mockCustomArgs = {
+      KEY: "age",
+      QUESTION: "How old are you?"
+    };
+
+    // Call supercharger function
+    optional.function(mockSession, {}, {}, mockCustomArgs, skip);
+
+    // Assert that skip value in conversationData is equal to KEY.
+    expect(mockSession.conversationData.skip).not.toEqual("age");
+    
+  });
+
 });

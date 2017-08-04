@@ -3,7 +3,7 @@ const supercharger = require('../custom_modules/module_supercharger');
 
 describe("Optional Question Supercharger", () => {
 
-	it("Optional Question Metadata should be correct", () => {
+	it("Metadata should be correct", () => {
     
     let optional = genericSuperchargers.optionalQuestion;
 
@@ -20,7 +20,7 @@ describe("Optional Question Supercharger", () => {
     
   });
 
-	it("Optional Question should skip if userData exists for KEY", () => {
+	it("should skip if userData exists for KEY", () => {
 
     let optional = genericSuperchargers.optionalQuestion;
     let skip = jasmine.createSpy("skip");
@@ -53,8 +53,7 @@ describe("Optional Question Supercharger", () => {
     
   });
 
-
-	it("Optional Question should NOT skip if userData doesn't exist for KEY", () => {
+	it("should NOT skip if userData doesn't exist for KEY", () => {
 
     let optional = genericSuperchargers.optionalQuestion;
     let skip = jasmine.createSpy("skip");
@@ -88,7 +87,7 @@ describe("Optional Question Supercharger", () => {
     
   });
 
-	it("Optional Question should set value of skip if userData exists for KEY", () => {
+	it("should set value of skip if userData exists for KEY", () => {
 
     let optional = genericSuperchargers.optionalQuestion;
     let skip = jasmine.createSpy("skip");
@@ -121,7 +120,7 @@ describe("Optional Question Supercharger", () => {
     
   });
 
-	it("Optional Question should NOT set value of skip if userData exists for KEY", () => {
+	it("should NOT set value of skip if userData exists for KEY", () => {
 
     let optional = genericSuperchargers.optionalQuestion;
     let skip = jasmine.createSpy("skip");

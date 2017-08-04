@@ -48,7 +48,7 @@ const chatLogger = botLogger(conversationHistoryDB);
 
 const options = {
   swaggerDefinition: Object.assign({}, config.swagger, {
-      host: process.env.HOST
+      host: process.env.SWAGGER_HOST
   }),
   apis: ['./routes/knowledge/index.js', './routes/conversationHistory/index.js', './routes/conversation/index.js','./routes/supercharger/index.js','./routes/luis/index.js'],
 };

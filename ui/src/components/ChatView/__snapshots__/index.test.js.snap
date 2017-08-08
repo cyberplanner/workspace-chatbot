@@ -1,0 +1,88 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders correctly and without crashing with a multiple messages from the bot 1`] = `
+<div
+  className="sc-bdVaJa eYYgnR"
+>
+  <p
+    className="sc-bwzfXH biAvUV"
+  >
+    bot
+  </p>
+  <p
+    className="sc-bwzfXH biAvUV"
+  >
+    bot
+  </p>
+</div>
+`;
+
+exports[`renders correctly and without crashing with a multiple messages from the user 1`] = `
+<div
+  className="sc-bdVaJa eYYgnR"
+>
+  <p
+    className="sc-bwzfXH biAvUV"
+  >
+    user
+  </p>
+  <p
+    className="sc-bwzfXH biAvUV"
+  >
+    user
+  </p>
+</div>
+`;
+
+exports[`renders correctly and without crashing with a single message from the bot 1`] = `
+<div
+  className="sc-bdVaJa eYYgnR"
+>
+  <p
+    className="sc-bwzfXH biAvUV"
+  >
+    bot
+  </p>
+</div>
+`;
+
+exports[`renders correctly and without crashing with a single message from the bot 2`] = `
+<div
+  className="sc-bdVaJa eYYgnR"
+>
+  <p
+    className="sc-bwzfXH biAvUV"
+  >
+    user
+  </p>
+</div>
+`;
+
+exports[`renders correctly and without crashing with mixed messages 1`] = `
+<div
+  className="sc-bdVaJa eYYgnR"
+>
+  <p
+    className="sc-bwzfXH biAvUV"
+  >
+    user
+  </p>
+  <p
+    className="sc-bwzfXH biAvUV"
+  >
+    bot
+  </p>
+</div>
+`;
+
+exports[`renders without crashing 1`] = `
+<div
+  className="sc-bdVaJa eYYgnR"
+/>
+`;
+
+exports[`renders without crashing with an empty array of messages 1`] = `
+<div
+  className="sc-bdVaJa eYYgnR"
+/>
+`;

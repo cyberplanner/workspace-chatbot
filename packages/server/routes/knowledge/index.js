@@ -1,6 +1,13 @@
 const express = require('express');
-const validator = require( 'restify-json-schema-validation-middleware' )();
 
+const expressJSONSchema = require('express-jsonschema').validate;
+const validator = {
+	body: (schema) => {
+		return expressJSONSchema({
+			body: schema
+		});
+	}
+}
 let db;
 
 // Setup Router
@@ -134,7 +141,7 @@ knowledgeRouter.get('/:id',
       })
       .catch(err => {
         console.log("Error :" + JSON.stringify(err))
-        res.json(err.statusCode, { error: err.reason });
+        res.status(err.statusCode).json({ error: err.reason });
       });
   });
 
@@ -169,7 +176,7 @@ knowledgeRouter.delete('/:id',
       })
       .catch(err => {
         console.log("Error :" + JSON.stringify(err))
-        res.json(err.statusCode, { error: err.reason });
+        res.status(err.statusCode).json({ error: err.reason });
       });
   });
 
@@ -194,7 +201,7 @@ knowledgeRouter.get('/',
       })
       .catch(err => {
         console.log("Error :" + JSON.stringify(err))
-        res.json(err.statusCode, { error: err.reason });
+        res.status(err.statusCode).json({ error: err.reason });
       });
   });
 
@@ -234,7 +241,7 @@ knowledgeRouter.put('/:id',
       })
       .catch(err => {
         console.log("Error :" + JSON.stringify(err))
-        res.json(err.statusCode, { error: err.reason });
+        res.status(err.statusCode).json({ error: err.reason });
       });
   });
 

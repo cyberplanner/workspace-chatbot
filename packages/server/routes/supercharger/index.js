@@ -1,6 +1,12 @@
 const express = require('express');
-const validator = require( 'restify-json-schema-validation-middleware' )();
-
+const expressJSONSchema = require('express-jsonschema').validate;
+const validator = {
+	body: (schema) => {
+		return expressJSONSchema({
+			body: schema
+		});
+	}
+}
 let db;
 
 // Setup Router
@@ -30,7 +36,7 @@ superchargerRouter.get('/',
 	        })
 	        .catch(err => {
 	            console.log("Error :"+JSON.stringify(err))
-	            res.json(err.statusCode, {error: err.reason});
+	            res.status(err.statusCode).json({error: err.reason});
 	        });
     });
 
@@ -76,7 +82,7 @@ superchargerRouter.delete('/all',
         })
         .catch(err => {
             console.log("Error :" + JSON.stringify(err))
-            res.json(err.statusCode, {error: err.reason});
+            res.status(err.statusCode).json({error: err.reason});
         });
     });
 
@@ -107,7 +113,7 @@ superchargerRouter.get('/:id',
         })
         .catch(err => {
             console.log("Error :"+JSON.stringify(err))
-            res.json(err.statusCode, {error: err.reason});
+            res.status(err.statusCode).json({error: err.reason});
         });
     });
 
@@ -140,11 +146,11 @@ superchargerRouter.post('/', [
 	    (req, res) => {
 	    	db.insert(Object.assign(req.body))
 	        .then(() => {
-	            res.json(200, {message: "Successfully saved supercharger."});
+	            res.json({message: "Successfully saved supercharger."});
 	        })
 	        .catch(error => {
 	            console.log(error);  
-	            res.json(500, {error: error.reason});
+	            res.status(500).json({error: error.reason});
 	        });
 	    }]);
 
@@ -190,7 +196,7 @@ superchargerRouter.post('/', [
         })
         .catch(err => {
             console.log("Error :"+JSON.stringify(err))
-            res.json(err.statusCode, {error: err.reason});
+            res.status(err.statusCode).json({error: err.reason});
         });		      
     }]);
 

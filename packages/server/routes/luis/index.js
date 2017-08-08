@@ -1,6 +1,13 @@
 const express = require('express');
-const validator = require( 'restify-json-schema-validation-middleware' )();
 
+const expressJSONSchema = require('express-jsonschema').validate;
+const validator = {
+	body: (schema) => {
+		return expressJSONSchema({
+			body: schema
+		});
+	}
+}
 // Setup Router
 const luisRouter = express.Router();
 

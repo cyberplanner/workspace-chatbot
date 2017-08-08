@@ -5,6 +5,7 @@ require('dotenv').config();
 
 const config = require('config');
 const express = require('express');
+const bodyParser = require('body-parser');
 const swaggerJSDoc = require('swagger-jsdoc');
 
 //=========================================================
@@ -143,8 +144,7 @@ const server = express();
 // Setup Express Middleware [TODO] Fix
 //=========================================================
 
-//server.use(restify.queryParser());
-//server.use(restify.bodyParser());
+server.use(bodyParser.json());
 /*server.use(restify.CORS({
   origins: process.env.CROSS_SITE_ORIGINS.split(","),
   credentials: false
@@ -181,6 +181,33 @@ server.use('/conversationHistory', conversationHistoryRouter(conversationHistory
 
 // LUIS Proxy
 server.use('/luis', luisRouter());
+
+//=========================================================
+// Setup error handling middleware
+//=========================================================
+
+server.use((err, req, res, next) => {
+
+    let responseData;
+
+    if (err.name === 'JsonSchemaValidation') {
+        console.log(err.message);
+        res.status(400);
+
+        // Format the response body
+        responseData = {
+           statusText: 'Bad Request',
+           jsonSchemaValidation: true,
+           validations: err.validations  // All of your validation information
+        };
+
+        res.json(responseData);
+        
+    } else {
+        // pass error to next error middleware handler
+        next(err);
+    }
+});
 
 //=========================================================
 // Start Server Listening

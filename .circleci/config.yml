@@ -26,8 +26,6 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: yarn install
-
       - save_cache:
           paths:
             - node_modules
@@ -35,9 +33,13 @@ jobs:
 
       - run: cd server
 
+      - run: yarn install
+
       - run: yarn test -- --output ~/repo/reports
 
       - run: cd ../ui
+
+      - run: yarn install
 
       - run: yarn test
 

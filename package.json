@@ -6,7 +6,6 @@
     "build": "npm run --prefix ./ui build && mv ./ui/build/ ./server/public/"
   },
   "devDependencies": {
-    "concurrently": "^3.5.0",
     "lerna": "^2.0.0"
   },
   "dependencies": {

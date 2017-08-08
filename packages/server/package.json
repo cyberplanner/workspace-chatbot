@@ -30,6 +30,7 @@
     "config": "^1.21.0",
     "dotenv": "^4.0.0",
     "express": "^4.15.4",
+    "express-history-api-fallback": "^2.2.1",
     "express-jsonschema": "^1.1.6",
     "jasmine-node": "^1.14.5",
     "jasmine-xml-reporter": "^1.0.6",
@@ -38,6 +39,7 @@
     "node-fetch": "^1.7.1",
     "restify-json-schema-validation-middleware": "^2.1.0",
     "restify-routing": "^0.3.11",
+    "serve-static": "^1.12.4",
     "swagger-jsdoc": "^1.9.4",
     "uuid": "^3.1.0"
   },

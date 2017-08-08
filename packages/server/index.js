@@ -4,9 +4,13 @@
 require('dotenv').config();
 
 const config = require('config');
+const swaggerJSDoc = require('swagger-jsdoc');
+
+// Express
 const express = require('express');
 const bodyParser = require('body-parser');
-const swaggerJSDoc = require('swagger-jsdoc');
+const serveStatic = require('serve-static');
+const fallback = require('express-history-api-fallback');
 
 //=========================================================
 // Import Custom Modules
@@ -139,6 +143,7 @@ dialog.onDefault(botHandler.bot(knowledgeDB, convDB, builder, []));
 //=========================================================
 
 const server = express();
+const root = `${__dirname}/public`;
 
 //=========================================================
 // Setup Express Middleware [TODO] Fix
@@ -181,6 +186,9 @@ server.use('/conversationHistory', conversationHistoryRouter(conversationHistory
 
 // LUIS Proxy
 server.use('/luis', luisRouter());
+
+server.use(serveStatic(root))
+server.use(fallback('index.html', { root }))
 
 //=========================================================
 // Setup error handling middleware

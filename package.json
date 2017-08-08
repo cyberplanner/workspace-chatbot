@@ -1,0 +1,14 @@
+{
+  "scripts": {
+    "server": "npm run --prefix ./packages/server start",
+    "start": "concurrently \"npm run --prefix ./packages/server start\" \"npm run --prefix ./packages/ui start\"",
+    "build": "npm run --prefix ./packages/ui build && mv ./packages/ui/build ./packages/server/public"
+  },
+  "devDependencies": {
+    "concurrently": "^3.5.0",
+    "lerna": "^2.0.0"
+  },
+  "dependencies": {
+    "ecstatic": "^2.2.1"
+  }
+}

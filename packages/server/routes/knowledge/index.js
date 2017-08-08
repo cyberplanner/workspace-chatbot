@@ -1,11 +1,10 @@
-// Module Imports
-const RestifyRouter = require('restify-routing');
-const validator = require('restify-json-schema-validation-middleware')();
+const express = require('express');
+const validator = require( 'restify-json-schema-validation-middleware' )();
 
 let db;
 
 // Setup Router
-let knowledgeRouter = new RestifyRouter();
+const knowledgeRouter = express.Router();
 
 /*
     Import Schemas

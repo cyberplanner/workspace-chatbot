@@ -1,13 +1,12 @@
-const RestifyRouter = require('restify-routing');
+const express = require('express');
 const validator = require( 'restify-json-schema-validation-middleware' )();
 
 let db;
 
 // Setup Router
-let conversationRouter = new RestifyRouter();
+const conversationRouter = express.Router();
 
 //Import Schemas
-
 const createConversationSchema = require('./schemas/createConversation.json');
 
 /**
@@ -87,18 +86,18 @@ conversationRouter.get('/:id',
 *       404:
 *        description: doc not found
 */
-conversationRouter.post('/', 
-	    validator.body( createConversationSchema ),
-	    (req, res) => {
-	    	db.insert(req.body)
-	        .then((doc) => {
-	            res.json(200, {message: "Successfully saved conversation.", id: doc.id});
-	        })
-	        .catch(error => {
-	            console.log(error);  
-	            res.json(500, {error: error.reason});
-	        });
-	    });
+conversationRouter.post('/', [
+		validator.body( createConversationSchema ),
+		(req, res) => {
+			db.insert(req.body)
+			.then((doc) => {
+				res.json(200, {message: "Successfully saved conversation.", id: doc.id});
+			})
+			.catch(error => {
+				console.log(error);  
+				res.json(500, {error: error.reason});
+			});
+		}]);
 
 /**
 * @swagger
@@ -123,8 +122,8 @@ conversationRouter.post('/',
 *       500:
 *         description: Update failed. Item may not exist in DB.
 */
- conversationRouter.put('/:nodeId', 
- validator.body( createConversationSchema ),
+ conversationRouter.put('/:nodeId', [
+	validator.body( createConversationSchema ),
     (req, res) => {
     	db.get(req.params.nodeId)
         .then(doc => {
@@ -144,7 +143,7 @@ conversationRouter.post('/',
             console.log("Error :"+JSON.stringify(err))
             res.json(err.statusCode, {error: err.reason});
         });		      
-    });
+    }]);
 
 /**
  * @swagger
@@ -183,5 +182,5 @@ conversationRouter.delete('/:id',
 
 module.exports = (database) => {
     db = database;
-    return conversationRouter
+    return conversationRouter;
 };

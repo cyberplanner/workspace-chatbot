@@ -1,11 +1,10 @@
-// Module Imports
-const RestifyRouter = require('restify-routing');
+const express = require('express');
 const validator = require( 'restify-json-schema-validation-middleware' )();
 
 let db;
 
 // Setup Router
-let superchargerRouter = new RestifyRouter();
+const superchargerRouter = express.Router();
 
 //Import Schemas
 const createSuperchargerSchema = require('./schemas/createSupercharger.json');
@@ -136,7 +135,7 @@ superchargerRouter.get('/:id',
 *       404:
 *        description: doc not found
 */
-superchargerRouter.post('/', 
+superchargerRouter.post('/', [
 	    validator.body(createSuperchargerSchema),
 	    (req, res) => {
 	    	db.insert(Object.assign(req.body))
@@ -147,7 +146,7 @@ superchargerRouter.post('/',
 	            console.log(error);  
 	            res.json(500, {error: error.reason});
 	        });
-	    });
+	    }]);
 
 /**
 * @swagger
@@ -172,8 +171,8 @@ superchargerRouter.post('/',
 *       500:
 *         description: Update failed. Item may not exist in DB.
 */
- superchargerRouter.put('/:id', 
- validator.body(createSuperchargerSchema),
+ superchargerRouter.put('/:id', [
+	validator.body(createSuperchargerSchema),
     (req, res) => {
     	db.get(req.params.id)
         .then(doc => {
@@ -193,11 +192,11 @@ superchargerRouter.post('/',
             console.log("Error :"+JSON.stringify(err))
             res.json(err.statusCode, {error: err.reason});
         });		      
-    });
+    }]);
 
 
 module.exports = (database) => {
     db = database;
-    return superchargerRouter
+    return superchargerRouter;
 };
 

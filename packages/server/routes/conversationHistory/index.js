@@ -1,11 +1,10 @@
-// Module Imports
-const RestifyRouter = require('restify-routing');
-const validator = require('restify-json-schema-validation-middleware')();
+const express = require('express');
+const validator = require( 'restify-json-schema-validation-middleware' )();
 
 let db;
 
 // Setup Router
-let conversationHistoryRouter = new RestifyRouter();
+const conversationHistoryRouter = express.Router();
 
 /*
     Import Schemas
@@ -30,7 +29,7 @@ const createConversationHistorySchema = require('./schemas/createConversationHis
 *       404:
 *        description: doc not found
 */
-conversationHistoryRouter.post('/:id',
+conversationHistoryRouter.post('/:id', [
   validator.body(createConversationHistorySchema),
   (req, res) => {
     res.header("Access-Control-Allow-Origin", req.header.origins);
@@ -44,7 +43,7 @@ conversationHistoryRouter.post('/:id',
         console.log(error);
         res.json(500, { error: error.reason });
       });
-  });
+}]);
 
 
 /**
@@ -63,7 +62,7 @@ conversationHistoryRouter.post('/:id',
 *       404:
 *        description: doc not found
 */
-conversationHistoryRouter.post('/',
+conversationHistoryRouter.post('/', [
   validator.body(createConversationHistorySchema),
   (req, res) => {
     res.header("Access-Control-Allow-Origin", req.header.origins);
@@ -75,7 +74,7 @@ conversationHistoryRouter.post('/',
         console.error(error);
         res.json(500, { error: error.reason });
       });
-  });
+}]);
 
 
 /**
@@ -96,7 +95,7 @@ conversationHistoryRouter.post('/',
  *       404:
  *          description: doc not found
  */
-conversationHistoryRouter.get('/:id',
+conversationHistoryRouter.get('/:id', 
   (req, res) => {
     db.get(req.params.id)
       .then(doc => {
@@ -151,7 +150,7 @@ conversationHistoryRouter.get('/',
 *       500:
 *         description: Update failed. Item may not exist in DB.
 */
-conversationHistoryRouter.put('/:id',
+conversationHistoryRouter.put('/:id', [
   validator.body(createConversationHistorySchema),
   (req, res) => {
     db.get(req.params.id)
@@ -172,10 +171,10 @@ conversationHistoryRouter.put('/:id',
         console.log("Error :" + err)
         res.json(err.statusCode, { error: err.reason });
       });
-  });
+  }]);
 
 
 module.exports = (database) => {
   db = database;
-  return conversationHistoryRouter
+  return conversationHistoryRouter;
 };

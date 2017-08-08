@@ -1,8 +1,11 @@
-const RestifyRouter = require('restify-routing');
+const express = require('express');
 const validator = require( 'restify-json-schema-validation-middleware' )();
-const fetch = require("node-fetch");
 
-let luisRouter = new RestifyRouter();
+// Setup Router
+const luisRouter = express.Router();
+
+// Import Fetch
+const fetch = require("node-fetch");
 
 const createIntentSchema = require('./schemas/createIntent.json');
 const createEntityExtractorSchema = require('./schemas/createEntityExtractor.json');
@@ -80,7 +83,7 @@ luisRouter.get('/intents', (req,res) => {
 *       500:
 *         description: Internal error
 */
-luisRouter.post('/intents', validator.body(createIntentSchema),
+luisRouter.post('/intents', [validator.body(createIntentSchema),
     (req,res) => {
     let options = Object.assign({
           body: JSON.stringify(req.body),
@@ -98,7 +101,7 @@ luisRouter.post('/intents', validator.body(createIntentSchema),
     }).catch(error => {
         res.json(500, {error: error.reason});
     });
-});
+}]);
 
 
 /**
@@ -141,7 +144,7 @@ luisRouter.get('/entities', (req,res) => {
 *       500:
 *         description: Internal error
 */
-luisRouter.post('/entityExtractor', validator.body(createEntityExtractorSchema),
+luisRouter.post('/entityExtractor', [validator.body(createEntityExtractorSchema),
     (req,res) => {
     let options = Object.assign({
           body: JSON.stringify(req.body),
@@ -159,7 +162,7 @@ luisRouter.post('/entityExtractor', validator.body(createEntityExtractorSchema),
     }).catch(error => {
         res.json(500, {error: error.reason});
     });
-});
+}]);
 
 
 /**
@@ -173,7 +176,7 @@ luisRouter.post('/entityExtractor', validator.body(createEntityExtractorSchema),
 *       500:
 *         description: Internal error
 */
-luisRouter.post('/closedListEntity', validator.body(createClosedListEntitySchema),
+luisRouter.post('/closedListEntity', [validator.body(createClosedListEntitySchema),
     (req,res) => {
     let options = Object.assign({
           body: JSON.stringify(req.body),
@@ -191,7 +194,7 @@ luisRouter.post('/closedListEntity', validator.body(createClosedListEntitySchema
     }).catch(error => {
         res.json(500, {error: error.reason});
     });
-});
+}]);
 
 
 /**
@@ -210,7 +213,7 @@ luisRouter.post('/closedListEntity', validator.body(createClosedListEntitySchema
 *       500:
 *         description: Internal error
 */
-luisRouter.put('/closedListEntity/:id', validator.body(createClosedListEntitySchema),
+luisRouter.put('/closedListEntity/:id', [validator.body(createClosedListEntitySchema),
     (req,res) => {
     let options = Object.assign({
           body: JSON.stringify(req.body),
@@ -228,7 +231,7 @@ luisRouter.put('/closedListEntity/:id', validator.body(createClosedListEntitySch
     }).catch(error => {
         res.json(500, {error: error.reason});
     });
-});
+}]);
 
 
 /**
@@ -242,7 +245,7 @@ luisRouter.put('/closedListEntity/:id', validator.body(createClosedListEntitySch
 *       500:
 *         description: Internal error
 */
-luisRouter.post('/utterance', validator.body(createUtteranceSchema),
+luisRouter.post('/utterance', [validator.body(createUtteranceSchema),
     (req,res) => {
     let options = Object.assign({
           body: JSON.stringify(req.body),
@@ -261,7 +264,7 @@ luisRouter.post('/utterance', validator.body(createUtteranceSchema),
         console.log(error);
         res.json(500, {error: error.reason});
     });
-});
+}]);
 
 
 /**

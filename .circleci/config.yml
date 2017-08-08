@@ -33,7 +33,7 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: cd packages/server
+      - run: cd server
 
       - run: yarn test -- --output ~/repo/reports
 

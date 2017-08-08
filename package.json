@@ -1,9 +1,9 @@
 {
   "scripts": {
-    "server": "npm run --prefix ./packages/server start",
+    "server": "npm run --prefix ./server start",
     "start": "lerna run start",
-    "test": "npm run --prefix ./packages/server test && npm run --prefix ./packages/ui test",
-    "build": "npm run --prefix ./packages/ui build && mv ./packages/ui/build/ ./packages/server/public/"
+    "test": "npm run --prefix ./server test && npm run --prefix ./ui test",
+    "build": "npm run --prefix ./ui build && mv ./ui/build/ ./server/public/"
   },
   "devDependencies": {
     "concurrently": "^3.5.0",

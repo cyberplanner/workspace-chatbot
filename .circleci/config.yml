@@ -31,17 +31,9 @@ jobs:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
 
-      - run: cd server
+      - run: cd server && yarn install && yarn test -- --output ~/repo/reports
 
-      - run: yarn install
-
-      - run: yarn test -- --output ~/repo/reports
-
-      - run: cd ../ui
-
-      - run: yarn install
-
-      - run: yarn test
+      - run: cd ui && yarn install && yarn test
 
       - store_artifacts:
           path: ~/repo/reports

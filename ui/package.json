@@ -35,5 +35,31 @@
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
-  }
+  },
+  "contributors": [
+    {
+      "name": "Dan Cotton",
+      "url": "https://github.com/daniel-cotton"
+    },
+    {
+      "name": "Jigna Shah",
+      "url": "https://github.com/jigna-shah"
+    },
+    {
+      "name": "Biniam Gebreyesus",
+      "url": "https://github.com/biniam23"
+    },
+    {
+      "name": "Harmelodic (Matt Smith)",
+      "url": "https://github.com/Harmelodic"
+    },
+    {
+      "name": "Ed Callow",
+      "url": "https://github.com/edcallow96"
+    },
+    {
+      "name": "James Gee",
+      "url": "https://github.com/Geeman201"
+    }
+  ]
 }

@@ -17,6 +17,8 @@ lib-cov
 # Test reports
 reports
 
+# Public
+public
 
 # Coverage directory used by tools like istanbul
 coverage

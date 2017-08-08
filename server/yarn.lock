@@ -1052,7 +1052,7 @@ lodash.once@^4.0.0:
   version "4.1.1"
   resolved "https://registry.yarnpkg.com/lodash.once/-/lodash.once-4.1.1.tgz#0dd3971213c7c56df880977d504c88fb471a97ac"
 
-lodash@^4.14.0, lodash@^4.2.1:
+lodash@^4.14.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
 
@@ -1148,7 +1148,7 @@ mock-require@^2.0.2:
   dependencies:
     caller-id "^0.1.0"
 
-moment@2.x.x, moment@^2.10.3, moment@^2.10.6:
+moment@2.x.x, moment@^2.10.3:
   version "2.18.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.18.1.tgz#c36193dd3ce1c2eed2adb7c802dbbc77a81b1c0f"
 
@@ -1480,18 +1480,6 @@ requirejs@>=0.27.1:
   version "2.3.3"
   resolved "https://registry.yarnpkg.com/requirejs/-/requirejs-2.3.3.tgz#aa59fd3a0287eaf407959a138228044b5dd6a6a3"
 
-restify-json-schema-validation-middleware@^2.1.0:
-  version "2.1.0"
-  resolved "https://registry.yarnpkg.com/restify-json-schema-validation-middleware/-/restify-json-schema-validation-middleware-2.1.0.tgz#a89a51fa8934261602fed0d84a519fffbb52dd04"
-  dependencies:
-    lodash "^4.2.1"
-    tv4 "^1.2.7"
-    tv4-formats "^2.2.0"
-
-restify-routing@^0.3.11:
-  version "0.3.11"
-  resolved "https://registry.yarnpkg.com/restify-routing/-/restify-routing-0.3.11.tgz#0dd40fb0c3365ab622a159cff4d78fb020a40b04"
-
 rimraf@2, rimraf@^2.5.1, rimraf@^2.6.1:
   version "2.6.1"
   resolved "https://registry.yarnpkg.com/rimraf/-/rimraf-2.6.1.tgz#c2338ec643df7a1b7fe5c54fa86f57428a55f33d"
@@ -1705,17 +1693,6 @@ tunnel-agent@~0.4.1:
   version "0.4.3"
   resolved "https://registry.yarnpkg.com/tunnel-agent/-/tunnel-agent-0.4.3.tgz#6373db76909fe570e08d73583365ed828a74eeeb"
 
-tv4-formats@^2.2.0:
-  version "2.2.2"
-  resolved "https://registry.yarnpkg.com/tv4-formats/-/tv4-formats-2.2.2.tgz#833da636dee3b4e77ce641d150e608018dc65b8d"
-  dependencies:
-    moment "^2.10.6"
-    validator "^7.0.0"
-
-tv4@^1.2.7:
-  version "1.3.0"
-  resolved "https://registry.yarnpkg.com/tv4/-/tv4-1.3.0.tgz#d020c846fadd50c855abb25ebaecc68fc10f7963"
-
 tweetnacl@^0.14.3, tweetnacl@~0.14.0:
   version "0.14.5"
   resolved "https://registry.yarnpkg.com/tweetnacl/-/tweetnacl-0.14.5.tgz#5ae68177f192d4456269d108afa93ff8743f4f64"
@@ -1758,10 +1735,6 @@ uuid@^3.0.0, uuid@^3.1.0:
 validator@^6.0.0:
   version "6.3.0"
   resolved "https://registry.yarnpkg.com/validator/-/validator-6.3.0.tgz#47ce23ed8d4eaddfa9d4b8ef0071b6cf1078d7c8"
-
-validator@^7.0.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/validator/-/validator-7.2.0.tgz#a63dcbaba51d4350bf8df20988e0d5a54d711791"
 
 vary@~1.1.1:
   version "1.1.1"

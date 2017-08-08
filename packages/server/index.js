@@ -4,8 +4,7 @@
 require('dotenv').config();
 
 const config = require('config');
-const restify = require('restify');
-const RestifyRouter = require('restify-routing');
+const express = require('express');
 const swaggerJSDoc = require('swagger-jsdoc');
 
 //=========================================================
@@ -135,60 +134,53 @@ bot.dialog('/', dialog);
 dialog.onDefault(botHandler.bot(knowledgeDB, convDB, builder, []));
 
 //=========================================================
-// Setup Restify
+// Setup Express
 //=========================================================
 
-const server = restify.createServer();
-const rootRouter = new RestifyRouter();
+const server = express();
 
 //=========================================================
-// Setup Restify Middleware
+// Setup Express Middleware [TODO] Fix
 //=========================================================
 
-server.use(restify.queryParser());
-server.use(restify.bodyParser());
-server.use(restify.CORS({
+//server.use(restify.queryParser());
+//server.use(restify.bodyParser());
+/*server.use(restify.CORS({
   origins: process.env.CROSS_SITE_ORIGINS.split(","),
   credentials: false
-}));
+}));*/
 
 //=========================================================
 // Setup Swagger + Bot Framework Endpoints
 //=========================================================
 
 // Serve swagger docs
-rootRouter.get('/swagger.json', function(req, res) {
+server.get('/swagger.json', function(req, res) {
   res.setHeader('Content-Type', 'application/json');
   res.send(swaggerSpec);
 });
 
 // Bot Framework Endpoint
-rootRouter.post('/api/messages', botComponents.getConnector().listen());
+server.post('/api/messages', botComponents.getConnector().listen());
 
 //=========================================================
 // Setup Subroutes
 //=========================================================
 
 // Knowledge Management
-rootRouter.use('/knowledge', knowledgeRouter(knowledgeDB));
+server.use('/knowledge', knowledgeRouter(knowledgeDB));
 
 // conversation 
-rootRouter.use('/conversation', conversationRouter(convDB));
+server.use('/conversation', conversationRouter(convDB));
 
 // supercharger
-rootRouter.use('/supercharger', superchargerRouter(superchargerDB));
+server.use('/supercharger', superchargerRouter(superchargerDB));
 
 // Conversation History Subroute
-rootRouter.use('/conversationHistory', conversationHistoryRouter(conversationHistoryDB))
+server.use('/conversationHistory', conversationHistoryRouter(conversationHistoryDB))
 
 // LUIS Proxy
-rootRouter.use('/luis', luisRouter());
-
-//=========================================================
-// Apply Routes to server
-//=========================================================
-
-rootRouter.applyRoutes(server);
+server.use('/luis', luisRouter());
 
 //=========================================================
 // Start Server Listening

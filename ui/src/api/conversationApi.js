@@ -1,4 +1,5 @@
 import "whatwg-fetch";
+import jsonFetch from "./jsonFetch";
 
 const parseJSON = response => response.json();
 const conversationEndpoint = `${process.env
@@ -8,14 +9,17 @@ const checkStatus = response => {
   if (response.status >= 200 && response.status < 300) {
     return response;
   }
-
-  const error = new Error(response.text());
-  error.response = response;
-  throw error;
+  try {
+    const error = new Error(response.text());
+    error.response = response;
+    throw error;
+  } catch(e) {
+    console.error(e);
+  }
 };
 
 export const retrieveAllConversationNodes = () => {
-  return fetch(`${conversationEndpoint}`, {})
+  return jsonFetch(`${conversationEndpoint}`, {})
     .then(checkStatus)
     .then(parseJSON)
     .then(results => {
@@ -24,13 +28,13 @@ export const retrieveAllConversationNodes = () => {
 };
 
 export const retrieveConversationNode = id => {
-  return fetch(`${conversationEndpoint}/${id}`, {})
+  return jsonFetch(`${conversationEndpoint}/${id}`, {})
     .then(checkStatus)
     .then(parseJSON);
 };
 
 export const addNewChildToNode = (parentId, child) => {
-  return fetch(`${conversationEndpoint}/${parentId}`, {})
+  return jsonFetch(`${conversationEndpoint}/${parentId}`, {})
     .then(checkStatus)
     .then(parseJSON)
     .then(response => {
@@ -52,7 +56,7 @@ export const addNewChildToNode = (parentId, child) => {
 };
 
 export const updateChildOfNode = (parentId, child) => {
-  return fetch(`${conversationEndpoint}/${parentId}`, {})
+  return jsonFetch(`${conversationEndpoint}/${parentId}`, {})
     .then(checkStatus)
     .then(parseJSON)
     .then(response => {
@@ -79,7 +83,7 @@ export const updateChildOfNode = (parentId, child) => {
 };
 
 export const createNewConversationNode = nodeData => {
-  return fetch(`${conversationEndpoint}`, {
+  return jsonFetch(`${conversationEndpoint}`, {
     method: "POST",
     body: JSON.stringify(nodeData),
     headers: {
@@ -91,7 +95,7 @@ export const createNewConversationNode = nodeData => {
 };
 
 export const updateConversationNode = (id, nodeData) => {
-  return fetch(`${conversationEndpoint}/${id}`, {
+  return jsonFetch(`${conversationEndpoint}/${id}`, {
     method: "PUT",
     body: JSON.stringify(nodeData),
     headers: {
@@ -103,7 +107,7 @@ export const updateConversationNode = (id, nodeData) => {
 };
 
 export const deleteConversationNode = id => {
-  return fetch(`${conversationEndpoint}/${id}`, {
+  return jsonFetch(`${conversationEndpoint}/${id}`, {
     method: "DELETE"
   })
     .then(checkStatus)

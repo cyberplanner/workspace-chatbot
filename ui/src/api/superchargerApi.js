@@ -1,4 +1,5 @@
 import "whatwg-fetch";
+import jsonFetch from "./jsonFetch";
 
 const parseJSON = response => response.json();
 const superchargerEndpoint = `${process.env
@@ -15,7 +16,7 @@ const checkStatus = response => {
 };
 
 export const retrieveAllSuperchargers = () => {
-  return fetch(`${superchargerEndpoint}`, {})
+  return jsonFetch(`${superchargerEndpoint}`, {})
     .then(checkStatus)
     .then(parseJSON)
     .then(results => {

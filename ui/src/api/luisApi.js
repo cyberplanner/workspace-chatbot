@@ -1,4 +1,5 @@
 import "whatwg-fetch";
+import jsonFetch from "./jsonFetch";
 
 const parseJSON = response => response.json();
 const luisEndpoint = `${process.env.REACT_APP_API_ENDPOINT}/luis/`;
@@ -14,7 +15,7 @@ const checkStatus = response => {
 };
 
 export const getIntents = () => {
-  return fetch(`${luisEndpoint}/intents`, {})
+  return jsonFetch(`${luisEndpoint}/intents`, {})
     .then(checkStatus)
     .then(parseJSON)
     .then(results => results.Result);

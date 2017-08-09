@@ -1,0 +1,213 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders without crashing 1`] = `
+<div>
+  <div>
+    <label
+      name="errorMessage"
+    >
+      <span
+        style={
+          Object {
+            "color": "red",
+          }
+        }
+      >
+        
+      </span>
+    </label>
+  </div>
+  <form
+    name="addIntentForm"
+    onSubmit={[Function]}
+  >
+    <table
+      className="sc-bdVaJa eiydml"
+    >
+      <tr>
+        <td>
+          <label>
+            Intent ID: 
+            <span
+              style={
+                Object {
+                  "color": "red",
+                }
+              }
+            >
+              *
+            </span>
+          </label>
+        </td>
+        <td>
+          <div>
+            <input
+              onChange={[Function]}
+              type="text"
+              value={undefined}
+            />
+            <label
+              name="errorMessage"
+            >
+              <span
+                style={
+                  Object {
+                    "color": "red",
+                  }
+                }
+              >
+                
+              </span>
+            </label>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>
+            Responses: 
+            <span
+              style={
+                Object {
+                  "color": "red",
+                }
+              }
+            >
+              *
+            </span>
+          </label>
+        </td>
+        <td>
+          <div>
+            <a
+              onClick={[Function]}
+            >
+              + New 
+            </a>
+          </div>
+          <textarea
+            name="message"
+            onChange={[Function]}
+            placeholder="Enter Message"
+            value=""
+          />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input
+            type="submit"
+            value="Submit"
+          />
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+`;
+
+exports[`renders without crashing with params 1`] = `
+<div>
+  <div>
+    <label
+      name="errorMessage"
+    >
+      <span
+        style={
+          Object {
+            "color": "red",
+          }
+        }
+      >
+        
+      </span>
+    </label>
+  </div>
+  <form
+    name="addIntentForm"
+    onSubmit={[Function]}
+  >
+    <table
+      className="sc-bdVaJa eiydml"
+    >
+      <tr>
+        <td>
+          <label>
+            Intent ID: 
+            <span
+              style={
+                Object {
+                  "color": "red",
+                }
+              }
+            >
+              *
+            </span>
+          </label>
+        </td>
+        <td>
+          <div>
+            <input
+              onChange={[Function]}
+              type="text"
+              value="test"
+            />
+            <label
+              name="errorMessage"
+            >
+              <span
+                style={
+                  Object {
+                    "color": "red",
+                  }
+                }
+              >
+                
+              </span>
+            </label>
+          </div>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <label>
+            Responses: 
+            <span
+              style={
+                Object {
+                  "color": "red",
+                }
+              }
+            >
+              *
+            </span>
+          </label>
+        </td>
+        <td>
+          <div>
+            <a
+              onClick={[Function]}
+            >
+              + New 
+            </a>
+          </div>
+          <textarea
+            name="message"
+            onChange={[Function]}
+            placeholder="Enter Message"
+            value=""
+          />
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <input
+            type="submit"
+            value="Submit"
+          />
+        </td>
+      </tr>
+    </table>
+  </form>
+</div>
+`;

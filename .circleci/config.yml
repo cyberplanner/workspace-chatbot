@@ -7,7 +7,7 @@ jobs:
   build:
     docker:
       # specify the version you desire here
-      - image: circleci/node:7.10
+      - image: circleci/node:6.10
       
       # Specify service dependencies here if necessary
       # CircleCI maintains a library of pre-built images
@@ -26,14 +26,14 @@ jobs:
           # fallback to using the latest cache if no exact match is found
           - v1-dependencies-
 
-      - run: yarn install
-
       - save_cache:
           paths:
             - node_modules
           key: v1-dependencies-{{ checksum "package.json" }}
-        
-      - run: yarn test -- --output ~/repo/reports
+
+      - run: cd server && yarn install && yarn test -- --output ~/repo/reports
+
+      - run: cd ui && yarn install && yarn test
 
       - store_artifacts:
           path: ~/repo/reports

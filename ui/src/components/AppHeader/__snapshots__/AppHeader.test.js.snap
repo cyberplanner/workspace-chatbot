@@ -1,0 +1,14 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`renders without crashing 1`] = `
+<header
+  className="sc-bdVaJa ihtZGL"
+>
+  <img
+    src="Octopus-128.png"
+  />
+  <h3>
+    Ubiqutious Octo Pancake
+  </h3>
+</header>
+`;

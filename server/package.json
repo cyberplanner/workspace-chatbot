@@ -1,0 +1,75 @@
+{
+  "name": "Ubiquitous-Octo-Pancake",
+  "version": "0.0.1",
+  "description": "Build a chatbot without the boilerplate.",
+  "main": "index.js",
+  "scripts": {
+    "test": "jasmine-node spec --junitreport",
+    "start": "node index"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Capgemini-AIE/ubiquitous-octo-pancake.git"
+  },
+  "keywords": [
+    "chatbot",
+    "microsoft bot framework",
+    "cloudant",
+    "couch",
+    "LUIS.ai"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Capgemini-AIE/ubiquitous-octo-pancake/issues"
+  },
+  "homepage": "https://github.com/Capgemini-AIE/ubiquitous-octo-pancake#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "botbuilder": "^3.8.3",
+    "cloudant": "^1.8.0",
+    "config": "^1.21.0",
+    "dotenv": "^4.0.0",
+    "express": "^4.15.4",
+    "express-history-api-fallback": "^2.2.1",
+    "express-jsonschema": "^1.1.6",
+    "mock-require": "^2.0.2",
+    "nconf": "^0.8.4",
+    "node-fetch": "^1.7.1",
+    "serve-static": "^1.12.4",
+    "swagger-jsdoc": "^1.9.4",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "jasmine-node": "^1.14.5",
+    "jasmine-xml-reporter": "^1.0.6"
+  },
+  "engines": {
+    "node": "7.x"
+  },
+  "contributors": [
+    {
+      "name": "Dan Cotton",
+      "url": "https://github.com/daniel-cotton"
+    },
+    {
+      "name": "Jigna Shah",
+      "url": "https://github.com/jigna-shah"
+    },
+    {
+      "name": "Biniam Gebreyesus",
+      "url": "https://github.com/biniam23"
+    },
+    {
+      "name": "Harmelodic (Matt Smith)",
+      "url": "https://github.com/Harmelodic"
+    },
+    {
+      "name": "Ed Callow",
+      "url": "https://github.com/edcallow96"
+    },
+    {
+      "name": "James Gee",
+      "url": "https://github.com/Geeman201"
+    }
+  ]
+}

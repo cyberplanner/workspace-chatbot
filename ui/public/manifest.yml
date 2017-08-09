@@ -1,0 +1,5 @@
+applications:
+- buildpack: https://github.com/daniel-cotton/single-page-buildpack
+  name: ubiqutious-octo-pancake-ui
+  instances: 1
+  memory: 64M

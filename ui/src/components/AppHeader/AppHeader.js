@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import styled from "styled-components";
 
-import octo from "./Octopus-128.png";
+import yak from "./Yak_White.svg";
 
 const Header = styled.header`
   background-color: #455963;
@@ -13,8 +13,9 @@ const Header = styled.header`
   align-items: center;
   padding: 0em 2em;
   & > img {
-    height: 100%;
+    height: 80%;
     width: auto;
+    margin-right: 1em;
   }
 `;
 
@@ -22,8 +23,8 @@ class AppHeader extends Component {
   render() {
     return (
       <Header>
-        <img src={octo} />
-        <h3>Ubiqutious Octo Pancake</h3>
+        <img src={yak} />
+        <h3>Yak</h3>
       </Header>
     );
   }

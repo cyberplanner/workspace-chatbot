@@ -1,4 +1,5 @@
 import "whatwg-fetch";
+import jsonFetch from "./jsonFetch";
 
 const parseJSON = response => response.json();
 const conversationEndpoint = `${process.env
@@ -15,7 +16,7 @@ const checkStatus = response => {
 };
 
 export const getKnowledgeById = id => {
-  return fetch(`${conversationEndpoint}/${id}`, {})
+  return jsonFetch(`${conversationEndpoint}/${id}`, {})
     .then(checkStatus)
     .then(parseJSON);
 };

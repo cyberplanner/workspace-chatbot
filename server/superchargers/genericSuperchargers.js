@@ -1,4 +1,4 @@
-const supercharger = require('../custom_modules/module_supercharger');
+const supercharger = require('../lib/supercharger');
 
 /**
  * Structures a question that is only asked 

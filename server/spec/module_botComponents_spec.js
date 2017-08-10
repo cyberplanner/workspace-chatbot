@@ -1,4 +1,4 @@
-var botComponents = require("../custom_modules/module_botComponents");
+var botComponents = require("../lib/botComponents");
 
 describe("Test botComponents functions", function() {
 	it("Tests that the getBot() is called", function() {

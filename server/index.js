@@ -16,10 +16,10 @@ const fallback = require('express-history-api-fallback');
 // Import Custom Modules
 //=========================================================
 
-const botComponents = require('./custom_modules/module_botComponents');
-const dbcon = require('./custom_modules/module_dbConnection');
+const botComponents = require('./lib/botComponents');
+const dbcon = require('./lib/dbConnection');
 const botHandler = require('./bot.js');
-let botLogger = require('./custom_modules/module_botLogger');
+let botLogger = require('./lib/botLogger');
 
 //=========================================================
 // Import Subroutes

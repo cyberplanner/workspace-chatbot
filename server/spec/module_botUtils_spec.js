@@ -1,4 +1,4 @@
-var utils = require("../custom_modules/module_botUtils.js");
+var utils = require("../lib/botUtils.js");
 
 
 describe("processResponse should replace {}", () => {

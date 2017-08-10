@@ -55,7 +55,7 @@ mock('node-fetch', (url, options) => {
     }
 });
 
-let supercharger = require('../custom_modules/module_supercharger');
+let supercharger = require('../lib/supercharger');
 
 describe("Supercharger", function() {
 	it("should execute successfully with an entity based argument", function() {

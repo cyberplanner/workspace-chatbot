@@ -1,4 +1,4 @@
-let botUtils = require('./custom_modules/module_botUtils.js');
+let botUtils = require('./lib/botUtils.js');
 let superchargers = require('./superchargers.js')();
 
 let databases = {

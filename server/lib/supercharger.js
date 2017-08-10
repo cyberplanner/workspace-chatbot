@@ -1,5 +1,5 @@
 const fetch = require("node-fetch");
-let botUtils = require('./module_botUtils.js');
+let botUtils = require('./botUtils.js');
 
 const PORT = process.env.PORT || "3978";
 

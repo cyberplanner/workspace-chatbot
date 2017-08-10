@@ -4,7 +4,7 @@ const genericSuperchargers = require('./superchargers/genericSuperchargers');
   Supercharger registration document
 */
 const init = () => {
-  let supercharger = require('./custom_modules/module_supercharger');
+  let supercharger = require('./lib/supercharger');
   supercharger.clear()
     .then(() => {
 

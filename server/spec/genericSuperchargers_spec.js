@@ -1,5 +1,5 @@
 const genericSuperchargers = require('../superchargers/genericSuperchargers');
-const supercharger = require('../custom_modules/module_supercharger');
+const supercharger = require('../lib/supercharger');
 
 describe("Optional Question Supercharger", () => {
 

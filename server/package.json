@@ -1,28 +1,9 @@
 {
-  "name": "Ubiquitous-Octo-Pancake",
-  "version": "0.0.1",
-  "description": "Build a chatbot without the boilerplate.",
   "main": "index.js",
   "scripts": {
     "test": "jasmine-node spec --junitreport",
     "start": "node index"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/Capgemini-AIE/ubiquitous-octo-pancake.git"
-  },
-  "keywords": [
-    "chatbot",
-    "microsoft bot framework",
-    "cloudant",
-    "couch",
-    "LUIS.ai"
-  ],
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/Capgemini-AIE/ubiquitous-octo-pancake/issues"
-  },
-  "homepage": "https://github.com/Capgemini-AIE/ubiquitous-octo-pancake#readme",
   "dependencies": {
     "body-parser": "^1.17.2",
     "botbuilder": "^3.8.3",

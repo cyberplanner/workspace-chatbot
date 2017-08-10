@@ -2,13 +2,13 @@
 
 exports[`renders without crashing 1`] = `
 <header
-  className="sc-bdVaJa ihtZGL"
+  className="sc-bdVaJa itvZZM"
 >
   <img
-    src="Octopus-128.png"
+    src="Yak_White.svg"
   />
   <h3>
-    Ubiqutious Octo Pancake
+    Yak
   </h3>
 </header>
 `;

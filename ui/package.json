@@ -1,7 +1,4 @@
 {
-  "name": "ubiqutious-octo-pancake-ui",
-  "version": "0.0.1",
-  "private": true,
   "dependencies": {
     "botframework-webchat": "^0.10.6",
     "react": "^15.6.1",

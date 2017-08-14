@@ -18,7 +18,8 @@
     "node-fetch": "^1.7.1",
     "serve-static": "^1.12.4",
     "swagger-jsdoc": "^1.9.4",
-    "uuid": "^3.1.0"
+    "uuid": "^3.1.0",
+    "winston": "^2.3.1"
   },
   "devDependencies": {
     "jasmine-node": "^1.14.5",

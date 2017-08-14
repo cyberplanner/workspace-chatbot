@@ -19,6 +19,7 @@ const fallback = require('express-history-api-fallback');
 const botComponents = require('./lib/botComponents');
 const dbcon = require('./lib/dbConnection');
 const botHandler = require('./bot.js');
+const expressMiddleware = require('./lib/expressMiddleware');
 let botLogger = require('./lib/botLogger');
 
 //=========================================================
@@ -150,6 +151,7 @@ const root = `${__dirname}/public`;
 //=========================================================
 
 server.use(bodyParser.json());
+server.use(expressMiddleware.crossOrigin);
 /*server.use(restify.CORS({
   origins: process.env.CROSS_SITE_ORIGINS.split(","),
   credentials: false

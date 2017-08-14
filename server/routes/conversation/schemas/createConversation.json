@@ -51,15 +51,17 @@
 			"type": "array"
 		},
         "supercharger" : {
-            "id": {
-              "type":"string"  
-            },
-            "arguments":{
-                "items":{
-                    "type": "object"
-                },
-                "type": "array"
-            },
+			"properties": {
+				"id": {
+					"type":"string"  
+				},
+				"arguments":{
+					"items":{
+						"type": "object"
+					},
+					"type": "array"
+				}
+			},
             "required" : [
                 "id",
                 "arguments"

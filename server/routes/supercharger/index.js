@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../../logger.js');
 const expressJSONSchema = require('express-jsonschema').validate;
 const validator = {
 	body: (schema) => {
@@ -35,7 +36,7 @@ superchargerRouter.get('/',
 	            res.json(doc);
 	        })
 	        .catch(err => {
-	            console.log("Error :"+JSON.stringify(err))
+	            logger.error(err);
 	            res.status(err.statusCode).json({error: err.reason});
 	        });
     });
@@ -70,7 +71,7 @@ superchargerRouter.delete('/all',
 					_rev: row.value.rev
 				});
 			});
-			console.log(JSON.stringify(req));
+			logger.debug(JSON.stringify(req));
 			return db.bulk({
 				docs: req
 			});
@@ -81,7 +82,7 @@ superchargerRouter.delete('/all',
 			});
         })
         .catch(err => {
-            console.log("Error :" + JSON.stringify(err))
+            logger.error(err);
             res.status(err.statusCode).json({error: err.reason});
         });
     });
@@ -112,7 +113,7 @@ superchargerRouter.get('/:id',
             res.json(doc);
         })
         .catch(err => {
-            console.log("Error :"+JSON.stringify(err))
+            logger.error(err);
             res.status(err.statusCode).json({error: err.reason});
         });
     });
@@ -149,7 +150,7 @@ superchargerRouter.post('/', [
 	            res.json({message: "Successfully saved supercharger."});
 	        })
 	        .catch(error => {
-	            console.log(error);  
+	            logger.error(error);
 	            res.status(500).json({error: error.reason});
 	        });
 	    }]);
@@ -190,12 +191,12 @@ superchargerRouter.post('/', [
   		           res.json(200, {message: "Successfully updated supercharger."});
   		      })
   		      .catch(error => {
-  		            console.error(error);  
+  		            logger.error(error);
   		            res.json(500, {error: error.reason});
   		      });
         })
         .catch(err => {
-            console.log("Error :"+JSON.stringify(err))
+            logger.error(err);
             res.status(err.statusCode).json({error: err.reason});
         });		      
     }]);

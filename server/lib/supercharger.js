@@ -1,5 +1,6 @@
 const fetch = require("node-fetch");
 let botUtils = require('./botUtils.js');
+const logger = require('../logger.js');
 
 const PORT = process.env.PORT || "3978";
 
@@ -73,7 +74,7 @@ class Parameter {
 }
 
 const execute = (session, args, next, conversationDoc, skip) => {
-  console.log(conversationDoc);
+  logger.debug(conversationDoc);
   let customArguments = Object.keys(conversationDoc.supercharger.arguments)
     .map(key => {
       let value = conversationDoc.supercharger.arguments[key];
@@ -108,12 +109,12 @@ const execute = (session, args, next, conversationDoc, skip) => {
       return result;
     }, {});
   let supercharger = superchargers[conversationDoc.supercharger.id];
-  console.log("[SUPERCHARGER] Retrieving supercharger with ID: " + conversationDoc.supercharger.id);
+  logger.debug("[SUPERCHARGER] Retrieving supercharger with ID: " + conversationDoc.supercharger.id);
   if (typeof supercharger === "function") {
-    console.log("[SUPERCHARGER] Executing.");
+    logger.debug("[SUPERCHARGER] Executing.");
     supercharger(session, args, next, customArguments, skip);
   } else {
-    console.log("[SUPERCHARGER] Failed to execute. No function available.");
+    logger.debug("[SUPERCHARGER] Failed to execute. No function available.");
   }
   
 };
@@ -127,7 +128,7 @@ const clear = () => {
 module.exports = {
   init: builder => botBuilder = builder,
   register: detail => {
-    console.log("Registering...");
+    logger.debug("Registering...");
     detail.addToDB();
     superchargers[detail.id] = detail.function;
   },

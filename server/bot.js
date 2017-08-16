@@ -1,5 +1,6 @@
 let botUtils = require('./lib/botUtils.js');
 let superchargers = require('./superchargers.js')();
+const logger = require('./logger.js');
 
 let databases = {
     conversation: null,
@@ -11,7 +12,7 @@ let defaultResponse = {
 };
 
 process.on('unhandledRejection', function(reason, p){
-    console.log("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
+    logger.warn("Possibly Unhandled Rejection at: Promise ", p, " reason: ", reason);
     // application specific logging here
 });
 
@@ -29,11 +30,11 @@ const setCurrentConversation = (id, session, args, next) => {
       session.userData.conversation = {
         current: conversation
       };
-      console.log("[CONVERSATION] Setting current");
+      logger.debug("[CONVERSATION] Setting current");
       next();
     })
     .catch(error => {
-      console.log("[CONVERSATION] Failed to set current");
+      logger.error("[CONVERSATION] Failed to set current", error);
       next();
     });
 }
@@ -50,13 +51,13 @@ const setCurrentConversation = (id, session, args, next) => {
  * @param {Object} conversationData 
  */
 const progressConversation = (session, args, next, conversationData) => {
-  console.log("[PROGRESSION] INTENT: " + args.intent);
+  logger.debug("[PROGRESSION] INTENT: " + args.intent);
   let chosenOne = conversationData.current.children.find(child => child.intentId === "*" || (child.intentId === args.intent && botUtils.checkConditions(child, session, args, next)));
   if (chosenOne) {
-    console.log("[PROGRESSION] Valid node present.");
+    logger.debug("[PROGRESSION] Valid node present.");
     setCurrentConversation(chosenOne.nodeId, session, args, next);
   } else {
-    console.log("[PROGRESSION] No valid node present.");
+    logger.debug("[PROGRESSION] No valid node present.");
     checkForFallbacks(session, args, next, conversationData);
   }
 }
@@ -74,19 +75,19 @@ const checkForFallbacks = (session, args, next, conversationData) => {
   // Get the root of the conversation
   return databases.conversation.get('root')
     .then(conversation => {
-      console.log("[FALLBACK] Retrieved root.");
+      logger.debug("[FALLBACK] Retrieved root.");
       // Check the root node for a fallback.
       let chosenOne = conversation.children.find(child => {
         return (child.intentId === args.intent) && botUtils.checkConditions(child, session, args, next);
       });
       if (chosenOne) {
-        console.log("[FALLBACK] Direct child of root is valid. Using.");
+        logger.debug("[FALLBACK] Direct child of root is valid. Using.");
         // We have a viable path from the root - use it.
         setCurrentConversation(chosenOne.nodeId, session, args, next);
       } else {
-        console.log("[FALLBACK] Direct child of root is NOT valid.");
+        logger.debug("[FALLBACK] Direct child of root is NOT valid.");
         /*
-          We we're unable to find a good option on the 'root' node. 
+          We're unable to find a good option on the 'root' node.
           So let's inspect it's children for a good option.
         */
         let replied = false;
@@ -103,7 +104,7 @@ const checkForFallbacks = (session, args, next, conversationData) => {
                   return (child.intentId === args.intent) && botUtils.checkConditions(child, session, args, next); 
                 });
                 if (chosenOne && !replied) {
-                  console.log("[CONVERSATION] Retrieved fallback by children.");
+                  logger.debug("[CONVERSATION] Retrieved fallback by children.");
                   replied = true;
                   // If we have a response for the given intent.... USE IT.
                   setCurrentConversation(chosenOne.nodeId, session, args, () => {
@@ -116,7 +117,7 @@ const checkForFallbacks = (session, args, next, conversationData) => {
                 }
               })
               .catch(err => {
-                console.log("[ERROR] Loading child fallback node.");
+                logger.error("[ERROR] Loading child fallback node.", err);
                 resolve();
               });
           }));
@@ -129,14 +130,14 @@ const checkForFallbacks = (session, args, next, conversationData) => {
               next();
             }
           }, () => {
-            console.log("Check for fallbacks rejected.");
+            logger.debug("Check for fallbacks rejected.");
             // If we've not already replied - move on.
             next();
           })
       }
     })
     .catch(error => {
-      console.log("[ERROR] Loading root node for fallback.");
+      logger.error("[ERROR] Loading root node for fallback.", error);
       next();
     });
 
@@ -157,17 +158,17 @@ const conversationManager = (session, args, next) => {
     session.userData.summary = {};
   }
   if (!conversationData) {
-    console.log("[CONVERSATION] RESETTING TO ROOT");
+    logger.debug("[CONVERSATION] RESETTING TO ROOT");
     setCurrentConversation('root', session, args, next);
   } else {
     if (conversationData.current.children.length < 1) {
-      console.log("[CONVERSATION] RESETTING TO ROOT AND PROGRESSING");
+      logger.debug("[CONVERSATION] RESETTING TO ROOT AND PROGRESSING");
       setCurrentConversation('root', session, args, response => {
         conversationData = session.userData.conversation;
         progressConversation(session, args, next, conversationData);
       });
     } else {
-      console.log("[CONVERSATION] PROGRESSING BASED ON INTENT");
+      logger.debug("[CONVERSATION] PROGRESSING BASED ON INTENT");
       progressConversation(session, args, next, conversationData);
     }
 
@@ -184,7 +185,7 @@ const conversationManager = (session, args, next) => {
 const respondFromKnowledge = (session, knowledgeID) => {
   databases.knowledge.get(knowledgeID)
       .then(result => {
-        console.log("[RESPONDER] RESPONDING - SUCCESS");
+        logger.debug("[RESPONDER] RESPONDING - SUCCESS");
         if (result.responses) { 
           result.responses.forEach(function(response) { 
             session.send(botUtils.processResponse(session, response));
@@ -194,7 +195,7 @@ const respondFromKnowledge = (session, knowledgeID) => {
         }
       })
       .catch(error => {
-        console.log("[RESPONDER] RESPONDING - FAILED GETTING KNOWLEDGE FROM DB");
+        logger.error("[RESPONDER] RESPONDING - FAILED GETTING KNOWLEDGE FROM DB", error);
         session.send(botUtils.processResponse(session, defaultResponse.responses[0]));
       });
 }
@@ -207,7 +208,7 @@ const respondFromKnowledge = (session, knowledgeID) => {
  * @param {*} next 
  */
 const skip = (session, args, next) => {
-  console.log("[SKIP] Requested.");
+  logger.debug("[SKIP] Requested.");
   progressConversation(session, args, () => {
     responder(session, args, next);
   }, session.userData.conversation);
@@ -222,25 +223,25 @@ const skip = (session, args, next) => {
  * @param {Function} next 
  */
 const responder = (session, args, next) => {
-  console.log("[RESPONDER] ENTERED RESPONDER");
+  logger.debug("[RESPONDER] ENTERED RESPONDER");
   let conversationData = session.userData.conversation;
   if (session.message.summary) {
     try {
       session.userData.summary = Object.assign({}, session.userData.summary, JSON.parse(session.message.summary));
     } catch (error) {
-
+      logger.error("[RESPONDER] RESPONDING - Failed setting userdata summary", error);
     }
   }
   if (conversationData.current) {
     if (conversationData.current.supercharger && conversationData.current.supercharger) {
-      console.log("[RESPONDER] Calling Supercharger.");
+      logger.debug("[RESPONDER] Calling Supercharger.");
       superchargers.execute(session, args, next, conversationData.current, skip, conversationData);
     } else {
-      console.log("[RESPONDER] Responding from knowledge");
+      logger.debug("[RESPONDER] Responding from knowledge");
       respondFromKnowledge(session, conversationData.current.message);
     }
   } else {
-    console.log("[RESPONDER] RESPONDING - NO INTENT");
+    logger.debug("[RESPONDER] RESPONDING - NO INTENT");
     session.send(defaultResponse.responses[0]);
   }
 };

@@ -1,7 +1,7 @@
 let db;
 let Cloudant = require('cloudant');
 let cloudant;
-let logger = require('../logger.js');
+const logger = require('../logger.js');
 
 const dbCredentials = {
     url : process.env.CLOUDANT_BASIC_AUTH_URL

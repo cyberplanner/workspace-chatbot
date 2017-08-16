@@ -1,4 +1,5 @@
 const supercharger = require('../lib/supercharger');
+const logger = require('../logger.js');
 
 /**
  * Structures a question that is only asked 
@@ -17,11 +18,11 @@ const optionalQuestion = new supercharger.Detail(
   // Logic for supercharger
   (session, args, next, customArguments, skip) => {
     if (session.userData.summary[customArguments.KEY]) {
-      console.log("[OPTIONAL-Q] DATA EXISTING: " + session.userData.summary[customArguments.KEY]);
+      logger.debug("[OPTIONAL-Q] DATA EXISTING: " + session.userData.summary[customArguments.KEY]);
       session.conversationData.skip = customArguments.KEY;
       skip(session, args, next);
     } else {
-      console.log("[OPTIONAL-Q] DATA DOESN'T EXIST");
+      logger.debug("[OPTIONAL-Q] DATA DOESN'T EXIST");
       session.send(customArguments.QUESTION);
     }
   },

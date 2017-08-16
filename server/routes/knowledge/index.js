@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../../logger.js');
 
 const expressJSONSchema = require('express-jsonschema').validate;
 const validator = {
@@ -47,7 +48,7 @@ knowledgeRouter.post('/:id',
         res.json(200, { message: "Successfully saved knowledge." });
       })
       .catch(error => {
-        console.log(error);
+        logger.error(error);
         res.json(500, { error: error.reason });
       });
   });
@@ -78,7 +79,7 @@ knowledgeRouter.post('/',
         res.json(200, { message: "Successfully saved knowledge.", id: db._id });
       })
       .catch(error => {
-        console.log(error);
+        logger.error(error);
         res.json(500, { error: error.reason });
       });
   });
@@ -109,7 +110,7 @@ knowledgeRouter.post('/',
         res.json(200, { message: "Successfully saved knowledge.", id: db._id });
       })
       .catch(error => {
-        console.log(error);
+        logger.error(error);
         res.json(500, { error: error.reason });
       });
   });
@@ -140,7 +141,7 @@ knowledgeRouter.get('/:id',
         res.json(doc);
       })
       .catch(err => {
-        console.log("Error :" + JSON.stringify(err))
+        logger.error(err);
         res.status(err.statusCode).json({ error: err.reason });
       });
   });
@@ -175,7 +176,7 @@ knowledgeRouter.delete('/:id',
         });
       })
       .catch(err => {
-        console.log("Error :" + JSON.stringify(err))
+        logger.error(err);
         res.status(err.statusCode).json({ error: err.reason });
       });
   });
@@ -200,7 +201,7 @@ knowledgeRouter.get('/',
         res.json(doc);
       })
       .catch(err => {
-        console.log("Error :" + JSON.stringify(err))
+        logger.error(err);
         res.status(err.statusCode).json({ error: err.reason });
       });
   });
@@ -235,12 +236,12 @@ knowledgeRouter.put('/:id',
             res.json(200, { message: "Successfully updated knowledge." });
           })
           .catch(error => {
-            console.error(error);
+            logger.error(error);
             res.json(500, { error: error.reason });
           });
       })
       .catch(err => {
-        console.log("Error :" + JSON.stringify(err))
+        logger.error(err)
         res.status(err.statusCode).json({ error: err.reason });
       });
   });

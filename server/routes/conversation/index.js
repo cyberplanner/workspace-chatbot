@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../../logger.js');
 
 const expressJSONSchema = require('express-jsonschema').validate;
 const validator = {
@@ -36,7 +37,7 @@ conversationRouter.get('/',
 	            res.json(doc);
 	        })
 	        .catch(err => {
-	            console.log("Error :"+JSON.stringify(err))
+	            logger.error("Error processing get:", err)
 	            res.status(err.statusCode).json({error: err.reason});
 	        });
     });
@@ -66,7 +67,7 @@ conversationRouter.get('/:id',
             res.json(doc);
         })
         .catch(err => {
-            console.log("Error :"+JSON.stringify(err))
+            logger.error("Error processing id: ", err)
             res.status(err.statusCode).json({error: err.reason});
         });
     });
@@ -101,7 +102,7 @@ conversationRouter.post('/', [
 				res.json(200, {message: "Successfully saved conversation.", id: doc.id});
 			})
 			.catch(error => {
-				console.log(error);  
+				logger.error("Error processing post: ", error);
 				res.json(500, {error: error.reason});
 			});
 		}]);
@@ -142,12 +143,12 @@ conversationRouter.post('/', [
   		           res.json(200, {message: "Successfully updated conversation."});
   		      })
   		      .catch(error => {
-  		            console.error(error);  
+  		            logger.error(error);
   		            res.json(500, {error: error.reason});
   		      });
         })
         .catch(err => {
-            console.log("Error :"+JSON.stringify(err))
+            logger.error("Error processing nodeId :", err)
             res.status(err.statusCode).json({error: err.reason});
         });		      
     }]);
@@ -182,7 +183,7 @@ conversationRouter.delete('/:id',
 			});
 		})
         .catch(err => {
-            console.log("Error :"+JSON.stringify(err))
+            logger.error("Error processing delete id:", err)
             res.status(err.statusCode).json({error: err.reason});
         });
     });

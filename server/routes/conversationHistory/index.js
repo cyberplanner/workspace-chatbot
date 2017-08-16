@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../../logger.js');
 
 const expressJSONSchema = require('express-jsonschema').validate;
 const validator = {
@@ -47,7 +48,7 @@ conversationHistoryRouter.post('/:id', [
         res.json(200, { message: "Successfully saved Conversation History." });
       })
       .catch(error => {
-        console.log(error);
+        logger.error("Error processing post id: ", error);
         res.json(500, { error: error.reason });
       });
 }]);
@@ -78,7 +79,7 @@ conversationHistoryRouter.post('/', [
         res.json(200, { message: "Successfully saved Conversation History.", id: db._id });
       })
       .catch(error => {
-        console.error(error);
+        logger.error("Error processing post", error);
         res.json(500, { error: error.reason });
       });
 }]);
@@ -109,7 +110,7 @@ conversationHistoryRouter.get('/:id',
         res.json(doc);
       })
       .catch(err => {
-        console.error("Error :", err)
+        logger.error("Error processing get id: ", err)
         res.status(err.statusCode).json({ error: err.reason });
       });
   });
@@ -135,7 +136,7 @@ conversationHistoryRouter.get('/',
         res.json(doc);
       })
       .catch(err => {
-        console.error("Error :", err)
+        logger.error("Error processing get: ", err)
         res.status(err.statusCode).json({ error: err.reason });
       });
   });
@@ -170,12 +171,12 @@ conversationHistoryRouter.put('/:id', [
             res.json(200, { message: "Successfully updated Conversation History." });
           })
           .catch(error => {
-            console.error(error);
+            logger.error(error);
             res.json(500, { error: error.reason });
           });
       })
       .catch(err => {
-        console.log("Error :" + err)
+        logger.error(err)
         res.status(err.statusCode).json({ error: err.reason });
       });
   }]);

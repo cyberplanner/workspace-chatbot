@@ -2,6 +2,7 @@
 // Import NPM modules
 //=========================================================
 require('dotenv').config();
+const logger = require('./logger.js');
 
 const config = require('config');
 const swaggerJSDoc = require('swagger-jsdoc');
@@ -77,7 +78,7 @@ let botMiddleware = [
         recieve: false,
         send: true,
         middleware: (event, next) => {
-            console.log("[SEND] " + event.text);
+            logger.debug("[SEND] " + event.text);
             next();
         }
     },
@@ -85,7 +86,7 @@ let botMiddleware = [
         recieve: true,
         send: false,
         middleware: (event, next) => {
-            console.log("[RECIEVE] " + event.message.text);
+            logger.debug("[RECIEVE] " + event.message.text);
             next();
         }
     },
@@ -201,7 +202,7 @@ server.use((err, req, res, next) => {
     let responseData;
 
     if (err.name === 'JsonSchemaValidation') {
-        console.log(err.message);
+        logger.error(err.message);
         res.status(400);
 
         // Format the response body
@@ -224,5 +225,5 @@ server.use((err, req, res, next) => {
 //=========================================================
 
 server.listen(process.env.port || process.env.PORT || 3978, function () {
-    console.log('%s listening to %s', server.name, server.url);
+    logger.info('%s listening to %s', server.name, server.url);
 });

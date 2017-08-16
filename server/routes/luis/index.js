@@ -1,4 +1,5 @@
 const express = require('express');
+const logger = require('../../logger.js');
 
 const expressJSONSchema = require('express-jsonschema').validate;
 const validator = {
@@ -33,7 +34,7 @@ const publishData = {
 }
 
 function sendRequest(requestOptions, endpoint) {
-    console.log("url :"+endpoint+requestOptions.path)
+    logger.debug("url :"+endpoint+requestOptions.path)
     return fetch(endpoint + requestOptions.path, {
             body: requestOptions.body,
             method: requestOptions.method,

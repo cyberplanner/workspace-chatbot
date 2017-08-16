@@ -1,3 +1,4 @@
+const logger = require('../logger.js');
 
 let databases = {
     conversationHistory: null,
@@ -12,7 +13,7 @@ let databases = {
  * @param {Function} next
  */
 const conversationLogger = (session, args, next) => { 
-  console.log("[LOGGER] LOGGING CONVERSATION");
+  logger.debug("[BOTLOGGER] Logging conversation");
   let conversationId = session.message.address.conversation.id;
   let text = session.message.text;
   updateConversationHistory(conversationId, text, "user");
@@ -33,14 +34,14 @@ const updateConversationHistory = (conversationId, text, user) => {
       });
       databases.conversationHistory.insert(result)
         .then(result => {
-          console.log("[LOGGER] Sucessfully updated Conversation History");
+          logger.debug("[BOTLOGGER] Sucessfully updated Conversation History");
         }).catch(error => {
-          console.error("[LOGGER] There was an unexpected error updating the Conversation History, ", error);
+          logger.error("[BOTLOGGER] There was an unexpected error updating the Conversation History, ", error);
         });
     }).catch(error => {
       if (!error.error === "not_found") {
         // Unexpected error, log it.
-        console.error("[LOGGER] There was an unexpected error retrieveing the Conversation History, ", error);
+        logger.error("[BOTLOGGER] There was an unexpected error retrieveing the Conversation History, ", error);
       }
       // Entry doesn't exist, create it.
       createNewConversationHistory(conversationId, text, "user");
@@ -53,9 +54,9 @@ const updateConversationHistory = (conversationId, text, user) => {
 const createNewConversationHistory = (conversationId, text, user) => { 
   databases.conversationHistory.insert({_id: conversationId, conversationHistory:[{text, user}]})
       .then(result => { 
-        console.log("[LOGGER] Conversation History created.");
+        logger.debug("[BOTLOGGER] Conversation History created.");
       }).catch(error => {
-        console.error("[LOGGER] There was an error creating the Conversation History, ", error);
+        logger.error("[BOTLOGGER] There was an error creating the Conversation History, ", error);
       });
 }
 

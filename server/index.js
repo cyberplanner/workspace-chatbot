@@ -42,6 +42,10 @@ const convDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_DB_NAME);
 const superchargerDB = dbcon.getConnection(process.env.CLOUDANT_SUPERCHARGER_DB_NAME);
 const conversationHistoryDB = dbcon.getConnection(process.env.CLOUDANT_CONVERSATION_HISTORY_DB_NAME);
 
+// Run database bootstrapping
+const databaseBootstrap = require('./lib/database/bootstrap.js');
+databaseBootstrap(knowledgeDB, convDB);
+
 //=========================================================
 // Setup Chat Logger by providing History DB
 //=========================================================

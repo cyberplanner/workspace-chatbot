@@ -32,6 +32,6 @@ export const getClosedLists = () => {
   return jsonFetch(`${luisEndpoint}/closed-lists`, {})
     .then(checkStatus)
     .then(parseJSON)
-    .then(results => results.Result);
+    .then(results => results);
 };
 

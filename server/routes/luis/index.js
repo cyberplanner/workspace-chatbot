@@ -142,6 +142,34 @@ luisRouter.get('/entities', (req,res) => {
 
 
 /**
+ * @swagger
+ * /luis/closed-lists:
+ *   get:
+ *     description: Returns all closedlists
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: not found
+ */
+luisRouter.get('/closed-lists', (req,res) => {
+    let options = Object.assign({
+            method: "GET",
+            path: `${luisAuthCredentials.appId}/versions/${luisAuthCredentials.appVersion}/closedlists`,
+            headers: {
+                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+            }
+    });      
+    sendRequest(options,luisAuthCredentials.endpointV2)
+    .then(data => {
+        res.json(data);
+    }).catch(error => {
+        res.json(error);
+    });
+});
+
+
+/**
 * @swagger
 * /luis/entityExtractor:
 *   post:

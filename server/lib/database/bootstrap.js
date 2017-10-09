@@ -3,6 +3,13 @@ const logger = require('../../logger.js');
 const conversationRoot = require("./assets/conversation_root.json");
 const knowledgeWelcome = require("./assets/knowledge_welcome.json");
 
+/**
+ * Bootstraps the provided "knowledge"/"conversation"
+ * databases by populating their "root" documents
+ * if not already provided.
+ * @param {CloudantDB} knowledge The knowledge cloudant database object.
+ * @param {CloudantDB} conversation The Conversation cloudant database object.
+ */
 module.exports = (knowledge, conversation) => {
   // Attempt get conversation root from DB.
   conversation.get(conversationRoot._id) 

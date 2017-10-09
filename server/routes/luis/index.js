@@ -1,55 +1,54 @@
-const express = require('express');
-const logger = require('../../logger.js');
+const express = require("express");
+const logger = require("../../logger.js");
 
-const expressJSONSchema = require('express-jsonschema').validate;
+const expressJSONSchema = require("express-jsonschema").validate;
 const validator = {
-	body: (schema) => {
-		return expressJSONSchema({
-			body: schema
-		});
-	}
-}
+  body: schema => {
+    return expressJSONSchema({
+      body: schema
+    });
+  }
+};
 // Setup Router
 const luisRouter = express.Router();
 
 // Import Fetch
 const fetch = require("node-fetch");
 
-const createIntentSchema = require('./schemas/createIntent.json');
-const createEntityExtractorSchema = require('./schemas/createEntityExtractor.json');
-const createClosedListEntitySchema = require('./schemas/createClosedListEntity.json');
-const createUtteranceSchema = require('./schemas/createUtterance.json');
+const createIntentSchema = require("./schemas/createIntent.json");
+const createEntityExtractorSchema = require("./schemas/createEntityExtractor.json");
+const createClosedListEntitySchema = require("./schemas/createClosedListEntity.json");
+const createUtteranceSchema = require("./schemas/createUtterance.json");
 
 const luisAuthCredentials = {
-    "endpoint":process.env.LUIS_ENDPOINT,
-    "endpointV2":process.env.LUIS_ENDPOINT_V2,
-    "appId": process.env.LUIS_APP_ID,
-    "programmaticApiKey": process.env.LUIS_PROGRAMMATIC_API_KEY,
-    "appVersion": process.env.LUIS_APP_VERSION
+  endpoint: process.env.LUIS_ENDPOINT,
+  endpointV2: process.env.LUIS_ENDPOINT_V2,
+  appId: process.env.LUIS_APP_ID,
+  programmaticApiKey: process.env.LUIS_PROGRAMMATIC_API_KEY,
+  appVersion: process.env.LUIS_APP_VERSION
 };
 
 const publishData = {
-   "versionId": "0.1",
-   "isStaging": false
-}
+  versionId: "0.1",
+  isStaging: false
+};
 
 function sendRequest(requestOptions, endpoint) {
-    logger.debug("url :"+endpoint+requestOptions.path)
-    return fetch(endpoint + requestOptions.path, {
-            body: requestOptions.body,
-            method: requestOptions.method,
-            headers: requestOptions.headers
-        })
-        .then(function(response) { 
-            if (response.status >= 200 && response.status < 300) {
-                return response.json();
-            }
+  logger.debug("url :" + endpoint + requestOptions.path);
+  return fetch(endpoint + requestOptions.path, {
+    body: requestOptions.body,
+    method: requestOptions.method,
+    headers: requestOptions.headers
+  }).then(function(response) {
+    if (response.status >= 200 && response.status < 300) {
+      return response.json();
+    }
 
-            throw new Error("Failed HTTP request " + response.status + " " + response.statusText);
-           
-        });
+    throw new Error(
+      "Failed HTTP request " + response.status + " " + response.statusText
+    );
+  });
 }
-
 
 /**
  * @swagger
@@ -62,23 +61,23 @@ function sendRequest(requestOptions, endpoint) {
  *       404:
  *          description: not found
  */
-luisRouter.get('/intents', (req,res) => {
-    let options = Object.assign({
-            method: "GET",
-            path: luisAuthCredentials.appId + "/intents",
-            headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-            }
-    });    
-    
-    sendRequest(options,luisAuthCredentials.endpoint)
+luisRouter.get("/intents", (req, res) => {
+  let options = Object.assign({
+    method: "GET",
+    path: luisAuthCredentials.appId + "/intents",
+    headers: {
+      "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+    }
+  });
+
+  sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(error);
+      res.json(data);
+    })
+    .catch(error => {
+      res.json(error);
     });
 });
-
 
 /**
 * @swagger
@@ -91,26 +90,28 @@ luisRouter.get('/intents', (req,res) => {
 *       500:
 *         description: Internal error
 */
-luisRouter.post('/intents', [validator.body(createIntentSchema),
-    (req,res) => {
+luisRouter.post("/intents", [
+  validator.body(createIntentSchema),
+  (req, res) => {
     let options = Object.assign({
-          body: JSON.stringify(req.body),
-          method: "POST",
-          path: luisAuthCredentials.appId + "/intents",
-          headers: {
-              "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-          }
-    }); 
-        
-    sendRequest(options,luisAuthCredentials.endpoint)
-    .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(500, {error: error.reason});
+      body: JSON.stringify(req.body),
+      method: "POST",
+      path: luisAuthCredentials.appId + "/intents",
+      headers: {
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+      }
     });
-}]);
 
+    sendRequest(options, luisAuthCredentials.endpoint)
+      .then(data => {
+        res.json(data);
+      })
+      .catch(error => {
+        res.json(500, { error: error.reason });
+      });
+  }
+]);
 
 /**
  * @swagger
@@ -123,23 +124,23 @@ luisRouter.post('/intents', [validator.body(createIntentSchema),
  *       404:
  *          description: not found
  */
-luisRouter.get('/entities', (req,res) => {
-    let options = Object.assign({
-            method: "GET",
-            path: luisAuthCredentials.appId + "/entities",
-            headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-            }
-    });    
-    
-    sendRequest(options,luisAuthCredentials.endpoint)
+luisRouter.get("/entities", (req, res) => {
+  let options = Object.assign({
+    method: "GET",
+    path: luisAuthCredentials.appId + "/entities",
+    headers: {
+      "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+    }
+  });
+
+  sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(error);
+      res.json(data);
+    })
+    .catch(error => {
+      res.json(error);
     });
 });
-
 
 /**
 * @swagger
@@ -152,26 +153,32 @@ luisRouter.get('/entities', (req,res) => {
 *       500:
 *         description: Internal error
 */
-luisRouter.post('/entityExtractor', [validator.body(createEntityExtractorSchema),
-    (req,res) => {
+luisRouter.post("/entityExtractor", [
+  validator.body(createEntityExtractorSchema),
+  (req, res) => {
     let options = Object.assign({
-          body: JSON.stringify(req.body),
-          method: "POST",
-          path: luisAuthCredentials.appId+/versions/+luisAuthCredentials.appVersion+"/entities",
-          headers: {
-              "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-          }
-    }); 
-        
-    sendRequest(options,luisAuthCredentials.endpointV2)
-    .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(500, {error: error.reason});
+      body: JSON.stringify(req.body),
+      method: "POST",
+      path:
+        luisAuthCredentials.appId +
+        /versions/ +
+        luisAuthCredentials.appVersion +
+        "/entities",
+      headers: {
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+      }
     });
-}]);
 
+    sendRequest(options, luisAuthCredentials.endpointV2)
+      .then(data => {
+        res.json(data);
+      })
+      .catch(error => {
+        res.json(500, { error: error.reason });
+      });
+  }
+]);
 
 /**
 * @swagger
@@ -184,26 +191,32 @@ luisRouter.post('/entityExtractor', [validator.body(createEntityExtractorSchema)
 *       500:
 *         description: Internal error
 */
-luisRouter.post('/closedListEntity', [validator.body(createClosedListEntitySchema),
-    (req,res) => {
+luisRouter.post("/closedListEntity", [
+  validator.body(createClosedListEntitySchema),
+  (req, res) => {
     let options = Object.assign({
-          body: JSON.stringify(req.body),
-          method: "POST",
-          path: luisAuthCredentials.appId+/versions/+luisAuthCredentials.appVersion+"/closedlists",
-          headers: {
-              "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-          }
-    }); 
-        
-    sendRequest(options,luisAuthCredentials.endpointV2)
-    .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(500, {error: error.reason});
+      body: JSON.stringify(req.body),
+      method: "POST",
+      path:
+        luisAuthCredentials.appId +
+        /versions/ +
+        luisAuthCredentials.appVersion +
+        "/closedlists",
+      headers: {
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+      }
     });
-}]);
 
+    sendRequest(options, luisAuthCredentials.endpointV2)
+      .then(data => {
+        res.json(data);
+      })
+      .catch(error => {
+        res.json(500, { error: error.reason });
+      });
+  }
+]);
 
 /**
 * @swagger
@@ -221,26 +234,33 @@ luisRouter.post('/closedListEntity', [validator.body(createClosedListEntitySchem
 *       500:
 *         description: Internal error
 */
-luisRouter.put('/closedListEntity/:id', [validator.body(createClosedListEntitySchema),
-    (req,res) => {
+luisRouter.put("/closedListEntity/:id", [
+  validator.body(createClosedListEntitySchema),
+  (req, res) => {
     let options = Object.assign({
-          body: JSON.stringify(req.body),
-          method: "PUT",
-          path: luisAuthCredentials.appId+/versions/+luisAuthCredentials.appVersion+"/closedlists/"+req.params.id,
-          headers: {
-              "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-          }
-    }); 
-        
-    sendRequest(options,luisAuthCredentials.endpointV2)
-    .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(500, {error: error.reason});
+      body: JSON.stringify(req.body),
+      method: "PUT",
+      path:
+        luisAuthCredentials.appId +
+        /versions/ +
+        luisAuthCredentials.appVersion +
+        "/closedlists/" +
+        req.params.id,
+      headers: {
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+      }
     });
-}]);
 
+    sendRequest(options, luisAuthCredentials.endpointV2)
+      .then(data => {
+        res.json(data);
+      })
+      .catch(error => {
+        res.json(500, { error: error.reason });
+      });
+  }
+]);
 
 /**
 * @swagger
@@ -253,27 +273,29 @@ luisRouter.put('/closedListEntity/:id', [validator.body(createClosedListEntitySc
 *       500:
 *         description: Internal error
 */
-luisRouter.post('/utterance', [validator.body(createUtteranceSchema),
-    (req,res) => {
+luisRouter.post("/utterance", [
+  validator.body(createUtteranceSchema),
+  (req, res) => {
     let options = Object.assign({
-          body: JSON.stringify(req.body),
-          method: "POST",
-          path: luisAuthCredentials.appId + "/example",
-          headers: {
-              "Content-Type": "application/json",
-              "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-          }
-    }); 
-        
-    sendRequest(options,luisAuthCredentials.endpoint)
-    .then(data => {
-        res.json(data);
-    }).catch(error => {
-        console.log(error);
-        res.json(500, {error: error.reason});
+      body: JSON.stringify(req.body),
+      method: "POST",
+      path: luisAuthCredentials.appId + "/example",
+      headers: {
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+      }
     });
-}]);
 
+    sendRequest(options, luisAuthCredentials.endpoint)
+      .then(data => {
+        res.json(data);
+      })
+      .catch(error => {
+        console.log(error);
+        res.json(500, { error: error.reason });
+      });
+  }
+]);
 
 /**
  * @swagger
@@ -286,23 +308,23 @@ luisRouter.post('/utterance', [validator.body(createUtteranceSchema),
  *       404:
  *          description: not found
  */
-luisRouter.get('/models', (req,res) => {
-    let options = Object.assign({
-            method: "GET",
-            path: luisAuthCredentials.appId + "/models",
-            headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-            }
-    });    
-    
-    sendRequest(options,luisAuthCredentials.endpoint)
+luisRouter.get("/models", (req, res) => {
+  let options = Object.assign({
+    method: "GET",
+    path: luisAuthCredentials.appId + "/models",
+    headers: {
+      "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+    }
+  });
+
+  sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(error);
+      res.json(data);
+    })
+    .catch(error => {
+      res.json(error);
     });
 });
-
 
 /**
 * @swagger
@@ -310,24 +332,24 @@ luisRouter.get('/models', (req,res) => {
 *   post:
 *     description: trains Luis.
 */
-luisRouter.post('/train', (req,res) => {
-    let options = Object.assign({
-            method: "POST",
-            path: luisAuthCredentials.appId + "/train",
-            headers: {
-                "Content-Type": "application/json",
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-            }
-    });    
-    
-    sendRequest(options,luisAuthCredentials.endpoint)
+luisRouter.post("/train", (req, res) => {
+  let options = Object.assign({
+    method: "POST",
+    path: luisAuthCredentials.appId + "/train",
+    headers: {
+      "Content-Type": "application/json",
+      "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+    }
+  });
+
+  sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(error);
+      res.json(data);
+    })
+    .catch(error => {
+      res.json(error);
     });
 });
-
 
 /**
  * @swagger
@@ -340,23 +362,23 @@ luisRouter.post('/train', (req,res) => {
  *       404:
  *          description: not found
  */
-luisRouter.get('/train', (req,res) => {
-    let options = Object.assign({
-            method: "GET",
-            path: luisAuthCredentials.appId + "/train",
-            headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-            }
-    });    
-    
-    sendRequest(options,luisAuthCredentials.endpoint)
+luisRouter.get("/train", (req, res) => {
+  let options = Object.assign({
+    method: "GET",
+    path: luisAuthCredentials.appId + "/train",
+    headers: {
+      "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+    }
+  });
+
+  sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(error);
+      res.json(data);
+    })
+    .catch(error => {
+      res.json(error);
     });
 });
-
 
 /**
 * @swagger
@@ -364,26 +386,26 @@ luisRouter.get('/train', (req,res) => {
 *   post:
 *     description: publish  Luis.
 */
-luisRouter.post('/publish', (req,res) => {
-    let options = Object.assign({
-            body: JSON.stringify(publishData),
-            method: "POST",
-            path: luisAuthCredentials.appId + "/publish",
-            headers: {
-                "Content-Type": "application/json",
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-            }
-    });    
-    
-    sendRequest(options,luisAuthCredentials.endpointV2)
+luisRouter.post("/publish", (req, res) => {
+  let options = Object.assign({
+    body: JSON.stringify(publishData),
+    method: "POST",
+    path: luisAuthCredentials.appId + "/publish",
+    headers: {
+      "Content-Type": "application/json",
+      "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+    }
+  });
+
+  sendRequest(options, luisAuthCredentials.endpointV2)
     .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(error);
+      res.json(data);
+    })
+    .catch(error => {
+      res.json(error);
     });
 });
 
-
 module.exports = () => {
-    return luisRouter
+  return luisRouter;
 };

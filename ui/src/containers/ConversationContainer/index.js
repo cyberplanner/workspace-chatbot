@@ -482,13 +482,14 @@ class ConversationContainer extends Component {
             </button>
           </div>
         </SearchContainer>
-        {this.state.editingData &&
+        {this.state.editingData && (
           <CreateConversation
             editingData={this.state.editingData}
             superchargers={this.state.superchargers}
             onSubmit={this.handleCreate}
             handleClose={this.closePopup}
-          />}
+          />
+        )}
         <SortableTree
           searchQuery={searchQuery}
           searchFocusOffset={searchFocusIndex}

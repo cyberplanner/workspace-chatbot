@@ -368,12 +368,15 @@ export default class ConversationForm extends React.Component {
       LuisApi.getEntities(),
       LuisApi.getClosedLists()
     ])
-      .then(results => console.log(results) || this.setState({
+      .then(results => this.setState({
         entities: []
           .concat(results[0].map(entity => entity.name),
           results[1].map(entity => entity.name))
       }))
-      .catch(error => console.error(error) || console.info("[ENTITY_RETRIEVE] Failed."));
+      .catch(error => {
+        console.error(error);
+        console.info("[ENTITY_RETRIEVE] Failed.");
+      });
     /*
      If we've been provided with information useful when editing
      prepopulate the appropriate fields by updating values in state
@@ -419,8 +422,6 @@ export default class ConversationForm extends React.Component {
       intents = [],
       entities = []
     } = this.state;
-
-    console.log(entities);
 
     return (
       <Wrapper>

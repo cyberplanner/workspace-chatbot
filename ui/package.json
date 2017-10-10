@@ -17,9 +17,6 @@
     "react-scripts": "1.0.7",
     "react-test-renderer": "^15.6.1"
   },
-  "lint-staged": {
-    "*.js": ["prettier --write", "git add"]
-  },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",

@@ -375,7 +375,7 @@ export default class ConversationForm extends React.Component {
       }))
       .catch(error => {
         console.error(error);
-        console.info("[ENTITY_RETRIEVE] Failed.");
+        console.error("[ENTITY_RETRIEVE] Failed.");
       });
     /*
      If we've been provided with information useful when editing

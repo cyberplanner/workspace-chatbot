@@ -27,9 +27,7 @@ class RequiredInputBox extends React.Component {
           onChange={this.handleChange}
         />
         <label name="errorMessage">
-          <span style={{ color: "red" }}>
-            {this.state.errorMessage}
-          </span>
+          <span style={{ color: "red" }}>{this.state.errorMessage}</span>
         </label>
       </div>
     );

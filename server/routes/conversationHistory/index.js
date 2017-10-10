@@ -1,14 +1,14 @@
-const express = require('express');
-const logger = require('../../logger.js');
+const express = require("express");
+const logger = require("../../logger.js");
 
-const expressJSONSchema = require('express-jsonschema').validate;
+const expressJSONSchema = require("express-jsonschema").validate;
 const validator = {
-	body: (schema) => {
-		return expressJSONSchema({
-			body: schema
-		});
-	}
-}
+  body: schema => {
+    return expressJSONSchema({
+      body: schema
+    });
+  }
+};
 let db;
 
 // Setup Router
@@ -17,7 +17,7 @@ const conversationHistoryRouter = express.Router();
 /*
     Import Schemas
 */
-const createConversationHistorySchema = require('./schemas/createConversationHistory.json');
+const createConversationHistorySchema = require("./schemas/createConversationHistory.json");
 
 /**
 * @swagger
@@ -37,13 +37,16 @@ const createConversationHistorySchema = require('./schemas/createConversationHis
 *       404:
 *        description: doc not found
 */
-conversationHistoryRouter.post('/:id', [
+conversationHistoryRouter.post("/:id", [
   validator.body(createConversationHistorySchema),
   (req, res) => {
     res.header("Access-Control-Allow-Origin", req.header.origins);
-    db.insert(Object.assign(req.body, {
-      _id: req.params.id
-    }))
+    db
+      .insert(
+        Object.assign(req.body, {
+          _id: req.params.id
+        })
+      )
       .then(() => {
         res.json(200, { message: "Successfully saved Conversation History." });
       })
@@ -51,8 +54,8 @@ conversationHistoryRouter.post('/:id', [
         logger.error("Error processing post id: ", error);
         res.json(500, { error: error.reason });
       });
-}]);
-
+  }
+]);
 
 /**
 * @swagger
@@ -70,20 +73,24 @@ conversationHistoryRouter.post('/:id', [
 *       404:
 *        description: doc not found
 */
-conversationHistoryRouter.post('/', [
+conversationHistoryRouter.post("/", [
   validator.body(createConversationHistorySchema),
   (req, res) => {
     res.header("Access-Control-Allow-Origin", req.header.origins);
-    var knowledge = db.insert(Object.assign(req.body))
+    var knowledge = db
+      .insert(Object.assign(req.body))
       .then(() => {
-        res.json(200, { message: "Successfully saved Conversation History.", id: db._id });
+        res.json(200, {
+          message: "Successfully saved Conversation History.",
+          id: db._id
+        });
       })
       .catch(error => {
         logger.error("Error processing post", error);
         res.json(500, { error: error.reason });
       });
-}]);
-
+  }
+]);
 
 /**
  * @swagger
@@ -103,18 +110,17 @@ conversationHistoryRouter.post('/', [
  *       404:
  *          description: doc not found
  */
-conversationHistoryRouter.get('/:id', 
-  (req, res) => {
-    db.get(req.params.id)
-      .then(doc => {
-        res.json(doc);
-      })
-      .catch(err => {
-        logger.error("Error processing get id: ", err)
-        res.status(err.statusCode).json({ error: err.reason });
-      });
-  });
-
+conversationHistoryRouter.get("/:id", (req, res) => {
+  db
+    .get(req.params.id)
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      logger.error("Error processing get id: ", err);
+      res.status(err.statusCode).json({ error: err.reason });
+    });
+});
 
 /**
  * @swagger
@@ -129,18 +135,17 @@ conversationHistoryRouter.get('/:id',
  *       404:
  *          description: doc not found
  */
-conversationHistoryRouter.get('/',
-  (req, res) => {
-    db.list({ include_docs: true })
-      .then(doc => {
-        res.json(doc);
-      })
-      .catch(err => {
-        logger.error("Error processing get: ", err)
-        res.status(err.statusCode).json({ error: err.reason });
-      });
-  });
-
+conversationHistoryRouter.get("/", (req, res) => {
+  db
+    .list({ include_docs: true })
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      logger.error("Error processing get: ", err);
+      res.status(err.statusCode).json({ error: err.reason });
+    });
+});
 
 /**
 * @swagger
@@ -158,17 +163,23 @@ conversationHistoryRouter.get('/',
 *       500:
 *         description: Update failed. Item may not exist in DB.
 */
-conversationHistoryRouter.put('/:id', [
+conversationHistoryRouter.put("/:id", [
   validator.body(createConversationHistorySchema),
   (req, res) => {
-    db.get(req.params.id)
+    db
+      .get(req.params.id)
       .then(doc => {
-        db.insert(Object.assign(req.body, {
-          _rev: doc._rev,
-          _id: req.params.id
-        }))
+        db
+          .insert(
+            Object.assign(req.body, {
+              _rev: doc._rev,
+              _id: req.params.id
+            })
+          )
           .then(() => {
-            res.json(200, { message: "Successfully updated Conversation History." });
+            res.json(200, {
+              message: "Successfully updated Conversation History."
+            });
           })
           .catch(error => {
             logger.error(error);
@@ -176,13 +187,13 @@ conversationHistoryRouter.put('/:id', [
           });
       })
       .catch(err => {
-        logger.error(err)
+        logger.error(err);
         res.status(err.statusCode).json({ error: err.reason });
       });
-  }]);
+  }
+]);
 
-
-module.exports = (database) => {
+module.exports = database => {
   db = database;
   return conversationHistoryRouter;
 };

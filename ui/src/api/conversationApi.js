@@ -13,7 +13,7 @@ const checkStatus = response => {
     const error = new Error(response.text());
     error.response = response;
     throw error;
-  } catch(e) {
+  } catch (e) {
     console.error(e);
   }
 };

@@ -47,7 +47,7 @@ const ConditionList = styled.div`
   }
 
   &:after {
-    content: '';
+    content: "";
     position: absolute;
     border-style: solid;
     border-width: 0 15px 15px;
@@ -60,7 +60,7 @@ const ConditionList = styled.div`
   }
 
   &:before {
-    content: '';
+    content: "";
     position: absolute;
     border-style: solid;
     border-width: 0 15px 15px;
@@ -96,11 +96,11 @@ const ExpandCollapseButton = styled.button`
   }
 
   &.collapse::before {
-    content: '-';
+    content: "-";
   }
 
   &.expand::before {
-    content: '+';
+    content: "+";
   }
 `;
 
@@ -121,7 +121,7 @@ const SuperchargerBullet = styled.span`
     padding-top: 0;
   }
   &::before {
-    content: '⚡';
+    content: "⚡";
     margin-left: -20px;
     margin-right: 10px;
   }
@@ -169,7 +169,7 @@ const ConversationItem = styled.div`
     font-size: 0.8em;
 
     &:before {
-      content: '#';
+      content: "#";
       color: #bbb;
       padding-right: 8px;
     }
@@ -209,11 +209,11 @@ class NodeRendererDefault extends Component {
     return (
       <ConditionList>
         <ul>
-          {conditions.map((cond, index) =>
+          {conditions.map((cond, index) => (
             <li key={index}>
               "{cond.entityId}" {cond.not ? "NOT " : ""} {cond.comparator} "{cond.value}"
             </li>
-          )}
+          ))}
         </ul>
       </ConditionList>
     );
@@ -236,19 +236,20 @@ class NodeRendererDefault extends Component {
       <div style={{ height: "100%" }} {...otherProps}>
         {toggleChildrenVisibility &&
           node.children &&
-          node.children.length > 0 &&
-          <div>
-            <ExpandCollapseButton
-              type="button"
-              aria-label={node.expanded ? "Collapse" : "Expand"}
-              className={node.expanded ? "collapse" : "expand"}
-              style={{ left: -0.85 * scaffoldBlockPxWidth, top: "65px" }}
-              onClick={() =>
-                toggleChildrenVisibility({ node, path, treeIndex })}
-            />
+          node.children.length > 0 && (
+            <div>
+              <ExpandCollapseButton
+                type="button"
+                aria-label={node.expanded ? "Collapse" : "Expand"}
+                className={node.expanded ? "collapse" : "expand"}
+                style={{ left: -0.85 * scaffoldBlockPxWidth, top: "65px" }}
+                onClick={() =>
+                  toggleChildrenVisibility({ node, path, treeIndex })}
+              />
 
-            {node.expanded && <div style={{ width: scaffoldBlockPxWidth }} />}
-          </div>}
+              {node.expanded && <div style={{ width: scaffoldBlockPxWidth }} />}
+            </div>
+          )}
 
         <ResponseWrapper>
           <ConversationItem {...this.props}>
@@ -264,29 +265,27 @@ class NodeRendererDefault extends Component {
                     : node.title}
                 </span>
                 <span className="toolbar">
-                  {node.conditions
-                    ? <ConditionBadgeWrapper>
-                        <ConditionBadge
-                          onClick={this.showConditions.bind(this)}
-                        >
-                          {node.conditions.length} conditions
-                        </ConditionBadge>
-                        {showConditions
-                          ? this.renderConditionList(node.conditions)
-                          : null}
-                      </ConditionBadgeWrapper>
-                    : null}
-                  {buttons.map((btn, index) =>
+                  {node.conditions ? (
+                    <ConditionBadgeWrapper>
+                      <ConditionBadge onClick={this.showConditions.bind(this)}>
+                        {node.conditions.length} conditions
+                      </ConditionBadge>
+                      {showConditions
+                        ? this.renderConditionList(node.conditions)
+                        : null}
+                    </ConditionBadgeWrapper>
+                  ) : null}
+                  {buttons.map((btn, index) => (
                     <div
                       key={index} // eslint-disable-line react/no-array-index-key
                       className="btn"
                     >
                       {btn}
                     </div>
-                  )}
+                  ))}
                 </span>
               </div>
-              {node.subtitle &&
+              {node.subtitle && (
                 <span className="subtitle">
                   {typeof node.subtitle === "function"
                     ? node.subtitle({
@@ -295,11 +294,13 @@ class NodeRendererDefault extends Component {
                         treeIndex
                       })
                     : node.subtitle}
-                </span>}
-              {node.superchargerTitle &&
+                </span>
+              )}
+              {node.superchargerTitle && (
                 <SuperchargerBullet class>
                   {node.superchargerTitle}
-                </SuperchargerBullet>}
+                </SuperchargerBullet>
+              )}
             </LabelContainer>
           </ConversationItem>
         </ResponseWrapper>

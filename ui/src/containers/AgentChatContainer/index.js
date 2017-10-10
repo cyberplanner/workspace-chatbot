@@ -70,11 +70,12 @@ class AgentChatContainer extends Component {
             user={{ id: "agent_", name: "Dan Cotton" }}
           />
         </div>
-        {this.state.history.length > 0 &&
+        {this.state.history.length > 0 && (
           <HistoryContainer>
             <h3> User chat history </h3>
             <ChatView messages={this.state.history} />
-          </HistoryContainer>}
+          </HistoryContainer>
+        )}
       </AgentContainer>
     );
   }

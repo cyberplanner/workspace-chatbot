@@ -1,21 +1,21 @@
-const express = require('express');
-const logger = require('../../logger.js');
+const express = require("express");
+const logger = require("../../logger.js");
 
-const expressJSONSchema = require('express-jsonschema').validate;
+const expressJSONSchema = require("express-jsonschema").validate;
 const validator = {
-	body: (schema) => {
-		return expressJSONSchema({
-			body: schema
-		});
-	}
-}
+  body: schema => {
+    return expressJSONSchema({
+      body: schema
+    });
+  }
+};
 let db;
 
 // Setup Router
 const conversationRouter = express.Router();
 
 //Import Schemas
-const createConversationSchema = require('./schemas/createConversation.json');
+const createConversationSchema = require("./schemas/createConversation.json");
 
 /**
  * @swagger
@@ -30,17 +30,17 @@ const createConversationSchema = require('./schemas/createConversation.json');
  *       404:
  *          description: doc not found
  */
-conversationRouter.get('/', 
-    (req,res) => {
-    		db.list({include_docs:true})
-	        .then(doc => {
-	            res.json(doc);
-	        })
-	        .catch(err => {
-	            logger.error("Error processing get:", err)
-	            res.status(err.statusCode).json({error: err.reason});
-	        });
+conversationRouter.get("/", (req, res) => {
+  db
+    .list({ include_docs: true })
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      logger.error("Error processing get:", err);
+      res.status(err.statusCode).json({ error: err.reason });
     });
+});
 
 /**
  * @swagger
@@ -60,17 +60,17 @@ conversationRouter.get('/',
  *       404:
  *          description: doc not found
  */
-conversationRouter.get('/:id', 
-    (req,res) => {
-        db.get(req.params.id)
-        .then(doc => {
-            res.json(doc);
-        })
-        .catch(err => {
-            logger.error("Error processing id: ", err)
-            res.status(err.statusCode).json({error: err.reason});
-        });
+conversationRouter.get("/:id", (req, res) => {
+  db
+    .get(req.params.id)
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      logger.error("Error processing id: ", err);
+      res.status(err.statusCode).json({ error: err.reason });
     });
+});
 
 /**
 * @swagger
@@ -94,18 +94,23 @@ conversationRouter.get('/:id',
 *       404:
 *        description: doc not found
 */
-conversationRouter.post('/', [
-		validator.body( createConversationSchema ),
-		(req, res) => {
-			db.insert(req.body)
-			.then((doc) => {
-				res.json(200, {message: "Successfully saved conversation.", id: doc.id});
-			})
-			.catch(error => {
-				logger.error("Error processing post: ", error);
-				res.json(500, {error: error.reason});
-			});
-		}]);
+conversationRouter.post("/", [
+  validator.body(createConversationSchema),
+  (req, res) => {
+    db
+      .insert(req.body)
+      .then(doc => {
+        res.json(200, {
+          message: "Successfully saved conversation.",
+          id: doc.id
+        });
+      })
+      .catch(error => {
+        logger.error("Error processing post: ", error);
+        res.json(500, { error: error.reason });
+      });
+  }
+]);
 
 /**
 * @swagger
@@ -130,28 +135,33 @@ conversationRouter.post('/', [
 *       500:
 *         description: Update failed. Item may not exist in DB.
 */
- conversationRouter.put('/:nodeId', [
-	validator.body( createConversationSchema ),
-    (req, res) => {
-    	db.get(req.params.nodeId)
-        .then(doc => {
-              db.insert(Object.assign(req.body, {
-  		            _rev: doc._rev,
-                    _id:  req.params.nodeId
-  		      }))
-  		      .then(() => {
-  		           res.json(200, {message: "Successfully updated conversation."});
-  		      })
-  		      .catch(error => {
-  		            logger.error(error);
-  		            res.json(500, {error: error.reason});
-  		      });
-        })
-        .catch(err => {
-            logger.error("Error processing nodeId :", err)
-            res.status(err.statusCode).json({error: err.reason});
-        });		      
-    }]);
+conversationRouter.put("/:nodeId", [
+  validator.body(createConversationSchema),
+  (req, res) => {
+    db
+      .get(req.params.nodeId)
+      .then(doc => {
+        db
+          .insert(
+            Object.assign(req.body, {
+              _rev: doc._rev,
+              _id: req.params.nodeId
+            })
+          )
+          .then(() => {
+            res.json(200, { message: "Successfully updated conversation." });
+          })
+          .catch(error => {
+            logger.error(error);
+            res.json(500, { error: error.reason });
+          });
+      })
+      .catch(err => {
+        logger.error("Error processing nodeId :", err);
+        res.status(err.statusCode).json({ error: err.reason });
+      });
+  }
+]);
 
 /**
  * @swagger
@@ -171,24 +181,24 @@ conversationRouter.post('/', [
  *       404:
  *          description: doc not found
  */
-conversationRouter.delete('/:id', 
-    (req,res) => {
-        db.get(req.params.id)
-        .then(doc => {
-			return db.destroy(doc._id, doc._rev);
-		})
-		.then(complete => {
-			res.json({
-				deleted: true
-			});
-		})
-        .catch(err => {
-            logger.error("Error processing delete id:", err)
-            res.status(err.statusCode).json({error: err.reason});
-        });
+conversationRouter.delete("/:id", (req, res) => {
+  db
+    .get(req.params.id)
+    .then(doc => {
+      return db.destroy(doc._id, doc._rev);
+    })
+    .then(complete => {
+      res.json({
+        deleted: true
+      });
+    })
+    .catch(err => {
+      logger.error("Error processing delete id:", err);
+      res.status(err.statusCode).json({ error: err.reason });
     });
+});
 
-module.exports = (database) => {
-    db = database;
-    return conversationRouter;
+module.exports = database => {
+  db = database;
+  return conversationRouter;
 };

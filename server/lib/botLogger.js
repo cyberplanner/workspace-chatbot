@@ -1,7 +1,7 @@
-const logger = require('../logger.js');
+const logger = require("../logger.js");
 
 let databases = {
-    conversationHistory: null,
+  conversationHistory: null
 };
 
 /**
@@ -12,53 +12,68 @@ let databases = {
  * @param {Object} args
  * @param {Function} next
  */
-const conversationLogger = (session, args, next) => { 
+const conversationLogger = (session, args, next) => {
   logger.debug("[BOTLOGGER] Logging conversation");
   let conversationId = session.message.address.conversation.id;
   let text = session.message.text;
   updateConversationHistory(conversationId, text, "user");
   next(args);
-}
+};
 
 /**
  * Update the conversation history with a string of text.
  * @param {*} conversationId the id of the conversation and hense the conversation history object.
  * @param {*} text the text to be added to the conversation history.
  */
-const updateConversationHistory = (conversationId, text, user) => { 
-  databases.conversationHistory.get(conversationId)
+const updateConversationHistory = (conversationId, text, user) => {
+  databases.conversationHistory
+    .get(conversationId)
     .then(result => {
       result.conversationHistory.push({
         user,
         text
       });
-      databases.conversationHistory.insert(result)
+      databases.conversationHistory
+        .insert(result)
         .then(result => {
           logger.debug("[BOTLOGGER] Sucessfully updated Conversation History");
-        }).catch(error => {
-          logger.error("[BOTLOGGER] There was an unexpected error updating the Conversation History, ", error);
+        })
+        .catch(error => {
+          logger.error(
+            "[BOTLOGGER] There was an unexpected error updating the Conversation History, ",
+            error
+          );
         });
-    }).catch(error => {
+    })
+    .catch(error => {
       if (!error.error === "not_found") {
         // Unexpected error, log it.
-        logger.error("[BOTLOGGER] There was an unexpected error retrieveing the Conversation History, ", error);
+        logger.error(
+          "[BOTLOGGER] There was an unexpected error retrieveing the Conversation History, ",
+          error
+        );
       }
       // Entry doesn't exist, create it.
       createNewConversationHistory(conversationId, text, "user");
     });
-}
+};
 
 /**
  * Creates a new conversation history and stores the id in the session.
  */
-const createNewConversationHistory = (conversationId, text, user) => { 
-  databases.conversationHistory.insert({_id: conversationId, conversationHistory:[{text, user}]})
-      .then(result => { 
-        logger.debug("[BOTLOGGER] Conversation History created.");
-      }).catch(error => {
-        logger.error("[BOTLOGGER] There was an error creating the Conversation History, ", error);
-      });
-}
+const createNewConversationHistory = (conversationId, text, user) => {
+  databases.conversationHistory
+    .insert({ _id: conversationId, conversationHistory: [{ text, user }] })
+    .then(result => {
+      logger.debug("[BOTLOGGER] Conversation History created.");
+    })
+    .catch(error => {
+      logger.error(
+        "[BOTLOGGER] There was an error creating the Conversation History, ",
+        error
+      );
+    });
+};
 
 module.exports = db => {
   databases.conversationHistory = db;
@@ -66,5 +81,5 @@ module.exports = db => {
     createNewConversationHistory,
     updateConversationHistory,
     conversationLogger
-  }
-}
+  };
+};

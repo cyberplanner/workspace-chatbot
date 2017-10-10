@@ -1,7 +1,8 @@
 {
   "name": "Yak",
   "version": "0.0.1",
-  "description": "Build a chatbot without the boilerplate. Yak is a prebuilt platform, allowing you to build your conversation visually and simply add reusable integration plugins.",
+  "description":
+    "Build a chatbot without the boilerplate. Yak is a prebuilt platform, allowing you to build your conversation visually and simply add reusable integration plugins.",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/Capgemini-AIE/yak.git"

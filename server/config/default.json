@@ -3,7 +3,8 @@
     "info": {
       "title": "Ubiquitous Octo Pancake",
       "version": "0.0.1",
-      "description": " Ubiquitous Octo Pancake RESTful API Documentation with Swagger "
+      "description":
+        " Ubiquitous Octo Pancake RESTful API Documentation with Swagger "
     },
     "basePath": "/"
   }

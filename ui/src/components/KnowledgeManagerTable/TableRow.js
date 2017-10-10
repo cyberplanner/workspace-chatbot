@@ -33,14 +33,10 @@ class TableRow extends React.Component {
             height: 32px;
         `;
 
-    const row = data.map(data =>
+    const row = data.map(data => (
       <tr>
-        <StyledTd key={data.doc._id}>
-          {data.doc._id}
-        </StyledTd>
-        <StyledTd key={data.doc.responses}>
-          {data.doc.responses}
-        </StyledTd>
+        <StyledTd key={data.doc._id}>{data.doc._id}</StyledTd>
+        <StyledTd key={data.doc.responses}>{data.doc.responses}</StyledTd>
         <StyledTd>
           <Link to={`/addIntent/${data.doc._id}/${data.doc.responses}`}>
             <button>
@@ -57,7 +53,7 @@ class TableRow extends React.Component {
           </button>
         </StyledTd>
       </tr>
-    );
+    ));
     return (
       <div>
         <tr>

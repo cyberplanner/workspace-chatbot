@@ -1,5 +1,5 @@
-const supercharger = require('../lib/supercharger');
-const logger = require('../logger.js');
+const supercharger = require("../lib/supercharger");
+const logger = require("../logger.js");
 
 /**
  * Structures a question that is only asked 
@@ -8,8 +8,16 @@ const logger = require('../logger.js');
 const optionalQuestion = new supercharger.Detail(
   // Supercharger Parameters.
   [
-    new supercharger.Parameter("KEY", "The key to store the value under (may be used later)", "string"),
-    new supercharger.Parameter("QUESTION", "The message to sent as the Question.", "string"),
+    new supercharger.Parameter(
+      "KEY",
+      "The key to store the value under (may be used later)",
+      "string"
+    ),
+    new supercharger.Parameter(
+      "QUESTION",
+      "The message to sent as the Question.",
+      "string"
+    )
   ],
 
   // Supercharger Name
@@ -18,7 +26,10 @@ const optionalQuestion = new supercharger.Detail(
   // Logic for supercharger
   (session, args, next, customArguments, skip) => {
     if (session.userData.summary[customArguments.KEY]) {
-      logger.debug("[OPTIONAL-Q] DATA EXISTING: " + session.userData.summary[customArguments.KEY]);
+      logger.debug(
+        "[OPTIONAL-Q] DATA EXISTING: " +
+          session.userData.summary[customArguments.KEY]
+      );
       session.conversationData.skip = customArguments.KEY;
       skip(session, args, next);
     } else {
@@ -38,8 +49,16 @@ const optionalQuestion = new supercharger.Detail(
 const storeAnswer = new supercharger.Detail(
   // Supercharger Parameters.
   [
-    new supercharger.Parameter("KEY", "The key to store the value under (may be used later)", "string"),
-    new supercharger.Parameter("MESSAGE", "The message to be sent after storage.", "string"),
+    new supercharger.Parameter(
+      "KEY",
+      "The key to store the value under (may be used later)",
+      "string"
+    ),
+    new supercharger.Parameter(
+      "MESSAGE",
+      "The message to be sent after storage.",
+      "string"
+    )
   ],
 
   // Supercharger Name
@@ -47,7 +66,10 @@ const storeAnswer = new supercharger.Detail(
 
   // Logic for supercharger
   (session, args, next, customArguments, skip) => {
-    if (session.userData.summary[customArguments.KEY] && session.conversationData.skip === customArguments.KEY) {
+    if (
+      session.userData.summary[customArguments.KEY] &&
+      session.conversationData.skip === customArguments.KEY
+    ) {
       session.conversationData.skip = null;
     } else {
       session.userData.summary[customArguments.KEY] = session.message.text;

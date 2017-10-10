@@ -124,9 +124,7 @@ class AddIntentForm extends React.Component {
       <div>
         <div>
           <label name="errorMessage">
-            <span style={{ color: "red" }}>
-              {this.state.errorMessage}
-            </span>
+            <span style={{ color: "red" }}>{this.state.errorMessage}</span>
           </label>
         </div>
         <form onSubmit={this.handleSubmit} name="addIntentForm">
@@ -154,7 +152,7 @@ class AddIntentForm extends React.Component {
                 <div>
                   <a onClick={this.addNewInput}>+ New </a>
                 </div>
-                {messages.map((value, index) =>
+                {messages.map((value, index) => (
                   <textarea
                     key={index}
                     value={value}
@@ -162,7 +160,7 @@ class AddIntentForm extends React.Component {
                     placeholder="Enter Message"
                     onChange={event => this.updateMessages(event, index)}
                   />
-                )}
+                ))}
               </td>
             </tr>
             <tr>

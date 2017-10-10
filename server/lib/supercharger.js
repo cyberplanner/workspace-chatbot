@@ -47,7 +47,9 @@ class Detail {
         "Content-Type": "application/json"
       },
       body: JSON.stringify(req)
-    }).then(result => result.json());
+    })
+    .then(result => result.json())
+    .then(() => logger.debug("[SUPERCHARGER] Registered."));
   }
 
   set id(id) {
@@ -140,7 +142,7 @@ const clear = () => {
 module.exports = {
   init: builder => (botBuilder = builder),
   register: detail => {
-    logger.debug("Registering...");
+    logger.debug("[SUPERCHARGER] Registering...");
     detail.addToDB();
     superchargers[detail.id] = detail.function;
   },

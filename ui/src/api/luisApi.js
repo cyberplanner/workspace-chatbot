@@ -20,3 +20,18 @@ export const getIntents = () => {
     .then(parseJSON)
     .then(results => results.Result);
 };
+
+export const getEntities = () => {
+  return jsonFetch(`${luisEndpoint}/entities`, {})
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(results => results.Result);
+};
+
+export const getClosedLists = () => {
+  return jsonFetch(`${luisEndpoint}/closed-lists`, {})
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(results => results);
+};
+

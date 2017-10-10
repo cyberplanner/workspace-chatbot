@@ -62,13 +62,13 @@ function sendRequest(requestOptions, endpoint) {
  *          description: not found
  */
 luisRouter.get("/intents", (req, res) => {
-  let options = Object.assign({
+  let options = {
     method: "GET",
     path: luisAuthCredentials.appId + "/intents",
     headers: {
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
-  });
+  };
 
   sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
@@ -93,7 +93,7 @@ luisRouter.get("/intents", (req, res) => {
 luisRouter.post("/intents", [
   validator.body(createIntentSchema),
   (req, res) => {
-    let options = Object.assign({
+    let options = {
       body: JSON.stringify(req.body),
       method: "POST",
       path: luisAuthCredentials.appId + "/intents",
@@ -101,7 +101,7 @@ luisRouter.post("/intents", [
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
       }
-    });
+    };
 
     sendRequest(options, luisAuthCredentials.endpoint)
       .then(data => {
@@ -125,13 +125,13 @@ luisRouter.post("/intents", [
  *          description: not found
  */
 luisRouter.get("/entities", (req, res) => {
-  let options = Object.assign({
+  let options = {
     method: "GET",
     path: luisAuthCredentials.appId + "/entities",
     headers: {
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
-  });
+  };
 
   sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
@@ -141,6 +141,34 @@ luisRouter.get("/entities", (req, res) => {
       res.json(error);
     });
 });
+
+/**
+ * @swagger
+ * /luis/closed-lists:
+ *   get:
+ *     description: Returns all closedlists
+ *     responses:
+ *       200:
+ *         description: Successfully retrieved
+ *       404:
+ *          description: not found
+ */
+luisRouter.get('/closed-lists', (req,res) => {
+    let options = {
+            method: "GET",
+            path: `${luisAuthCredentials.appId}/versions/${luisAuthCredentials.appVersion}/closedlists`,
+            headers: {
+                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+            }
+    };      
+    sendRequest(options,luisAuthCredentials.endpointV2)
+    .then(data => {
+        res.json(data);
+    }).catch(error => {
+        res.json(error);
+    });
+});
+
 
 /**
 * @swagger
@@ -156,7 +184,7 @@ luisRouter.get("/entities", (req, res) => {
 luisRouter.post("/entityExtractor", [
   validator.body(createEntityExtractorSchema),
   (req, res) => {
-    let options = Object.assign({
+    let options = {
       body: JSON.stringify(req.body),
       method: "POST",
       path:
@@ -168,7 +196,7 @@ luisRouter.post("/entityExtractor", [
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
       }
-    });
+    };
 
     sendRequest(options, luisAuthCredentials.endpointV2)
       .then(data => {
@@ -194,7 +222,7 @@ luisRouter.post("/entityExtractor", [
 luisRouter.post("/closedListEntity", [
   validator.body(createClosedListEntitySchema),
   (req, res) => {
-    let options = Object.assign({
+    let options = {
       body: JSON.stringify(req.body),
       method: "POST",
       path:
@@ -206,7 +234,7 @@ luisRouter.post("/closedListEntity", [
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
       }
-    });
+    };
 
     sendRequest(options, luisAuthCredentials.endpointV2)
       .then(data => {
@@ -237,7 +265,7 @@ luisRouter.post("/closedListEntity", [
 luisRouter.put("/closedListEntity/:id", [
   validator.body(createClosedListEntitySchema),
   (req, res) => {
-    let options = Object.assign({
+    let options = {
       body: JSON.stringify(req.body),
       method: "PUT",
       path:
@@ -250,7 +278,7 @@ luisRouter.put("/closedListEntity/:id", [
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
       }
-    });
+    };
 
     sendRequest(options, luisAuthCredentials.endpointV2)
       .then(data => {
@@ -276,7 +304,7 @@ luisRouter.put("/closedListEntity/:id", [
 luisRouter.post("/utterance", [
   validator.body(createUtteranceSchema),
   (req, res) => {
-    let options = Object.assign({
+    let options = {
       body: JSON.stringify(req.body),
       method: "POST",
       path: luisAuthCredentials.appId + "/example",
@@ -284,7 +312,7 @@ luisRouter.post("/utterance", [
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
       }
-    });
+    };
 
     sendRequest(options, luisAuthCredentials.endpoint)
       .then(data => {
@@ -309,13 +337,13 @@ luisRouter.post("/utterance", [
  *          description: not found
  */
 luisRouter.get("/models", (req, res) => {
-  let options = Object.assign({
+  let options = {
     method: "GET",
     path: luisAuthCredentials.appId + "/models",
     headers: {
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
-  });
+  };
 
   sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
@@ -333,14 +361,14 @@ luisRouter.get("/models", (req, res) => {
 *     description: trains Luis.
 */
 luisRouter.post("/train", (req, res) => {
-  let options = Object.assign({
+  let options = {
     method: "POST",
     path: luisAuthCredentials.appId + "/train",
     headers: {
       "Content-Type": "application/json",
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
-  });
+  };
 
   sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
@@ -363,13 +391,13 @@ luisRouter.post("/train", (req, res) => {
  *          description: not found
  */
 luisRouter.get("/train", (req, res) => {
-  let options = Object.assign({
+  let options = {
     method: "GET",
     path: luisAuthCredentials.appId + "/train",
     headers: {
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
-  });
+  };
 
   sendRequest(options, luisAuthCredentials.endpoint)
     .then(data => {
@@ -387,7 +415,7 @@ luisRouter.get("/train", (req, res) => {
 *     description: publish  Luis.
 */
 luisRouter.post("/publish", (req, res) => {
-  let options = Object.assign({
+  let options = {
     body: JSON.stringify(publishData),
     method: "POST",
     path: luisAuthCredentials.appId + "/publish",
@@ -395,7 +423,7 @@ luisRouter.post("/publish", (req, res) => {
       "Content-Type": "application/json",
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
-  });
+  };
 
   sendRequest(options, luisAuthCredentials.endpointV2)
     .then(data => {

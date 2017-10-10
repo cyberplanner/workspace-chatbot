@@ -162,7 +162,7 @@ const PopUp = styled.form`
     color: #464646;
   }
 
-  input[name="intentId"] {
+  input.styled {
     & {
       min-height: 19px;
       display: inline-block;
@@ -361,6 +361,23 @@ export default class ConversationForm extends React.Component {
       this.setState({ intents });
     });
     /*
+      Fetch all entities & closed-list entities for
+      autocomplete
+     */
+    Promise.all([
+      LuisApi.getEntities(),
+      LuisApi.getClosedLists()
+    ])
+      .then(results => this.setState({
+        entities: []
+          .concat(results[0].map(entity => entity.name),
+          results[1].map(entity => entity.name))
+      }))
+      .catch(error => {
+        console.error(error);
+        console.error("[ENTITY_RETRIEVE] Failed.");
+      });
+    /*
      If we've been provided with information useful when editing
      prepopulate the appropriate fields by updating values in state
      */
@@ -402,8 +419,10 @@ export default class ConversationForm extends React.Component {
       superchargerParameters = [],
       entityConditions = [],
       responses = [],
-      intents = []
+      intents = [],
+      entities = []
     } = this.state;
+
     return (
       <Wrapper>
         <PopUp onSubmit={this.formSubmission}>
@@ -418,7 +437,8 @@ export default class ConversationForm extends React.Component {
               inputProps={{
                 id: "intentId",
                 name: "intentId",
-                style: { width: "100%" }
+                style: { width: "100%" },
+                className: "styled"
               }}
               wrapperStyle={{ flexGrow: 2 }}
               id="intentId"
@@ -496,12 +516,34 @@ export default class ConversationForm extends React.Component {
                     justifyContent: "space-between"
                   }}
                 >
-                  <StyledTextInput
-                    type="text"
-                    value={value.entityId}
+                  <AutoComplete
+                    inputProps={{
+                      id: "entityId",
+                      name: "entityId",
+                      className: "styled",
+                      placeholder: "Entity ID"
+                    }}
+                    id="entityId"
                     name="entityId"
-                    placeholder="Entity ID"
+                    value={value.entityId || ""}
                     onChange={event => this.updateEntityCondition(event, index)}
+                    onSelect={value => this.updateEntityCondition({
+                      target: {
+                        value,
+                        name: "entityId"
+                      }
+                    }, index)}
+                    items={entities}
+                    shouldItemRender={(item, value) => {
+                      return (
+                        item.toUpperCase().indexOf(value.toUpperCase()) !== -1
+                      );
+                    }}
+                    getItemValue={item => item}
+                    renderItem={(item, isHighlighted) =>
+                      <SelectItem isHighlighted={isHighlighted}>
+                        {item}
+                      </SelectItem>}
                   />
                   <StyledSelect
                     name="not"

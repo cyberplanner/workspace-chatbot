@@ -1,14 +1,14 @@
-const express = require('express');
-const logger = require('../../logger.js');
+const express = require("express");
+const logger = require("../../logger.js");
 
-const expressJSONSchema = require('express-jsonschema').validate;
+const expressJSONSchema = require("express-jsonschema").validate;
 const validator = {
-	body: (schema) => {
-		return expressJSONSchema({
-			body: schema
-		});
-	}
-}
+  body: schema => {
+    return expressJSONSchema({
+      body: schema
+    });
+  }
+};
 let db;
 
 // Setup Router
@@ -17,7 +17,7 @@ const knowledgeRouter = express.Router();
 /*
     Import Schemas
 */
-const createKnowledgeSchema = require('./schemas/createKnowledge.json');
+const createKnowledgeSchema = require("./schemas/createKnowledge.json");
 
 /**
 * @swagger
@@ -37,13 +37,17 @@ const createKnowledgeSchema = require('./schemas/createKnowledge.json');
 *       404:
 *        description: doc not found
 */
-knowledgeRouter.post('/:id',
+knowledgeRouter.post(
+  "/:id",
   validator.body(createKnowledgeSchema),
   (req, res) => {
     res.header("Access-Control-Allow-Origin", req.header.origins);
-    db.insert(Object.assign(req.body, {
-      _id: req.params.id
-    }))
+    db
+      .insert(
+        Object.assign(req.body, {
+          _id: req.params.id
+        })
+      )
       .then(() => {
         res.json(200, { message: "Successfully saved knowledge." });
       })
@@ -51,39 +55,8 @@ knowledgeRouter.post('/:id',
         logger.error(error);
         res.json(500, { error: error.reason });
       });
-  });
-
-
-/**
-* @swagger
-* /knowledge/:
-*   post:
-*     description: Creates a new Knowledge Management item in storage.
-*     properties:
-*       id:
-*         type: string  
-*     responses:
-*       200:
-*         description: Successful Creation
-*       500:
-*         description: Creation failed. Item may already exist in DB.
-*       404:
-*        description: doc not found
-*/
-knowledgeRouter.post('/',
-  validator.body(createKnowledgeSchema),
-  (req, res) => {
-    res.header("Access-Control-Allow-Origin", req.header.origins);
-    var knowledge = db.insert(Object.assign(req.body))
-      .then(() => {
-        res.json(200, { message: "Successfully saved knowledge.", id: db._id });
-      })
-      .catch(error => {
-        logger.error(error);
-        res.json(500, { error: error.reason });
-      });
-  });
-
+  }
+);
 
 /**
 * @swagger
@@ -101,20 +74,47 @@ knowledgeRouter.post('/',
 *       404:
 *        description: doc not found
 */
-knowledgeRouter.post('/',
-  validator.body(createKnowledgeSchema),
-  (req, res) => {
-    res.header("Access-Control-Allow-Origin", req.header.origins);
-    var knowledge = db.insert(Object.assign(req.body))
-      .then(() => {
-        res.json(200, { message: "Successfully saved knowledge.", id: db._id });
-      })
-      .catch(error => {
-        logger.error(error);
-        res.json(500, { error: error.reason });
-      });
-  });
+knowledgeRouter.post("/", validator.body(createKnowledgeSchema), (req, res) => {
+  res.header("Access-Control-Allow-Origin", req.header.origins);
+  var knowledge = db
+    .insert(Object.assign(req.body))
+    .then(() => {
+      res.json(200, { message: "Successfully saved knowledge.", id: db._id });
+    })
+    .catch(error => {
+      logger.error(error);
+      res.json(500, { error: error.reason });
+    });
+});
 
+/**
+* @swagger
+* /knowledge/:
+*   post:
+*     description: Creates a new Knowledge Management item in storage.
+*     properties:
+*       id:
+*         type: string  
+*     responses:
+*       200:
+*         description: Successful Creation
+*       500:
+*         description: Creation failed. Item may already exist in DB.
+*       404:
+*        description: doc not found
+*/
+knowledgeRouter.post("/", validator.body(createKnowledgeSchema), (req, res) => {
+  res.header("Access-Control-Allow-Origin", req.header.origins);
+  var knowledge = db
+    .insert(Object.assign(req.body))
+    .then(() => {
+      res.json(200, { message: "Successfully saved knowledge.", id: db._id });
+    })
+    .catch(error => {
+      logger.error(error);
+      res.json(500, { error: error.reason });
+    });
+});
 
 /**
  * @swagger
@@ -134,17 +134,17 @@ knowledgeRouter.post('/',
  *       404:
  *          description: doc not found
  */
-knowledgeRouter.get('/:id',
-  (req, res) => {
-    db.get(req.params.id)
-      .then(doc => {
-        res.json(doc);
-      })
-      .catch(err => {
-        logger.error(err);
-        res.status(err.statusCode).json({ error: err.reason });
-      });
-  });
+knowledgeRouter.get("/:id", (req, res) => {
+  db
+    .get(req.params.id)
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      logger.error(err);
+      res.status(err.statusCode).json({ error: err.reason });
+    });
+});
 
 /**
  * @swagger
@@ -164,22 +164,22 @@ knowledgeRouter.get('/:id',
  *       404:
  *          description: doc not found
  */
-knowledgeRouter.delete('/:id',
-  (req, res) => {
-    db.get(req.params.id)
-      .then(doc => {
-        return db.destroy(doc._id, doc._rev)
-      })
-      .then(result => {
-        res.json({
-          deleted: true
-        });
-      })
-      .catch(err => {
-        logger.error(err);
-        res.status(err.statusCode).json({ error: err.reason });
+knowledgeRouter.delete("/:id", (req, res) => {
+  db
+    .get(req.params.id)
+    .then(doc => {
+      return db.destroy(doc._id, doc._rev);
+    })
+    .then(result => {
+      res.json({
+        deleted: true
       });
-  });
+    })
+    .catch(err => {
+      logger.error(err);
+      res.status(err.statusCode).json({ error: err.reason });
+    });
+});
 
 /**
  * @swagger
@@ -194,18 +194,17 @@ knowledgeRouter.delete('/:id',
  *       404:
  *          description: doc not found
  */
-knowledgeRouter.get('/',
-  (req, res) => {
-    db.list({ include_docs: true })
-      .then(doc => {
-        res.json(doc);
-      })
-      .catch(err => {
-        logger.error(err);
-        res.status(err.statusCode).json({ error: err.reason });
-      });
-  });
-
+knowledgeRouter.get("/", (req, res) => {
+  db
+    .list({ include_docs: true })
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      logger.error(err);
+      res.status(err.statusCode).json({ error: err.reason });
+    });
+});
 
 /**
 * @swagger
@@ -223,15 +222,20 @@ knowledgeRouter.get('/',
 *       500:
 *         description: Update failed. Item may not exist in DB.
 */
-knowledgeRouter.put('/:id',
+knowledgeRouter.put(
+  "/:id",
   validator.body(createKnowledgeSchema),
   (req, res) => {
-    db.get(req.params.id)
+    db
+      .get(req.params.id)
       .then(doc => {
-        db.insert(Object.assign(req.body, {
-          _rev: doc._rev,
-          _id: req.params.id
-        }))
+        db
+          .insert(
+            Object.assign(req.body, {
+              _rev: doc._rev,
+              _id: req.params.id
+            })
+          )
           .then(() => {
             res.json(200, { message: "Successfully updated knowledge." });
           })
@@ -241,13 +245,13 @@ knowledgeRouter.put('/:id',
           });
       })
       .catch(err => {
-        logger.error(err)
+        logger.error(err);
         res.status(err.statusCode).json({ error: err.reason });
       });
-  });
+  }
+);
 
-
-module.exports = (database) => {
+module.exports = database => {
   db = database;
-  return knowledgeRouter
+  return knowledgeRouter;
 };

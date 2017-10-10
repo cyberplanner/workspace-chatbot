@@ -17,4 +17,4 @@ module.exports = class User {
   get conversationId() {
     return this._conversationId;
   }
-}
+};

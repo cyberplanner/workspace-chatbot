@@ -1,20 +1,20 @@
-const express = require('express');
-const logger = require('../../logger.js');
-const expressJSONSchema = require('express-jsonschema').validate;
+const express = require("express");
+const logger = require("../../logger.js");
+const expressJSONSchema = require("express-jsonschema").validate;
 const validator = {
-	body: (schema) => {
-		return expressJSONSchema({
-			body: schema
-		});
-	}
-}
+  body: schema => {
+    return expressJSONSchema({
+      body: schema
+    });
+  }
+};
 let db;
 
 // Setup Router
 const superchargerRouter = express.Router();
 
 //Import Schemas
-const createSuperchargerSchema = require('./schemas/createSupercharger.json');
+const createSuperchargerSchema = require("./schemas/createSupercharger.json");
 
 /**
  * @swagger
@@ -29,17 +29,17 @@ const createSuperchargerSchema = require('./schemas/createSupercharger.json');
  *       404:
  *          description: doc not found
  */
-superchargerRouter.get('/', 
-    (req,res) => {
-    		db.list({include_docs:true})
-	        .then(doc => {
-	            res.json(doc);
-	        })
-	        .catch(err => {
-	            logger.error(err);
-	            res.status(err.statusCode).json({error: err.reason});
-	        });
+superchargerRouter.get("/", (req, res) => {
+  db
+    .list({ include_docs: true })
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      logger.error(err);
+      res.status(err.statusCode).json({ error: err.reason });
     });
+});
 
 /**
  * @swagger
@@ -60,32 +60,32 @@ superchargerRouter.get('/',
  *       404:
  *          description: doc not found
  */
-superchargerRouter.delete('/all', 
-    (req,res) => {
-        db.list()
-		.then((body) => {
-            let req = body.rows.map(row => {
-				return Object.assign(row, {
-					_deleted: true,
-					_id: row.id,
-					_rev: row.value.rev
-				});
-			});
-			logger.debug(JSON.stringify(req));
-			return db.bulk({
-				docs: req
-			});
-		})
-        .then(() => {
-            res.json({
-				success: true
-			});
-        })
-        .catch(err => {
-            logger.error(err);
-            res.status(err.statusCode).json({error: err.reason});
+superchargerRouter.delete("/all", (req, res) => {
+  db
+    .list()
+    .then(body => {
+      let req = body.rows.map(row => {
+        return Object.assign(row, {
+          _deleted: true,
+          _id: row.id,
+          _rev: row.value.rev
         });
+      });
+      logger.debug(JSON.stringify(req));
+      return db.bulk({
+        docs: req
+      });
+    })
+    .then(() => {
+      res.json({
+        success: true
+      });
+    })
+    .catch(err => {
+      logger.error(err);
+      res.status(err.statusCode).json({ error: err.reason });
     });
+});
 
 /**
  * @swagger
@@ -106,19 +106,17 @@ superchargerRouter.delete('/all',
  *       404:
  *          description: doc not found
  */
-superchargerRouter.get('/:id', 
-    (req,res) => {
-        db.get(req.params.id)
-        .then(doc => {
-            res.json(doc);
-        })
-        .catch(err => {
-            logger.error(err);
-            res.status(err.statusCode).json({error: err.reason});
-        });
+superchargerRouter.get("/:id", (req, res) => {
+  db
+    .get(req.params.id)
+    .then(doc => {
+      res.json(doc);
+    })
+    .catch(err => {
+      logger.error(err);
+      res.status(err.statusCode).json({ error: err.reason });
     });
-
-
+});
 
 /**
 * @swagger
@@ -142,18 +140,20 @@ superchargerRouter.get('/:id',
 *       404:
 *        description: doc not found
 */
-superchargerRouter.post('/', [
-	    validator.body(createSuperchargerSchema),
-	    (req, res) => {
-	    	db.insert(Object.assign(req.body))
-	        .then(() => {
-	            res.json({message: "Successfully saved supercharger."});
-	        })
-	        .catch(error => {
-	            logger.error(error);
-	            res.status(500).json({error: error.reason});
-	        });
-	    }]);
+superchargerRouter.post("/", [
+  validator.body(createSuperchargerSchema),
+  (req, res) => {
+    db
+      .insert(Object.assign(req.body))
+      .then(() => {
+        res.json({ message: "Successfully saved supercharger." });
+      })
+      .catch(error => {
+        logger.error(error);
+        res.status(500).json({ error: error.reason });
+      });
+  }
+]);
 
 /**
 * @swagger
@@ -178,32 +178,35 @@ superchargerRouter.post('/', [
 *       500:
 *         description: Update failed. Item may not exist in DB.
 */
- superchargerRouter.put('/:id', [
-	validator.body(createSuperchargerSchema),
-    (req, res) => {
-    	db.get(req.params.id)
-        .then(doc => {
-              db.insert(Object.assign(req.body, {
-  		            _rev: doc._rev,
-                    _id:  req.params.id
-  		      }))
-  		      .then(() => {
-  		           res.json(200, {message: "Successfully updated supercharger."});
-  		      })
-  		      .catch(error => {
-  		            logger.error(error);
-  		            res.json(500, {error: error.reason});
-  		      });
-        })
-        .catch(err => {
-            logger.error(err);
-            res.status(err.statusCode).json({error: err.reason});
-        });		      
-    }]);
+superchargerRouter.put("/:id", [
+  validator.body(createSuperchargerSchema),
+  (req, res) => {
+    db
+      .get(req.params.id)
+      .then(doc => {
+        db
+          .insert(
+            Object.assign(req.body, {
+              _rev: doc._rev,
+              _id: req.params.id
+            })
+          )
+          .then(() => {
+            res.json(200, { message: "Successfully updated supercharger." });
+          })
+          .catch(error => {
+            logger.error(error);
+            res.json(500, { error: error.reason });
+          });
+      })
+      .catch(err => {
+        logger.error(err);
+        res.status(err.statusCode).json({ error: err.reason });
+      });
+  }
+]);
 
-
-module.exports = (database) => {
-    db = database;
-    return superchargerRouter;
+module.exports = database => {
+  db = database;
+  return superchargerRouter;
 };
-

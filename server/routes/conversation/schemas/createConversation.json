@@ -17,43 +17,31 @@
                   "type": "string"
                 },
                 "not": {
-                  "type":"boolean"
+                  "type": "boolean"
                 },
                 "comparator": {
                   "type": "string",
-                  "enum": [
-                    "EQUALS",
-                    "CONTAINS",
-                    "REGEX_MATCH"
-                  ]
+                  "enum": ["EQUALS", "CONTAINS", "REGEX_MATCH"]
                 },
                 "value": {
                   "type": "string"
                 }
               },
-              "required": [
-                "entityId",
-                "comparator",
-                "value",
-                "not"
-              ],
+              "required": ["entityId", "comparator", "value", "not"],
               "type": "object"
             },
             "type": "array"
           }
         },
-        "required": [
-          "intentId",
-          "nodeId"
-        ],
+        "required": ["intentId", "nodeId"],
         "type": "object"
       },
       "type": "array"
     },
-    "supercharger" : {
+    "supercharger": {
       "properties": {
         "id": {
-          "type":"string"  
+          "type": "string"
         },
         "arguments": {
           "items": {
@@ -62,10 +50,7 @@
           "type": "array"
         }
       },
-      "required" : [
-        "id",
-        "arguments"
-      ],
+      "required": ["id", "arguments"],
       "type": "object"
     },
     "fallback": {
@@ -78,10 +63,6 @@
       "type": "string"
     }
   },
-  "required": [
-    "fallback",
-    "message",
-    "children"
-  ],
+  "required": ["fallback", "message", "children"],
   "type": "object"
 }

@@ -21,7 +21,7 @@
   "homepage": "https://github.com/Capgemini-AIE/yak#readme",
   "scripts": {
     "precommit": "lint-staged",
-    "bootstrap": "npm --prefix ./server install && npm --prefix ./ui install",
+    "bootstrap": "yarn && cd server && yarn && cd ../ui && yarn && cd ../",
     "server": "npm run --prefix ./server start",
     "start": "lerna run start",
     "test": "npm run --prefix ./server test && npm run --prefix ./ui test",

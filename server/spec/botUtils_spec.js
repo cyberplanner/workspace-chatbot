@@ -129,7 +129,13 @@ describe("checkConditions", () => {
     let session = {};
     let args = {};
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(true);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({})
+        }
+      })
+    ).toEqual(true);
   });
 
   it("should return true if no conditions present in node", () => {
@@ -137,7 +143,13 @@ describe("checkConditions", () => {
     let session = {};
     let args = {};
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(true);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({})
+        }
+      })
+    ).toEqual(true);
   });
 
   it("should return true if valid equality condition present in node", () => {
@@ -163,7 +175,15 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(true);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "Company Car"
+          })
+        }
+      })
+    ).toEqual(true);
   });
 
   it("should return true if valid contains condition present in node", () => {
@@ -189,7 +209,15 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(true);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "Company Car"
+          })
+        }
+      })
+    ).toEqual(true);
   });
 
   it("should return true if valid regex condition present in node", () => {
@@ -215,7 +243,15 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(true);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "Welcome"
+          })
+        }
+      })
+    ).toEqual(true);
   });
 
   it("should return false if invalid equality condition present in node", () => {
@@ -241,7 +277,15 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(false);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "Company Car"
+          })
+        }
+      })
+    ).toEqual(false);
   });
 
   it("should return false if invalid contains condition present in node", () => {
@@ -267,7 +311,15 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(false);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "Company Car"
+          })
+        }
+      })
+    ).toEqual(false);
   });
 
   it("should return false if invalid regex condition present in node", () => {
@@ -293,7 +345,15 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(false);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "Welcome"
+          })
+        }
+      })
+    ).toEqual(false);
   });
 
   it("should return false if valid regex condition present however 'not' is defined in node", () => {
@@ -319,7 +379,15 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(false);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "A"
+          })
+        }
+      })
+    ).toEqual(false);
   });
 
   it("should return true if multiple valid conditions", () => {
@@ -369,7 +437,26 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(true);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: (entities, name) => {
+            if (name === "test3") {
+              return {
+                entity: "TEST-3"
+              };
+            } else if (name === "test2") {
+              return {
+                entity: "ABcDeFg"
+              };
+            }
+            return {
+              entity: "A"
+            };
+          }
+        }
+      })
+    ).toEqual(true);
   });
 
   it("should return false if multiple valid conditions and one failure", () => {
@@ -419,6 +506,25 @@ describe("checkConditions", () => {
       ]
     };
     let next = () => {};
-    expect(utils.checkConditions(node, session, args, next)).toEqual(false);
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: (entities, name) => {
+            if (name === "test3") {
+              return {
+                entity: "TEST-3"
+              };
+            } else if (name === "test2") {
+              return {
+                entity: "ABcDeFg"
+              };
+            }
+            return {
+              entity: "A"
+            };
+          }
+        }
+      })
+    ).toEqual(false);
   });
 });

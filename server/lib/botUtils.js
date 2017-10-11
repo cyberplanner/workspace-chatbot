@@ -57,23 +57,22 @@ const checkConditions = (node, session, args, next, builder) => {
           // No result, return false;
           return false;
         }
+        let value = entity.entity;
         // Great - we've got a result, carry on.
-        let result = entity.resolution.values.reduce((result, value) => {
-          if (result) {
-            return true;
-          } else {
-            switch (condition.comparator) {
-              case "EQUALS":
-                return value === condition.value;
-              case "CONTAINS":
-                return value.includes(condition.value);
-              case "REGEX_MATCH":
-                return new RegExp(condition.value).test(value);
-              default:
-                return false;
-            }
+        let getResult = (condition, value) => {
+          switch (condition.comparator) {
+            case "EQUALS":
+              return value === condition.value;
+            case "CONTAINS":
+              return value.includes(condition.value);
+            case "REGEX_MATCH":
+              return new RegExp(condition.value).test(value);
+            default:
+              return false;
           }
-        }, false);
+        };
+
+        let result = getResult(condition, value);
 
         if (condition.not) {
           return !result;

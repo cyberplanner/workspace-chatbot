@@ -44,10 +44,7 @@
           "type": "string"
         },
         "arguments": {
-          "items": {
-            "type": "object"
-          },
-          "type": "array"
+          "type": "object"
         }
       },
       "required": ["id", "arguments"],

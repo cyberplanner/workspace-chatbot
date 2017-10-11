@@ -1,6 +1,7 @@
 let botUtils = require("./lib/botUtils.js");
 let superchargers = require("./superchargers.js")();
 const logger = require("./logger.js");
+let builder;
 
 let databases = {
   conversation: null,
@@ -8,7 +9,7 @@ let databases = {
 };
 let conversation;
 let defaultResponse = {
-  response: ["Hi, I'm a HR Bot. How can I help?"]
+  response: ["Hi, I'm a Bot. How can I help?"]
 };
 
 process.on("unhandledRejection", function(reason, p) {
@@ -62,7 +63,7 @@ const progressConversation = (session, args, next, conversationData) => {
     child =>
       child.intentId === "*" ||
       (child.intentId === args.intent &&
-        botUtils.checkConditions(child, session, args, next))
+        botUtils.checkConditions(child, session, args, next, builder))
   );
   if (chosenOne) {
     logger.debug("[PROGRESSION] Valid node present.");
@@ -92,7 +93,7 @@ const checkForFallbacks = (session, args, next, conversationData) => {
       let chosenOne = conversation.children.find(child => {
         return (
           child.intentId === args.intent &&
-          botUtils.checkConditions(child, session, args, next)
+          botUtils.checkConditions(child, session, args, next, builder)
         );
       });
       if (chosenOne) {
@@ -120,7 +121,13 @@ const checkForFallbacks = (session, args, next, conversationData) => {
                   let chosenOne = node.children.find(child => {
                     return (
                       child.intentId === args.intent &&
-                      botUtils.checkConditions(child, session, args, next)
+                      botUtils.checkConditions(
+                        child,
+                        session,
+                        args,
+                        next,
+                        builder
+                      )
                     );
                   });
                   if (chosenOne && !replied) {
@@ -310,6 +317,7 @@ module.exports = {
   bot: (knowledgeDB, conversationDB, builder, middleware) => {
     databases.knowledge = knowledgeDB;
     databases.conversation = conversationDB;
+    builder = builder;
     superchargers.init(builder);
     // Get default message
     databases.knowledge

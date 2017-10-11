@@ -43,14 +43,16 @@ const processResponse = (session, message) => {
  * @param {*} session the conversation session
  * @param {*} args the "arguments" passed by LUIS, including entities
  * @param {*} next the next function in the chain
+ * @param {*} builder the botbuilder builder object
  */
-const checkConditions = (node, session, args, next) => {
+const checkConditions = (node, session, args, next, builder) => {
   if (node.conditions && node.conditions.length > 0) {
     return node.conditions.reduce((result, condition) => {
       if (result) {
-        let entity = args.entities.find(entity => {
-          return entity.type === condition.entityId;
-        });
+        let entity = builder.EntityRecognizer.findEntity(
+          args.entities,
+          condition.entityId
+        );
         if (!entity) {
           // No result, return false;
           return false;

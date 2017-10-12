@@ -47,7 +47,7 @@ const conversationHistoryDB = dbcon.getConnection(
 );
 
 // Run database bootstrapping
-const databaseBootstrap = require('./lib/database/bootstrap.js');
+const databaseBootstrap = require("./lib/database/bootstrap.js");
 databaseBootstrap(knowledgeDB, convDB);
 
 //=========================================================
@@ -175,10 +175,6 @@ const root = `${__dirname}/public`;
 
 server.use(bodyParser.json());
 server.use(expressMiddleware.crossOrigin);
-/*server.use(restify.CORS({
-  origins: process.env.CROSS_SITE_ORIGINS.split(","),
-  credentials: false
-}));*/
 
 //=========================================================
 // Setup Swagger + Bot Framework Endpoints

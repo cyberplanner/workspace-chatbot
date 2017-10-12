@@ -41,7 +41,6 @@ knowledgeRouter.post(
   "/:id",
   validator.body(createKnowledgeSchema),
   (req, res) => {
-    res.header("Access-Control-Allow-Origin", req.header.origins);
     db
       .insert(
         Object.assign(req.body, {
@@ -75,7 +74,6 @@ knowledgeRouter.post(
 *        description: doc not found
 */
 knowledgeRouter.post("/", validator.body(createKnowledgeSchema), (req, res) => {
-  res.header("Access-Control-Allow-Origin", req.header.origins);
   var knowledge = db
     .insert(Object.assign(req.body))
     .then(() => {
@@ -104,7 +102,6 @@ knowledgeRouter.post("/", validator.body(createKnowledgeSchema), (req, res) => {
 *        description: doc not found
 */
 knowledgeRouter.post("/", validator.body(createKnowledgeSchema), (req, res) => {
-  res.header("Access-Control-Allow-Origin", req.header.origins);
   var knowledge = db
     .insert(Object.assign(req.body))
     .then(() => {

@@ -40,7 +40,6 @@ const createConversationHistorySchema = require("./schemas/createConversationHis
 conversationHistoryRouter.post("/:id", [
   validator.body(createConversationHistorySchema),
   (req, res) => {
-    res.header("Access-Control-Allow-Origin", req.header.origins);
     db
       .insert(
         Object.assign(req.body, {
@@ -76,7 +75,6 @@ conversationHistoryRouter.post("/:id", [
 conversationHistoryRouter.post("/", [
   validator.body(createConversationHistorySchema),
   (req, res) => {
-    res.header("Access-Control-Allow-Origin", req.header.origins);
     var knowledge = db
       .insert(Object.assign(req.body))
       .then(() => {

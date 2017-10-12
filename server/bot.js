@@ -314,10 +314,10 @@ const responder = (session, args, next) => {
 
 module.exports = {
   // Setup databases
-  bot: (knowledgeDB, conversationDB, builder, middleware) => {
+  bot: (knowledgeDB, conversationDB, botBuilder, middleware) => {
     databases.knowledge = knowledgeDB;
     databases.conversation = conversationDB;
-    builder = builder;
+    builder = botBuilder;
     superchargers.init(builder);
     // Get default message
     databases.knowledge

@@ -21,9 +21,12 @@ export const getKnowledgeById = id => {
 };
 
 export const bulkDeleteKnowledge = arrayOfIDs => {
-  return jsonFetch(`${knowledgeEndpoint}/bulk?id=${arrayOfIDs.join("&id=")}`, {
-    method: "DELETE"
-  })
+  return jsonFetch(
+    `${knowledgeEndpoint}/bulk/all?id=${arrayOfIDs.join("&id=")}`,
+    {
+      method: "DELETE"
+    }
+  )
     .then(checkStatus)
     .then(parseJSON);
 };

@@ -266,7 +266,7 @@ knowledgeRouter.put(
  *       404:
  *          description: doc not found
  */
-conversationRouter.delete("/bulk/all", (req, res) => {
+knowledgeRouter.delete("/bulk/all", (req, res) => {
   let requestedIDs = [].concat(req.query.id);
   db
     .list()

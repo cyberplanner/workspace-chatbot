@@ -82,6 +82,34 @@ export const updateChildOfNode = (parentId, child) => {
     .then(parseJSON);
 };
 
+export const deleteChildOfNode = (parentId, childId) => {
+  return jsonFetch(`${conversationEndpoint}/${parentId}`, {})
+    .then(checkStatus)
+    .then(parseJSON)
+    .then(response => {
+      let children = [].concat(response.children);
+      let index = children.findIndex(item => {
+        return item.nodeId === childId;
+      });
+
+      children.splice(index, 1);
+
+      let req = Object.assign({}, response, {
+        children: children
+      });
+
+      return fetch(`${conversationEndpoint}/${parentId}`, {
+        method: "PUT",
+        body: JSON.stringify(req),
+        headers: {
+          "Content-Type": "application/json"
+        }
+      });
+    })
+    .then(checkStatus)
+    .then(parseJSON);
+};
+
 export const createNewConversationNode = nodeData => {
   return jsonFetch(`${conversationEndpoint}`, {
     method: "POST",
@@ -116,7 +144,7 @@ export const deleteConversationNode = id => {
 
 export const bulkDeleteConversationNodes = arrayOfIDs => {
   return jsonFetch(
-    `${conversationEndpoint}/bulk?id=${arrayOfIDs.join("&id=")}`,
+    `${conversationEndpoint}/bulk/all?id=${arrayOfIDs.join("&id=")}`,
     {
       method: "DELETE"
     }

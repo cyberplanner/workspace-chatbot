@@ -10,7 +10,8 @@ import {
   deleteConversationNode,
   updateConversationNode,
   addNewChildToNode,
-  updateChildOfNode
+  updateChildOfNode,
+  deleteChildOfNode
 } from "../../api/conversationApi";
 import { retrieveAllSuperchargers } from "../../api/superchargerApi";
 import { getKnowledgeById, bulkDeleteKnowledge } from "../../api/knowledgeApi";
@@ -258,12 +259,25 @@ class ConversationContainer extends Component {
     });
   }
 
-  deleteCallback({ node }) {
+  deleteCallback({ node, parentNode }) {
     let affectedNodes = this.walkNodesForChildren(node);
     let nodeIDs = affectedNodes.map(node => node.id);
     let knowledgeIDs = affectedNodes.map(node => node.message);
-    console.log(nodeIDs);
-    console.log(knowledgeIDs);
+
+    Promise.all([
+      bulkDeleteKnowledge(knowledgeIDs),
+      bulkDeleteConversationNodes(nodeIDs),
+      deleteChildOfNode(parentNode.node.id, node.node.id)
+    ])
+      .then(results => {
+        this.updateFromServer();
+      })
+      .catch(error => {
+        this.setState({
+          error
+        });
+        this.updateFromServer();
+      });
   }
 
   walkNodesForChildren(node) {

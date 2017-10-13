@@ -3,6 +3,7 @@ import SortableTree, { toggleExpandedForAll } from "react-sortable-tree";
 import { addNodeUnderParent } from "./utils.js";
 import ConversationNodeView from "./ConversationNode";
 import {
+  bulkDeleteConversationNodes,
   retrieveAllConversationNodes,
   retrieveConversationNode,
   createNewConversationNode,
@@ -12,7 +13,7 @@ import {
   updateChildOfNode
 } from "../../api/conversationApi";
 import { retrieveAllSuperchargers } from "../../api/superchargerApi";
-import { getKnowledgeById } from "../../api/knowledgeApi";
+import { getKnowledgeById, bulkDeleteKnowledge } from "../../api/knowledgeApi";
 import ConversationNode from "../../model/conversationNode";
 import CreateConversation from "../../components/CreateConversation";
 import { KnowledgeManagmentService } from "../../components/KnowledgeManagmentService";
@@ -117,6 +118,8 @@ class ConversationContainer extends Component {
       editingData: false,
       superchargers: {}
     };
+    this.deleteCallback = this.deleteCallback.bind(this);
+    this.walkNodesForChildren = this.walkNodesForChildren.bind(this);
     this.processConversationNodes = this.processConversationNodes.bind(this);
     this.createCallback = this.createCallback.bind(this);
     this.updateFromServer = this.updateFromServer.bind(this);
@@ -253,6 +256,22 @@ class ConversationContainer extends Component {
         editMode: false
       }
     });
+  }
+
+  deleteCallback({ node }) {
+    let affectedNodes = this.walkNodesForChildren(node);
+    let nodeIDs = affectedNodes.map(node => node.id);
+    let knowledgeIDs = affectedNodes.map(node => node.message);
+    console.log(nodeIDs);
+    console.log(knowledgeIDs);
+  }
+
+  walkNodesForChildren(node) {
+    let results = [].concat(node.node);
+    node.children
+      .map(this.walkNodesForChildren)
+      .forEach(array => (results = results.concat(array)));
+    return results;
   }
 
   editNode({ node, path, treeIndex }) {
@@ -530,6 +549,14 @@ class ConversationContainer extends Component {
                   onClick={() => this.createCallback(rowInfo)}
                 >
                   +
+                </StyledButton>,
+                <StyledButton
+                  style={{
+                    verticalAlign: "middle"
+                  }}
+                  onClick={() => this.deleteCallback(rowInfo)}
+                >
+                  x
                 </StyledButton>
               ]
             };

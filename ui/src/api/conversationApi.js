@@ -113,3 +113,14 @@ export const deleteConversationNode = id => {
     .then(checkStatus)
     .then(parseJSON);
 };
+
+export const bulkDeleteConversationNodes = arrayOfIDs => {
+  return jsonFetch(
+    `${conversationEndpoint}/bulk?id=${arrayOfIDs.join("&id=")}`,
+    {
+      method: "DELETE"
+    }
+  )
+    .then(checkStatus)
+    .then(parseJSON);
+};

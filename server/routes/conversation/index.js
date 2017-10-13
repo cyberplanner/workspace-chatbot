@@ -200,7 +200,7 @@ conversationRouter.delete("/:id", (req, res) => {
 
 /**
  * @swagger
- * /conversation/bulk:
+ * /conversation/bulk/all:
  *   delete:
  *     description: Deletes conversation nodes with the given IDs
  *     produces:
@@ -235,7 +235,7 @@ conversationRouter.delete("/bulk/all", (req, res) => {
       });
     })
     .catch(err => {
-      logger.error("Error processing delete id:", err);
+      logger.error("[CONVERSATION] Error processing bulk delete:", err);
       res.status(err.statusCode).json({ error: err.reason });
     });
 });

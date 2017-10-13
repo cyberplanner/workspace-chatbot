@@ -537,7 +537,7 @@ class ConversationContainer extends Component {
           }}
           nodeContentRenderer={ConversationNodeView}
           generateNodeProps={rowInfo => {
-            return {
+            let props = {
               buttons: [
                 <StyledButton
                   style={{
@@ -563,7 +563,12 @@ class ConversationContainer extends Component {
                   onClick={() => this.createCallback(rowInfo)}
                 >
                   +
-                </StyledButton>,
+                </StyledButton>
+              ]
+            };
+
+            if (rowInfo.path.length > 1) {
+              props.buttons.push(
                 <StyledButton
                   style={{
                     verticalAlign: "middle"
@@ -572,8 +577,10 @@ class ConversationContainer extends Component {
                 >
                   x
                 </StyledButton>
-              ]
-            };
+              );
+            }
+
+            return props;
           }}
         />
       </StyledTreeView>

@@ -248,6 +248,48 @@ knowledgeRouter.put(
   }
 );
 
+/**
+ * @swagger
+ * /knowledge/bulk/all:
+ *   delete:
+ *     description: Deletes knowledge entries with the given IDs
+ *     produces:
+ *       - application/json
+ *     properties:
+ *       id:
+ *         type: query
+ *     required:
+ *      - id
+ *     responses:
+ *       200:
+ *         description: Successfully deleted
+ *       404:
+ *          description: doc not found
+ */
+knowledgeRouter.delete("/bulk/all", (req, res) => {
+  let requestedIDs = [].concat(req.query.id);
+  db
+    .list()
+    .then(result => {
+      let deletableDocs = {
+        docs: result.rows
+          .filter(doc => requestedIDs.indexOf(doc.id) > -1)
+          .map(doc => ({
+            _id: doc.id,
+            _rev: doc.value.rev,
+            _deleted: true
+          }))
+      };
+      db.bulk(deletableDocs).then(result => {
+        res.status(200).json(result);
+      });
+    })
+    .catch(err => {
+      logger.error("[KNOWLEDGE] Error processing bulk delete:", err);
+      res.status(err.statusCode).json({ error: err.reason });
+    });
+});
+
 module.exports = database => {
   db = database;
   return knowledgeRouter;

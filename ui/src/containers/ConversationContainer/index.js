@@ -3,16 +3,18 @@ import SortableTree, { toggleExpandedForAll } from "react-sortable-tree";
 import { addNodeUnderParent } from "./utils.js";
 import ConversationNodeView from "./ConversationNode";
 import {
+  bulkDeleteConversationNodes,
   retrieveAllConversationNodes,
   retrieveConversationNode,
   createNewConversationNode,
   deleteConversationNode,
   updateConversationNode,
   addNewChildToNode,
-  updateChildOfNode
+  updateChildOfNode,
+  deleteChildOfNode
 } from "../../api/conversationApi";
 import { retrieveAllSuperchargers } from "../../api/superchargerApi";
-import { getKnowledgeById } from "../../api/knowledgeApi";
+import { getKnowledgeById, bulkDeleteKnowledge } from "../../api/knowledgeApi";
 import ConversationNode from "../../model/conversationNode";
 import CreateConversation from "../../components/CreateConversation";
 import { KnowledgeManagmentService } from "../../components/KnowledgeManagmentService";
@@ -117,6 +119,8 @@ class ConversationContainer extends Component {
       editingData: false,
       superchargers: {}
     };
+    this.deleteCallback = this.deleteCallback.bind(this);
+    this.walkNodesForChildren = this.walkNodesForChildren.bind(this);
     this.processConversationNodes = this.processConversationNodes.bind(this);
     this.createCallback = this.createCallback.bind(this);
     this.updateFromServer = this.updateFromServer.bind(this);
@@ -253,6 +257,35 @@ class ConversationContainer extends Component {
         editMode: false
       }
     });
+  }
+
+  deleteCallback({ node, parentNode }) {
+    let affectedNodes = this.walkNodesForChildren(node);
+    let nodeIDs = affectedNodes.map(node => node.id);
+    let knowledgeIDs = affectedNodes.map(node => node.message);
+
+    Promise.all([
+      bulkDeleteKnowledge(knowledgeIDs),
+      bulkDeleteConversationNodes(nodeIDs),
+      deleteChildOfNode(parentNode.node.id, node.node.id)
+    ])
+      .then(results => {
+        this.updateFromServer();
+      })
+      .catch(error => {
+        this.setState({
+          error
+        });
+        this.updateFromServer();
+      });
+  }
+
+  walkNodesForChildren(node) {
+    let results = [].concat(node.node);
+    node.children
+      .map(this.walkNodesForChildren)
+      .forEach(array => (results = results.concat(array)));
+    return results;
   }
 
   editNode({ node, path, treeIndex }) {
@@ -504,7 +537,7 @@ class ConversationContainer extends Component {
           }}
           nodeContentRenderer={ConversationNodeView}
           generateNodeProps={rowInfo => {
-            return {
+            let props = {
               buttons: [
                 <StyledButton
                   style={{
@@ -533,6 +566,21 @@ class ConversationContainer extends Component {
                 </StyledButton>
               ]
             };
+
+            if (rowInfo.path.length > 1) {
+              props.buttons.push(
+                <StyledButton
+                  style={{
+                    verticalAlign: "middle"
+                  }}
+                  onClick={() => this.deleteCallback(rowInfo)}
+                >
+                  x
+                </StyledButton>
+              );
+            }
+
+            return props;
           }}
         />
       </StyledTreeView>

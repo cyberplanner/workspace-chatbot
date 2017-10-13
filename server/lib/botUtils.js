@@ -57,6 +57,7 @@ const checkConditions = (node, session, args, next, builder) => {
           // No result, return false;
           return false;
         }
+        // Store the text value of the entity.
         let value = entity.entity;
         // Great - we've got a result, carry on.
         let getResult = (condition, value) => {
@@ -73,6 +74,22 @@ const checkConditions = (node, session, args, next, builder) => {
         };
 
         let result = getResult(condition, value);
+
+        // If it's a List entity, let's handle that
+        // by checking all entity resolutions
+        if (
+          entity.resolution &&
+          entity.resolution.values &&
+          entity.resolution.values
+        ) {
+          // Re-assign result.
+          result = entity.resolution.values.reduce((result, value) => {
+            if (result) {
+              return true;
+            }
+            return getResult(condition, value);
+          }, false);
+        }
 
         if (condition.not) {
           return !result;

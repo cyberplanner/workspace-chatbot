@@ -19,9 +19,11 @@ const createIntentSchema = require("./schemas/createIntent.json");
 const createEntityExtractorSchema = require("./schemas/createEntityExtractor.json");
 const createClosedListEntitySchema = require("./schemas/createClosedListEntity.json");
 const createUtteranceSchema = require("./schemas/createUtterance.json");
+const publishSchema = require("./schemas/publish.json");
 
 const luisAuthCredentials = {
   endpoint: process.env.LUIS_ENDPOINT,
+  appEndpoint: `${process.env.LUIS_ENDPOINT_V2}/${process.env.LUIS_APP_ID}`,
   endpointV2: `${process.env.LUIS_ENDPOINT_V2}/${process.env
     .LUIS_APP_ID}/versions/${process.env.LUIS_APP_VERSION}`,
   appId: process.env.LUIS_APP_ID,
@@ -340,13 +342,13 @@ luisRouter.post("/utterance", [
 luisRouter.get("/models", (req, res) => {
   let options = {
     method: "GET",
-    path: luisAuthCredentials.appId + "/models",
+    path: "/models",
     headers: {
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
   };
 
-  sendRequest(options, luisAuthCredentials.endpoint)
+  sendRequest(options, luisAuthCredentials.endpointV2)
     .then(data => {
       res.json(data);
     })
@@ -364,14 +366,14 @@ luisRouter.get("/models", (req, res) => {
 luisRouter.post("/train", (req, res) => {
   let options = {
     method: "POST",
-    path: luisAuthCredentials.appId + "/train",
+    path: "/train",
     headers: {
       "Content-Type": "application/json",
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
   };
 
-  sendRequest(options, luisAuthCredentials.endpoint)
+  sendRequest(options, luisAuthCredentials.endpointV2)
     .then(data => {
       res.json(data);
     })
@@ -394,13 +396,13 @@ luisRouter.post("/train", (req, res) => {
 luisRouter.get("/train", (req, res) => {
   let options = {
     method: "GET",
-    path: luisAuthCredentials.appId + "/train",
+    path: "/train",
     headers: {
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
   };
 
-  sendRequest(options, luisAuthCredentials.endpoint)
+  sendRequest(options, luisAuthCredentials.endpointV2)
     .then(data => {
       res.json(data);
     })
@@ -415,25 +417,28 @@ luisRouter.get("/train", (req, res) => {
 *   post:
 *     description: publish  Luis.
 */
-luisRouter.post("/publish", (req, res) => {
-  let options = {
-    body: JSON.stringify(publishData),
-    method: "POST",
-    path: "/publish",
-    headers: {
-      "Content-Type": "application/json",
-      "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-    }
-  };
+luisRouter.post("/publish", [
+  validator.body(publishSchema),
+  (req, res) => {
+    let options = {
+      body: JSON.stringify(publishData),
+      method: "POST",
+      path: "/publish",
+      headers: {
+        "Content-Type": "application/json",
+        "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+      }
+    };
 
-  sendRequest(options, luisAuthCredentials.endpointV2)
-    .then(data => {
-      res.json(data);
-    })
-    .catch(error => {
-      res.json(error);
-    });
-});
+    sendRequest(options, luisAuthCredentials.appEndpoint)
+      .then(data => {
+        res.json(data);
+      })
+      .catch(error => {
+        res.json(error);
+      });
+  }
+]);
 
 module.exports = () => {
   return luisRouter;

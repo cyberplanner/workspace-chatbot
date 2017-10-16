@@ -1,5 +1,6 @@
-let botUtils = require("./lib/botUtils.js");
-let superchargers = require("./superchargers.js")();
+const botUtils = require("./lib/botUtils.js");
+const supercharger = require("./lib/supercharger.js");
+const userSuperchargers = require("./superchargers.js");
 const logger = require("./logger.js");
 let builder;
 
@@ -292,7 +293,7 @@ const responder = (session, args, next) => {
       conversationData.current.supercharger
     ) {
       logger.debug("[RESPONDER] Calling Supercharger.");
-      superchargers.execute(
+      supercharger.execute(
         session,
         args,
         next,
@@ -318,7 +319,19 @@ module.exports = {
     databases.knowledge = knowledgeDB;
     databases.conversation = conversationDB;
     builder = botBuilder;
-    superchargers.init(builder);
+
+    /*
+      Setup Superchargers 
+     */
+    // Provide bot-builder
+    supercharger.init(builder);
+
+    // Clear existing superchargers
+    supercharger
+      .clear()
+      // Then register new ones in DB
+      .then(supercharger.apply);
+
     // Get default message
     databases.knowledge
       .get("default")

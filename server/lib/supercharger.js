@@ -6,6 +6,7 @@ const PORT = process.env.PORT || "3978";
 
 let botBuilder;
 
+let superchargerObjects = [];
 let superchargers = {};
 
 const VALID_TYPES = [
@@ -33,23 +34,14 @@ class Detail {
     this.function = fn;
     this._id = id;
   }
-  addToDB() {
-    let req = {
+
+  get document() {
+    return {
       arguments: this.arguments,
       displayName: this.displayName,
       functionName: this._id,
       _id: this._id
     };
-
-    return fetch(`http://localhost:${PORT}/supercharger`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify(req)
-    })
-    .then(result => result.json())
-    .then(() => logger.debug("[SUPERCHARGER] Registered."));
   }
 
   set id(id) {
@@ -139,13 +131,36 @@ const clear = () => {
   });
 };
 
+const apply = () => {
+  logger.debug(
+    `[SUPERCHARGER] Registering ${superchargerObjects.length} Superchargers`
+  );
+  let superchargers = superchargerObjects.map(
+    supercharger => supercharger.document
+  );
+  return fetch(`http://localhost:${PORT}/supercharger/bulk`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(superchargers)
+  })
+    .then(result => result.json())
+    .then(() => logger.debug("[SUPERCHARGER] Registered superchargers."))
+    .catch(error => {
+      logger.error("[SUPERCHARGER] Error registering superchargers.");
+      logger.error(error);
+    });
+};
+
 module.exports = {
   init: builder => (botBuilder = builder),
   register: detail => {
-    logger.debug("[SUPERCHARGER] Registering...");
-    detail.addToDB();
+    logger.debug("[SUPERCHARGER] Adding to queue");
+    superchargerObjects.push(detail);
     superchargers[detail.id] = detail.function;
   },
+  apply: apply,
   clear: clear,
   execute: execute,
   Detail: Detail,

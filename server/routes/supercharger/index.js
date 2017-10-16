@@ -14,6 +14,7 @@ let db;
 const superchargerRouter = express.Router();
 
 //Import Schemas
+const bulkCreateSuperchargerSchema = require("./schemas/bulkCreateSupercharger.json");
 const createSuperchargerSchema = require("./schemas/createSupercharger.json");
 
 /**
@@ -137,8 +138,6 @@ superchargerRouter.get("/:id", (req, res) => {
 *         description: Successful Creation
 *       500:
 *         description: Creation failed. Item may already exist in DB.
-*       404:
-*        description: doc not found
 */
 superchargerRouter.post("/", [
   validator.body(createSuperchargerSchema),
@@ -149,6 +148,45 @@ superchargerRouter.post("/", [
         res.json({ message: "Successfully saved supercharger." });
       })
       .catch(error => {
+        logger.error(error);
+        res.status(500).json({ error: error.reason });
+      });
+  }
+]);
+
+/**
+* @swagger
+* /supercharger/bulk:
+*   post:
+*     description: Creates a new supercharger item in storage for each supercharger document provided.
+*     produces:
+*       - application/json
+*     parameters:
+*       - name: post-schema
+*         description: An array of supercharger items
+*         in: body
+*         required: true
+*         schema:
+*           $ref: '#/schemas/bulkCreateSupercharger'     
+*     responses:
+*       200:
+*         description: Successful Creation
+*       500:
+*         description: Creation failed. An item may already exist in DB.
+*/
+superchargerRouter.post("/bulk", [
+  validator.body(bulkCreateSuperchargerSchema),
+  (req, res) => {
+    db
+      .bulk({
+        docs: req.body
+      })
+      .then(() => {
+        logger.debug("[SUPERCHARGER] Bulk registration succeeded.");
+        res.json({ message: "Successfully saved superchargers." });
+      })
+      .catch(error => {
+        logger.error("[SUPERCHARGER] Bulk registration failed.");
         logger.error(error);
         res.status(500).json({ error: error.reason });
       });

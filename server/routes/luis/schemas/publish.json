@@ -1,0 +1,13 @@
+{
+  "additionalProperties": false,
+  "type": "object",
+  "properties": {
+    "versionId": {
+      "type": "string"
+    },
+    "isStaging": {
+      "default": false,
+      "type": "boolean"
+    }
+  }
+}

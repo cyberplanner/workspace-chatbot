@@ -2,29 +2,31 @@
   "additionalProperties": false,
   "type": "object",
   "properties": {
-    "ExampleText": {
+    "text": {
       "type": "string"
     },
-    "SelectedIntentName": {
+    "intentName": {
       "type": "string"
     },
-    "EntityLabels": {
+    "entityLabels": {
       "items": {
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "EntityType": {
+          "entityName": {
             "type": "string"
           },
-          "StartToken": {
+          "startCharIndex": {
             "type": "integer"
           },
-          "EndToken": {
+          "endCharIndex": {
             "type": "integer"
           }
-        }
+        },
+        "required": ["entityName", "startCharIndex", "endCharIndex"]
       },
       "type": "array"
     }
-  }
+  },
+  "required": ["text", "intentName", "entityLabels"]
 }

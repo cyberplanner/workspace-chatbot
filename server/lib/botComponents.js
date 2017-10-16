@@ -19,7 +19,7 @@ var bot = new builder.UniversalBot(connector);
 //var bot = new builder.UniversalBot(connector);
 
 var model =
-  "https://westus.api.cognitive.microsoft.com/luis/v2.0/apps/" +
+  process.env.LUIS_ENDPOINT_V2 +
   process.env.LUIS_APP_ID +
   "?subscription-key=" +
   process.env.LUIS_APP_SUBSCRIPTION_KEY;

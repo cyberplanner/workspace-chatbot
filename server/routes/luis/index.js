@@ -308,14 +308,14 @@ luisRouter.post("/utterance", [
     let options = {
       body: JSON.stringify(req.body),
       method: "POST",
-      path: luisAuthCredentials.appId + "/example",
+      path: "/example",
       headers: {
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
       }
     };
 
-    sendRequest(options, luisAuthCredentials.endpoint)
+    sendRequest(options, luisAuthCredentials.endpointV2)
       .then(data => {
         res.json(data);
       })

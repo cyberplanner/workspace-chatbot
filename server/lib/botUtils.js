@@ -73,7 +73,20 @@ const checkConditions = (node, session, args, next, builder) => {
           }
         };
 
-        let result = getResult(condition, value);
+        let conditionValue = condition.value;
+
+        // Should we be case sensitive?
+        if (!condition.caseSensitive) {
+          value = value.toLowerCase();
+          conditionValue = conditionValue.toLowerCase();
+        }
+
+        let result = getResult(
+          Object.assign({}, condition, {
+            value: conditionValue
+          }),
+          value
+        );
 
         // If it's a List entity, let's handle that
         // by checking all entity resolutions

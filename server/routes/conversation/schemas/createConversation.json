@@ -19,6 +19,9 @@
                 "not": {
                   "type": "boolean"
                 },
+                "caseSensitive": {
+                  "type": "boolean"
+                },
                 "comparator": {
                   "type": "string",
                   "enum": ["EQUALS", "CONTAINS", "REGEX_MATCH"]
@@ -27,7 +30,13 @@
                   "type": "string"
                 }
               },
-              "required": ["entityId", "comparator", "value", "not"],
+              "required": [
+                "entityId",
+                "comparator",
+                "value",
+                "not",
+                "caseSensitive"
+              ],
               "type": "object"
             },
             "type": "array"

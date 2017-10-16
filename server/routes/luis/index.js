@@ -21,6 +21,7 @@ const createClosedListEntitySchema = require("./schemas/createClosedListEntity.j
 const createUtteranceSchema = require("./schemas/createUtterance.json");
 
 const luisAuthCredentials = {
+  endpoint: process.env.LUIS_ENDPOINT,
   endpointV2: `${process.env.LUIS_ENDPOINT_V2}/${process.env
     .LUIS_APP_ID}/versions/${process.env.LUIS_APP_VERSION}`,
   appId: process.env.LUIS_APP_ID,
@@ -103,14 +104,14 @@ luisRouter.post("/intents", [
     let options = {
       body: JSON.stringify(req.body),
       method: "POST",
-      path: luisAuthCredentials.appId + "/intents",
+      path: "/intents",
       headers: {
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
       }
     };
 
-    sendRequest(options, luisAuthCredentials.endpoint)
+    sendRequest(options, luisAuthCredentials.endpointV2)
       .then(data => {
         res.json(data);
       })
@@ -134,15 +135,21 @@ luisRouter.post("/intents", [
 luisRouter.get("/entities", (req, res) => {
   let options = {
     method: "GET",
-    path: luisAuthCredentials.appId + "/entities",
+    path: "/entities",
     headers: {
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
   };
 
-  sendRequest(options, luisAuthCredentials.endpoint)
+  sendRequest(options, luisAuthCredentials.endpointV2)
     .then(data => {
-      res.json(data);
+      res.json({
+        Result: data.map(item =>
+          Object.assign(item, {
+            type: item.readableType
+          })
+        )
+      });
     })
     .catch(error => {
       res.json(error);

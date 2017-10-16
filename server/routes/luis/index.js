@@ -22,18 +22,12 @@ const createUtteranceSchema = require("./schemas/createUtterance.json");
 const publishSchema = require("./schemas/publish.json");
 
 const luisAuthCredentials = {
-  endpoint: process.env.LUIS_ENDPOINT,
   appEndpoint: `${process.env.LUIS_ENDPOINT_V2}/${process.env.LUIS_APP_ID}`,
   endpointV2: `${process.env.LUIS_ENDPOINT_V2}/${process.env
     .LUIS_APP_ID}/versions/${process.env.LUIS_APP_VERSION}`,
   appId: process.env.LUIS_APP_ID,
   programmaticApiKey: process.env.LUIS_PROGRAMMATIC_API_KEY,
   appVersion: process.env.LUIS_APP_VERSION
-};
-
-const publishData = {
-  versionId: "0.1",
-  isStaging: false
 };
 
 function sendRequest(requestOptions, endpoint) {
@@ -421,7 +415,7 @@ luisRouter.post("/publish", [
   validator.body(publishSchema),
   (req, res) => {
     let options = {
-      body: JSON.stringify(publishData),
+      body: JSON.stringify(req.body),
       method: "POST",
       path: "/publish",
       headers: {

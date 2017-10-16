@@ -21,8 +21,8 @@ const createClosedListEntitySchema = require("./schemas/createClosedListEntity.j
 const createUtteranceSchema = require("./schemas/createUtterance.json");
 
 const luisAuthCredentials = {
-  endpoint: process.env.LUIS_ENDPOINT,
-  endpointV2: process.env.LUIS_ENDPOINT_V2,
+  endpointV2: `${process.env.LUIS_ENDPOINT_V2}/${process.env
+    .LUIS_APP_ID}/versions/${process.env.LUIS_APP_VERSION}`,
   appId: process.env.LUIS_APP_ID,
   programmaticApiKey: process.env.LUIS_PROGRAMMATIC_API_KEY,
   appVersion: process.env.LUIS_APP_VERSION
@@ -64,15 +64,22 @@ function sendRequest(requestOptions, endpoint) {
 luisRouter.get("/intents", (req, res) => {
   let options = {
     method: "GET",
-    path: luisAuthCredentials.appId + "/intents",
+    path: "/intents",
     headers: {
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
     }
   };
 
-  sendRequest(options, luisAuthCredentials.endpoint)
+  sendRequest(options, luisAuthCredentials.endpointV2)
     .then(data => {
-      res.json(data);
+      res.json({
+        Result: data.map(item => ({
+          id: item.id,
+          name: item.name,
+          type: item.readableType,
+          typeId: item.typeId
+        }))
+      });
     })
     .catch(error => {
       res.json(error);
@@ -153,22 +160,22 @@ luisRouter.get("/entities", (req, res) => {
  *       404:
  *          description: not found
  */
-luisRouter.get('/closed-lists', (req,res) => {
-    let options = {
-            method: "GET",
-            path: `${luisAuthCredentials.appId}/versions/${luisAuthCredentials.appVersion}/closedlists`,
-            headers: {
-                "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
-            }
-    };      
-    sendRequest(options,luisAuthCredentials.endpointV2)
+luisRouter.get("/closed-lists", (req, res) => {
+  let options = {
+    method: "GET",
+    path: `/closedlists`,
+    headers: {
+      "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
+    }
+  };
+  sendRequest(options, luisAuthCredentials.endpointV2)
     .then(data => {
-        res.json(data);
-    }).catch(error => {
-        res.json(error);
+      res.json(data);
+    })
+    .catch(error => {
+      res.json(error);
     });
 });
-
 
 /**
 * @swagger
@@ -187,11 +194,7 @@ luisRouter.post("/entityExtractor", [
     let options = {
       body: JSON.stringify(req.body),
       method: "POST",
-      path:
-        luisAuthCredentials.appId +
-        /versions/ +
-        luisAuthCredentials.appVersion +
-        "/entities",
+      path: "/entities",
       headers: {
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
@@ -225,11 +228,7 @@ luisRouter.post("/closedListEntity", [
     let options = {
       body: JSON.stringify(req.body),
       method: "POST",
-      path:
-        luisAuthCredentials.appId +
-        /versions/ +
-        luisAuthCredentials.appVersion +
-        "/closedlists",
+      path: "/closedlists",
       headers: {
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
@@ -268,12 +267,7 @@ luisRouter.put("/closedListEntity/:id", [
     let options = {
       body: JSON.stringify(req.body),
       method: "PUT",
-      path:
-        luisAuthCredentials.appId +
-        /versions/ +
-        luisAuthCredentials.appVersion +
-        "/closedlists/" +
-        req.params.id,
+      path: "/closedlists/" + req.params.id,
       headers: {
         "Content-Type": "application/json",
         "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey
@@ -418,7 +412,7 @@ luisRouter.post("/publish", (req, res) => {
   let options = {
     body: JSON.stringify(publishData),
     method: "POST",
-    path: luisAuthCredentials.appId + "/publish",
+    path: "/publish",
     headers: {
       "Content-Type": "application/json",
       "Ocp-Apim-Subscription-Key": luisAuthCredentials.programmaticApiKey

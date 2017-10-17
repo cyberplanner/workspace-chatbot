@@ -186,6 +186,40 @@ describe("checkConditions", () => {
     ).toEqual(true);
   });
 
+  it("should return true if valid case ignored and valid condition present in node", () => {
+    let node = {
+      conditions: [
+        {
+          entityId: "test",
+          not: false,
+          comparator: "EQUALS",
+          value: "company car"
+        }
+      ]
+    };
+    let session = {};
+    let args = {
+      entities: [
+        {
+          type: "test",
+          resolution: {
+            values: ["Company Car"]
+          }
+        }
+      ]
+    };
+    let next = () => {};
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "Company Car"
+          })
+        }
+      })
+    ).toEqual(true);
+  });
+
   it("should return true if valid contains condition present in node", () => {
     let node = {
       conditions: [
@@ -272,6 +306,41 @@ describe("checkConditions", () => {
           type: "test",
           resolution: {
             values: ["Company Car"]
+          }
+        }
+      ]
+    };
+    let next = () => {};
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => ({
+            entity: "Company Car"
+          })
+        }
+      })
+    ).toEqual(false);
+  });
+
+  it("should return false if case sensitivity present in node", () => {
+    let node = {
+      conditions: [
+        {
+          entityId: "test",
+          not: false,
+          caseSensitive: true,
+          comparator: "EQUALS",
+          value: "Payroll"
+        }
+      ]
+    };
+    let session = {};
+    let args = {
+      entities: [
+        {
+          type: "test",
+          resolution: {
+            values: ["payroll"]
           }
         }
       ]

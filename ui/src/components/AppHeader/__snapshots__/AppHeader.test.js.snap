@@ -5,6 +5,7 @@ exports[`renders without crashing 1`] = `
   className="sc-bdVaJa itvZZM"
 >
   <img
+    alt="Yak project logo"
     src="Yak_White.svg"
   />
   <h3>

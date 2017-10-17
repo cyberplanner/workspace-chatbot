@@ -76,7 +76,10 @@ const checkConditions = (node, session, args, next, builder) => {
         let conditionValue = condition.value;
 
         // Should we be case sensitive?
-        if (!condition.caseSensitive) {
+        if (
+          !condition.caseSensitive &&
+          condition.comparator !== "REGEX_MATCH"
+        ) {
           value = value.toLowerCase();
           conditionValue = conditionValue.toLowerCase();
         }
@@ -101,7 +104,10 @@ const checkConditions = (node, session, args, next, builder) => {
               return true;
             }
 
-            if (!condition.caseSensitive) {
+            if (
+              !condition.caseSensitive &&
+              condition.comparator !== "REGEX_MATCH"
+            ) {
               value = value.toLowerCase();
             }
             return getResult(condition, value);

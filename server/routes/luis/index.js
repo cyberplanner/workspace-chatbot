@@ -22,8 +22,9 @@ const createUtteranceSchema = require("./schemas/createUtterance.json");
 const publishSchema = require("./schemas/publish.json");
 
 const luisAuthCredentials = {
-  appEndpoint: `${process.env.LUIS_ENDPOINT_V2}/${process.env.LUIS_APP_ID}`,
-  endpointV2: `${process.env.LUIS_ENDPOINT_V2}/${process.env
+  appEndpoint: `${process.env.LUIS_ENDPOINT_V2}/api/v2.0/apps/${process.env
+    .LUIS_APP_ID}`,
+  endpointV2: `${process.env.LUIS_ENDPOINT_V2}/api/v2.0/apps/${process.env
     .LUIS_APP_ID}/versions/${process.env.LUIS_APP_VERSION}`,
   appId: process.env.LUIS_APP_ID,
   programmaticApiKey: process.env.LUIS_PROGRAMMATIC_API_KEY,

@@ -20,6 +20,7 @@ var bot = new builder.UniversalBot(connector);
 
 var model =
   process.env.LUIS_ENDPOINT_V2 +
+  "/v2.0/apps/" +
   process.env.LUIS_APP_ID +
   "?subscription-key=" +
   process.env.LUIS_APP_SUBSCRIPTION_KEY;

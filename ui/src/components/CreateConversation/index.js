@@ -522,7 +522,8 @@ export default class ConversationForm extends React.Component {
               );
             })}
           </ItemWrapper>
-          {this.props.editingData.path.length > 1 && (
+          {(this.props.editingData.path.length > 1 ||
+            !this.props.editingData.editMode) && (
             <ItemWrapper>
               {entityConditions.map((value, index) => {
                 if (!value) {

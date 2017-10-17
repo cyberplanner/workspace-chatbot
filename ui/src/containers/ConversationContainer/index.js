@@ -198,7 +198,7 @@ class ConversationContainer extends Component {
           default:
             this.setState({
               error: new Error(
-                "The conversation structure seems to be corrupted."
+                "The conversation structure seems to be corrupted. If you don't have a structure, try restarting the server to create an initial setup."
               )
             });
             break;

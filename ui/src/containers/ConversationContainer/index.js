@@ -282,7 +282,8 @@ class ConversationContainer extends Component {
         path,
         treeIndex,
         editMode: false
-      }
+      },
+      asideError: null
     });
   }
 
@@ -316,17 +317,27 @@ class ConversationContainer extends Component {
   }
 
   editNode({ node, path, treeIndex }) {
-    getKnowledgeById(node.node.message).then(res => {
-      this.setState({
-        editingData: {
-          node,
-          path,
-          treeIndex,
-          editMode: true,
-          messages: res.responses
-        }
+    getKnowledgeById(node.node.message)
+      .then(res => {
+        this.setState({
+          editingData: {
+            node,
+            path,
+            treeIndex,
+            editMode: true,
+            messages: res.responses
+          },
+          asideError: null
+        });
+      })
+      .catch(error => {
+        console.error(error);
+        this.setState({
+          error: new Error(
+            "Failed to retrieve responses for the selected node."
+          )
+        });
       });
-    });
   }
 
   closePopup() {
@@ -362,6 +373,12 @@ class ConversationContainer extends Component {
         "Content-Type": "application/json"
       }
     })
+      .catch(error => {
+        console.error(error);
+        throw new Error(
+          "Failed to create knowledge entry for responses. Check connectivity and retry."
+        );
+      })
       .then(response => {
         // If that was successful, start building up the
         // content of the new conversation node.
@@ -387,6 +404,12 @@ class ConversationContainer extends Component {
         }
         // Now - add that node into the DB.
         createNewConversationNode(req)
+          .catch(error => {
+            console.error(error);
+            throw new Error(
+              "Failed to create conversation node. Check supercharger configuration is valid, check connectivity and retry."
+            );
+          })
           .then(response => {
             // Now - add the child to the parent...
             return addNewChildToNode(parentId, {
@@ -397,7 +420,9 @@ class ConversationContainer extends Component {
               // As the new node has been created - delete it.
               // We failed to add it as a child to the parent.
               deleteConversationNode(response.id);
-              throw new Error("Failed to add to parent.");
+              throw new Error(
+                "Failed to update parent node. Please check entity conditions, check connectivity and retry."
+              );
             });
           })
           .then(done => {
@@ -411,68 +436,98 @@ class ConversationContainer extends Component {
         KnowledgeManagmentService("/" + id, {
           method: "DELETE"
         });
+        this.setState({
+          asideError: new Error(error.message)
+        });
       });
   }
 
   handleUpdate(formData, nodeId, parentId) {
     // Get existing value for node
-    retrieveConversationNode(nodeId).then(nodeDetail => {
-      // Send a PUT to knowledge management to update the responses
-      KnowledgeManagmentService("/" + nodeDetail.message, {
-        method: "PUT",
-        body: JSON.stringify({
-          responses: formData.responses
-        }),
-        headers: {
-          "Content-Type": "application/json"
-        }
-      }).then(response => {
-        // Build up Node Update Request
-        let req = {
-          // Keep existing children, we're not editing those here.
-          children: [].concat(nodeDetail.children),
-          fallback: ["I'm sorry - I can't help with that."],
-          message: nodeDetail.message
-        };
-        // Check that we have a valid supercharger.
-        if (this.superchargerExists(formData)) {
-          // We do. Add it to the request
-          console.log("Creating supercharger");
-          req.supercharger = {};
-          req.supercharger.id = formData.supercharger;
-          req.supercharger.arguments = formData.superchargerParameters.reduce(
-            (result, item) => {
-              result[item.name] = item.value;
-              return result;
-            },
-            {}
-          );
-        }
-        // Call update on that node.
-        // This will update any supercharger changes
-        updateConversationNode(nodeId, req)
-          .then(response => {
-            // Then update the child of the parent node, to add
-            // any changes to the intentId or conditions.
-            if (nodeId === "root" && !parentId) {
-              return;
-            }
-            return updateChildOfNode(parentId, {
-              intentId: formData.intentId,
-              nodeId: nodeId,
-              conditions: formData.conditions
-            });
-          })
-          .then(done => {
-            // Finished! Update our tree and close the edit window.
-            this.updateFromServer();
-            this.closePopup();
-          })
+    retrieveConversationNode(nodeId)
+      .catch(error => {
+        console.error(error);
+        throw new Error(
+          "Failed to retrieve conversation node for update. Check connectivity and retry."
+        );
+      })
+      .then(nodeDetail => {
+        // Send a PUT to knowledge management to update the responses
+        return KnowledgeManagmentService("/" + nodeDetail.message, {
+          method: "PUT",
+          body: JSON.stringify({
+            responses: formData.responses
+          }),
+          headers: {
+            "Content-Type": "application/json"
+          }
+        })
           .catch(error => {
             console.error(error);
+            throw new Error(
+              "Failed to update bot responses. Check connectivity and retry."
+            );
+          })
+          .then(response => {
+            // Build up Node Update Request
+            let req = {
+              // Keep existing children, we're not editing those here.
+              children: [].concat(nodeDetail.children),
+              fallback: ["I'm sorry - I can't help with that."],
+              message: nodeDetail.message
+            };
+            // Check that we have a valid supercharger.
+            if (this.superchargerExists(formData)) {
+              // We do. Add it to the request
+              console.log("Creating supercharger");
+              req.supercharger = {};
+              req.supercharger.id = formData.supercharger;
+              req.supercharger.arguments = formData.superchargerParameters.reduce(
+                (result, item) => {
+                  result[item.name] = item.value;
+                  return result;
+                },
+                {}
+              );
+            }
+            // Call update on that node.
+            // This will update any supercharger changes
+            return updateConversationNode(nodeId, req)
+              .catch(error => {
+                console.error(error);
+                throw new Error(
+                  "Failed to update conversation node for update. Check superchargers and responses and retry."
+                );
+              })
+              .then(response => {
+                // Then update the child of the parent node, to add
+                // any changes to the intentId or conditions.
+                if (nodeId === "root" && !parentId) {
+                  return;
+                }
+                return updateChildOfNode(parentId, {
+                  intentId: formData.intentId,
+                  nodeId: nodeId,
+                  conditions: formData.conditions
+                }).catch(error => {
+                  console.error(error);
+                  throw new Error(
+                    "Failed to update parent node, check your entity conditions and retry."
+                  );
+                });
+              })
+              .then(done => {
+                // Finished! Update our tree and close the edit window.
+                this.updateFromServer();
+                this.closePopup();
+              });
           });
+      })
+      .catch(error => {
+        this.setState({
+          asideError: new Error(error.message)
+        });
       });
-    });
   }
 
   updateSearch(e) {
@@ -513,7 +568,8 @@ class ConversationContainer extends Component {
     const {
       searchQuery,
       searchFocusIndex = 0,
-      searchFoundCount = 0
+      searchFoundCount = 0,
+      asideError
     } = this.state;
     return (
       <StyledTreeView>
@@ -562,6 +618,7 @@ class ConversationContainer extends Component {
             superchargers={this.state.superchargers}
             onSubmit={this.handleCreate}
             handleClose={this.closePopup}
+            error={asideError}
           />
         )}
         {!this.state.error && (

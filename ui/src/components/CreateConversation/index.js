@@ -251,6 +251,16 @@ const ItemWrapper = styled.div`
   }
 `;
 
+// language=SCSS
+const ErrorSection = styled.section`
+  & h3 {
+    text-align: left;
+  }
+  margin: 0.5em;
+  padding: 0.5em;
+  border: 1px solid #f00;
+`;
+
 export default class ConversationForm extends React.Component {
   state = {
     fields: {},
@@ -428,6 +438,12 @@ export default class ConversationForm extends React.Component {
           <h2>
             {this.props.editingData.editMode ? "Update" : "Create"} a node
           </h2>
+          {this.props.error && (
+            <ErrorSection id="error">
+              <h3> Something went wrong: </h3>
+              <p>{this.props.error.message}</p>
+            </ErrorSection>
+          )}
           <InputContainer>
             <StyledLabel htmlFor="intentId" title="Intent Id">
               #

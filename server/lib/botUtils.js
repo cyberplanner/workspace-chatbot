@@ -100,6 +100,10 @@ const checkConditions = (node, session, args, next, builder) => {
             if (result) {
               return true;
             }
+
+            if (!condition.caseSensitive) {
+              value = value.toLowerCase();
+            }
             return getResult(condition, value);
           }, false);
         }

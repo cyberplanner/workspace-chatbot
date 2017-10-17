@@ -588,14 +588,15 @@ export default class ConversationForm extends React.Component {
                     <input
                       type="checkbox"
                       name="caseSensitive"
-                      value={value.caseSensitive}
+                      checked={Boolean(value.caseSensitive)}
                       onChange={event =>
                         this.updateEntityCondition(
-                          Object.assign(event, {
-                            target: Object.assign(event.target, {
-                              value: Boolean(event.target.checked)
-                            })
-                          }),
+                          {
+                            target: {
+                              value: Boolean(event.target.checked),
+                              name: event.target.name
+                            }
+                          },
                           index
                         )}
                     />

@@ -583,24 +583,26 @@ export default class ConversationForm extends React.Component {
                     placeholder="Value"
                     onChange={event => this.updateEntityCondition(event, index)}
                   />
-                  <StyledCheckboxLabel>
-                    Case sensitive?
-                    <input
-                      type="checkbox"
-                      name="caseSensitive"
-                      checked={Boolean(value.caseSensitive)}
-                      onChange={event =>
-                        this.updateEntityCondition(
-                          {
-                            target: {
-                              value: Boolean(event.target.checked),
-                              name: event.target.name
-                            }
-                          },
-                          index
-                        )}
-                    />
-                  </StyledCheckboxLabel>
+                  {value.comparator !== "REGEX_MATCH" && (
+                    <StyledCheckboxLabel>
+                      Case sensitive?
+                      <input
+                        type="checkbox"
+                        name="caseSensitive"
+                        checked={Boolean(value.caseSensitive)}
+                        onChange={event =>
+                          this.updateEntityCondition(
+                            {
+                              target: {
+                                value: Boolean(event.target.checked),
+                                name: event.target.name
+                              }
+                            },
+                            index
+                          )}
+                      />
+                    </StyledCheckboxLabel>
+                  )}
                   <StyledButton
                     type="button"
                     onClick={event => this.removeEntityCondition(event, index)}

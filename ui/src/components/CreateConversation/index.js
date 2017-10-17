@@ -422,7 +422,6 @@ export default class ConversationForm extends React.Component {
       intents = [],
       entities = []
     } = this.state;
-    console.log(this.props.editingData);
     return (
       <Wrapper>
         <PopUp onSubmit={this.formSubmission}>

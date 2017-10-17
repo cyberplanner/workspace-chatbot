@@ -364,15 +364,15 @@ export default class ConversationForm extends React.Component {
       Fetch all entities & closed-list entities for
       autocomplete
      */
-    Promise.all([
-      LuisApi.getEntities(),
-      LuisApi.getClosedLists()
-    ])
-      .then(results => this.setState({
-        entities: []
-          .concat(results[0].map(entity => entity.name),
-          results[1].map(entity => entity.name))
-      }))
+    Promise.all([LuisApi.getEntities(), LuisApi.getClosedLists()])
+      .then(results =>
+        this.setState({
+          entities: [].concat(
+            results[0].map(entity => entity.name),
+            results[1].map(entity => entity.name)
+          )
+        })
+      )
       .catch(error => {
         console.error(error);
         console.error("[ENTITY_RETRIEVE] Failed.");
@@ -461,7 +461,12 @@ export default class ConversationForm extends React.Component {
             />
           </InputContainer>
           <InputContainer>
-            <span>⚡ Supercharger: </span>
+            <span>
+              <span role="img" aria-label="lightning bolt emoji">
+                ⚡
+              </span>{" "}
+              Supercharger:{" "}
+            </span>
             <StyledSelect
               name="supercharger"
               value={this.state.fields.supercharger}
@@ -505,7 +510,7 @@ export default class ConversationForm extends React.Component {
           <ItemWrapper>
             {entityConditions.map((value, index) => {
               if (!value) {
-                return <div />;
+                return <div key={index} />;
               }
               return (
                 <div
@@ -527,12 +532,16 @@ export default class ConversationForm extends React.Component {
                     name="entityId"
                     value={value.entityId || ""}
                     onChange={event => this.updateEntityCondition(event, index)}
-                    onSelect={value => this.updateEntityCondition({
-                      target: {
-                        value,
-                        name: "entityId"
-                      }
-                    }, index)}
+                    onSelect={value =>
+                      this.updateEntityCondition(
+                        {
+                          target: {
+                            value,
+                            name: "entityId"
+                          }
+                        },
+                        index
+                      )}
                     items={entities}
                     shouldItemRender={(item, value) => {
                       return (
@@ -540,10 +549,11 @@ export default class ConversationForm extends React.Component {
                       );
                     }}
                     getItemValue={item => item}
-                    renderItem={(item, isHighlighted) =>
+                    renderItem={(item, isHighlighted) => (
                       <SelectItem isHighlighted={isHighlighted}>
                         {item}
-                      </SelectItem>}
+                      </SelectItem>
+                    )}
                   />
                   <StyledSelect
                     name="not"

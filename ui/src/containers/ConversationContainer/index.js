@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import SortableTree, { toggleExpandedForAll } from "react-sortable-tree";
-import { addNodeUnderParent } from "./utils.js";
 import ConversationNodeView from "./ConversationNode";
 import {
   bulkDeleteConversationNodes,
@@ -545,7 +544,10 @@ class ConversationContainer extends Component {
         </SearchContainer>
         {this.state.error && (
           <ErrorSection id="error">
-            <img src={require("../../components/AppHeader/Yak.svg")} />
+            <img
+              src={require("../../components/AppHeader/Yak.svg")}
+              alt="Yak Project logo"
+            />
             <h2>Oops, Something went wrong!</h2>
             <p>{this.state.error.message}</p>
             <StyledButton onClick={this.updateFromServer}>Retry</StyledButton>

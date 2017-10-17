@@ -454,6 +454,9 @@ class ConversationContainer extends Component {
           .then(response => {
             // Then update the child of the parent node, to add
             // any changes to the intentId or conditions.
+            if (nodeId === "root" && !parentId) {
+              return;
+            }
             return updateChildOfNode(parentId, {
               intentId: formData.intentId,
               nodeId: nodeId,

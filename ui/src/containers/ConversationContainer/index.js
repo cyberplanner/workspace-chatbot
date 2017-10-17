@@ -20,6 +20,14 @@ import CreateConversation from "../../components/CreateConversation";
 import { KnowledgeManagmentService } from "../../components/KnowledgeManagmentService";
 import styled from "styled-components";
 
+const ErrorSection = styled.section`
+  opacity: 0.8;
+  text-align: center;
+  & img {
+    height: 150px;
+  }
+`;
+
 const StyledButton = styled.button`
   background: white;
   border: 1px #bbbbbb solid;
@@ -174,8 +182,28 @@ class ConversationContainer extends Component {
       })
       .then(results => {
         this.setState({
+          error: null,
           treeData: this.processConversationNodes(results)
         });
+      })
+      .catch(error => {
+        console.error(error);
+        switch (error.message) {
+          case "Failed to fetch":
+            this.setState({
+              error: new Error(
+                "Failed to retrieve the conversation structure, please check your connectivity."
+              )
+            });
+            break;
+          default:
+            this.setState({
+              error: new Error(
+                "The conversation structure seems to be corrupted."
+              )
+            });
+            break;
+        }
       });
   }
 
@@ -515,6 +543,14 @@ class ConversationContainer extends Component {
             </button>
           </div>
         </SearchContainer>
+        {this.state.error && (
+          <ErrorSection id="error">
+            <img src={require("../../components/AppHeader/Yak.svg")} />
+            <h2>Oops, Something went wrong!</h2>
+            <p>{this.state.error.message}</p>
+            <StyledButton onClick={this.updateFromServer}>Retry</StyledButton>
+          </ErrorSection>
+        )}
         {this.state.editingData && (
           <CreateConversation
             editingData={this.state.editingData}
@@ -523,66 +559,68 @@ class ConversationContainer extends Component {
             handleClose={this.closePopup}
           />
         )}
-        <SortableTree
-          searchQuery={searchQuery}
-          searchFocusOffset={searchFocusIndex}
-          searchFinishCallback={this.searchFinishCallback}
-          rowHeight={162}
-          canDrag={false}
-          style={{ height: "calc(100% - 70px)" }}
-          treeData={this.state.treeData}
-          onChange={treeData => this.setState({ treeData })}
-          getNodeKey={node => {
-            return node.node.node.id;
-          }}
-          nodeContentRenderer={ConversationNodeView}
-          generateNodeProps={rowInfo => {
-            let props = {
-              buttons: [
-                <StyledButton
-                  style={{
-                    verticalAlign: "middle"
-                  }}
-                  onClick={() => this.editNode(rowInfo)}
-                >
-                  <svg
-                    fill="#00a0d7"
-                    height="12"
-                    viewBox="0 0 24 24"
-                    width="12"
-                    xmlns="http://www.w3.org/2000/svg"
+        {!this.state.error && (
+          <SortableTree
+            searchQuery={searchQuery}
+            searchFocusOffset={searchFocusIndex}
+            searchFinishCallback={this.searchFinishCallback}
+            rowHeight={162}
+            canDrag={false}
+            style={{ height: "calc(100% - 70px)" }}
+            treeData={this.state.treeData}
+            onChange={treeData => this.setState({ treeData })}
+            getNodeKey={node => {
+              return node.node.node.id;
+            }}
+            nodeContentRenderer={ConversationNodeView}
+            generateNodeProps={rowInfo => {
+              let props = {
+                buttons: [
+                  <StyledButton
+                    style={{
+                      verticalAlign: "middle"
+                    }}
+                    onClick={() => this.editNode(rowInfo)}
                   >
-                    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
-                    <path d="M0 0h24v24H0z" fill="none" />
-                  </svg>
-                </StyledButton>,
-                <StyledButton
-                  style={{
-                    verticalAlign: "middle"
-                  }}
-                  onClick={() => this.createCallback(rowInfo)}
-                >
-                  +
-                </StyledButton>
-              ]
-            };
+                    <svg
+                      fill="#00a0d7"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      width="12"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z" />
+                      <path d="M0 0h24v24H0z" fill="none" />
+                    </svg>
+                  </StyledButton>,
+                  <StyledButton
+                    style={{
+                      verticalAlign: "middle"
+                    }}
+                    onClick={() => this.createCallback(rowInfo)}
+                  >
+                    +
+                  </StyledButton>
+                ]
+              };
 
-            if (rowInfo.path.length > 1) {
-              props.buttons.push(
-                <StyledButton
-                  style={{
-                    verticalAlign: "middle"
-                  }}
-                  onClick={() => this.deleteCallback(rowInfo)}
-                >
-                  x
-                </StyledButton>
-              );
-            }
+              if (rowInfo.path.length > 1) {
+                props.buttons.push(
+                  <StyledButton
+                    style={{
+                      verticalAlign: "middle"
+                    }}
+                    onClick={() => this.deleteCallback(rowInfo)}
+                  >
+                    x
+                  </StyledButton>
+                );
+              }
 
-            return props;
-          }}
-        />
+              return props;
+            }}
+          />
+        )}
       </StyledTreeView>
     );
   }

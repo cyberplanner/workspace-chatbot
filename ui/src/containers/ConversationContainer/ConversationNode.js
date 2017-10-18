@@ -226,14 +226,13 @@ class NodeRendererDefault extends Component {
       node,
       path,
       treeIndex,
-      buttons,
-      ...otherProps
+      buttons
     } = this.props;
 
     const { showConditions } = this.state;
 
     return (
-      <div style={{ height: "100%" }} {...otherProps}>
+      <div style={{ height: "100%" }}>
         {toggleChildrenVisibility &&
           node.children &&
           node.children.length > 0 && (

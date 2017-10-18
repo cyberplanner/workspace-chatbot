@@ -258,6 +258,16 @@ const ItemWrapper = styled.div`
   }
 `;
 
+// language=SCSS
+const ErrorSection = styled.section`
+  & h3 {
+    text-align: left;
+  }
+  margin: 0.5em;
+  padding: 0.5em;
+  border: 1px solid #f00;
+`;
+
 export default class ConversationForm extends React.Component {
   state = {
     fields: {},
@@ -429,13 +439,18 @@ export default class ConversationForm extends React.Component {
       intents = [],
       entities = []
     } = this.state;
-
     return (
       <Wrapper>
         <PopUp onSubmit={this.formSubmission}>
           <h2>
             {this.props.editingData.editMode ? "Update" : "Create"} a node
           </h2>
+          {this.props.error && (
+            <ErrorSection id="error">
+              <h3> Something went wrong: </h3>
+              <p>{this.props.error.message}</p>
+            </ErrorSection>
+          )}
           <InputContainer>
             <StyledLabel htmlFor="intentId" title="Intent Id">
               #
@@ -468,7 +483,12 @@ export default class ConversationForm extends React.Component {
             />
           </InputContainer>
           <InputContainer>
-            <span>⚡ Supercharger: </span>
+            <span>
+              <span role="img" aria-label="lightning bolt emoji">
+                ⚡
+              </span>{" "}
+              Supercharger:{" "}
+            </span>
             <StyledSelect
               name="supercharger"
               value={this.state.fields.supercharger}
@@ -509,119 +529,127 @@ export default class ConversationForm extends React.Component {
               );
             })}
           </ItemWrapper>
-          <ItemWrapper>
-            {entityConditions.map((value, index) => {
-              if (!value) {
-                return <div />;
-              }
-              return (
-                <div
-                  key={index}
-                  style={{
-                    display: "flex",
-                    alignItems: "baseline",
-                    justifyContent: "space-between"
-                  }}
-                >
-                  <AutoComplete
-                    inputProps={{
-                      id: "entityId",
-                      name: "entityId",
-                      className: "styled",
-                      placeholder: "Entity ID"
+          {(this.props.editingData.path.length > 1 ||
+            !this.props.editingData.editMode) && (
+            <ItemWrapper>
+              {entityConditions.map((value, index) => {
+                if (!value) {
+                  return <div key={index} />;
+                }
+                return (
+                  <div
+                    key={index}
+                    style={{
+                      display: "flex",
+                      alignItems: "baseline",
+                      justifyContent: "space-between"
                     }}
-                    id="entityId"
-                    name="entityId"
-                    value={value.entityId || ""}
-                    onChange={event => this.updateEntityCondition(event, index)}
-                    onSelect={value =>
-                      this.updateEntityCondition(
-                        {
-                          target: {
-                            value,
-                            name: "entityId"
-                          }
-                        },
-                        index
+                  >
+                    <AutoComplete
+                      inputProps={{
+                        id: "entityId",
+                        name: "entityId",
+                        className: "styled",
+                        placeholder: "Entity ID"
+                      }}
+                      id="entityId"
+                      name="entityId"
+                      value={value.entityId || ""}
+                      onChange={event =>
+                        this.updateEntityCondition(event, index)}
+                      onSelect={value =>
+                        this.updateEntityCondition(
+                          {
+                            target: {
+                              value,
+                              name: "entityId"
+                            }
+                          },
+                          index
+                        )}
+                      items={entities}
+                      shouldItemRender={(item, value) => {
+                        return (
+                          item.toUpperCase().indexOf(value.toUpperCase()) !== -1
+                        );
+                      }}
+                      getItemValue={item => item}
+                      renderItem={(item, isHighlighted) => (
+                        <SelectItem isHighlighted={isHighlighted}>
+                          {item}
+                        </SelectItem>
                       )}
-                    items={entities}
-                    shouldItemRender={(item, value) => {
-                      return (
-                        item.toUpperCase().indexOf(value.toUpperCase()) !== -1
-                      );
-                    }}
-                    getItemValue={item => item}
-                    renderItem={(item, isHighlighted) => (
-                      <SelectItem isHighlighted={isHighlighted}>
-                        {item}
-                      </SelectItem>
+                    />
+                    <StyledSelect
+                      name="not"
+                      value={value.not}
+                      placeholder="Is/Is Not"
+                      onChange={event =>
+                        this.updateEntityCondition(event, index)}
+                    >
+                      <option value={false}>is</option>
+                      <option value={true}>is not</option>
+                    </StyledSelect>
+                    <StyledSelect
+                      name="comparator"
+                      value={value.comparator}
+                      placeholder="Comparator"
+                      onChange={event =>
+                        this.updateEntityCondition(event, index)}
+                    >
+                      <option value="EQUALS">equal to</option>
+                      <option value="CONTAINS">containing</option>
+                      <option value="REGEX_MATCH">a match for Regex</option>
+                    </StyledSelect>
+                    <StyledTextInput
+                      type="text"
+                      name="value"
+                      value={value.value}
+                      placeholder="Value"
+                      onChange={event =>
+                        this.updateEntityCondition(event, index)}
+                    />
+                    {value.comparator !== "REGEX_MATCH" && (
+                      <StyledCheckboxLabel>
+                        Case sensitive?
+                        <input
+                          type="checkbox"
+                          name="caseSensitive"
+                          checked={Boolean(value.caseSensitive)}
+                          onChange={event =>
+                            this.updateEntityCondition(
+                              {
+                                target: {
+                                  value: Boolean(event.target.checked),
+                                  name: event.target.name
+                                }
+                              },
+                              index
+                            )}
+                        />
+                      </StyledCheckboxLabel>
                     )}
-                  />
-                  <StyledSelect
-                    name="not"
-                    value={value.not}
-                    placeholder="Is/Is Not"
-                    onChange={event => this.updateEntityCondition(event, index)}
-                  >
-                    <option value={false}>is</option>
-                    <option value={true}>is not</option>
-                  </StyledSelect>
-                  <StyledSelect
-                    name="comparator"
-                    value={value.comparator}
-                    placeholder="Comparator"
-                    onChange={event => this.updateEntityCondition(event, index)}
-                  >
-                    <option value="EQUALS">equal to</option>
-                    <option value="CONTAINS">containing</option>
-                    <option value="REGEX_MATCH">a match for Regex</option>
-                  </StyledSelect>
-                  <StyledTextInput
-                    type="text"
-                    name="value"
-                    value={value.value}
-                    placeholder="Value"
-                    onChange={event => this.updateEntityCondition(event, index)}
-                  />
-                  {value.comparator !== "REGEX_MATCH" && (
-                    <StyledCheckboxLabel>
-                      Case sensitive?
-                      <input
-                        type="checkbox"
-                        name="caseSensitive"
-                        checked={Boolean(value.caseSensitive)}
-                        onChange={event =>
-                          this.updateEntityCondition(
-                            {
-                              target: {
-                                value: Boolean(event.target.checked),
-                                name: event.target.name
-                              }
-                            },
-                            index
-                          )}
-                      />
-                    </StyledCheckboxLabel>
-                  )}
-                  <StyledButton
-                    type="button"
-                    onClick={event => this.removeEntityCondition(event, index)}
-                  >
-                    {" "}
-                    X{" "}
-                  </StyledButton>
-                </div>
-              );
-            })}
-            <StyledButton
-              type="button"
-              onClick={this.addNewEntityCondition}
-              style={{ width: "100%" }}
-            >
-              {" "}
-              Add new condition{" "}
-            </StyledButton>
-          </ItemWrapper>
+                    <StyledButton
+                      type="button"
+                      onClick={event =>
+                        this.removeEntityCondition(event, index)}
+                    >
+                      {" "}
+                      X{" "}
+                    </StyledButton>
+                  </div>
+                );
+              })}
+              <StyledButton
+                type="button"
+                onClick={this.addNewEntityCondition}
+                style={{ width: "100%" }}
+              >
+                {" "}
+                Add new condition{" "}
+              </StyledButton>
+            </ItemWrapper>
+          )}
           <ItemWrapper>
             {responses.map((value, index) => {
               return (

@@ -109,8 +109,14 @@ const checkConditions = (node, session, args, next, builder) => {
               condition.comparator !== "REGEX_MATCH"
             ) {
               value = value.toLowerCase();
+              conditionValue = conditionValue.toLowerCase();
             }
-            return getResult(condition, value);
+            return getResult(
+              Object.assign({}, condition, {
+                value: conditionValue
+              }),
+              value
+            );
           }, false);
         }
 

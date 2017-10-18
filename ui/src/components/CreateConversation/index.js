@@ -80,6 +80,13 @@ const StyledTextArea = styled.textarea`
   }
 `;
 
+const StyledCheckboxLabel = styled.label`
+  display: inline-block;
+  font-size: 12px;
+  display: flex;
+  padding: 11px;
+`;
+
 //  language=SCSS
 const StyledSelect = styled.select`
   & {
@@ -330,7 +337,7 @@ export default class ConversationForm extends React.Component {
     event.preventDefault();
     event.stopPropagation();
     let newConditions = [].concat(this.state.entityConditions);
-    newConditions.push(new EntityCondition(null, false, "EQUALS", null));
+    newConditions.push(new EntityCondition(null, false, "EQUALS", null, false));
     this.setState({ entityConditions: newConditions });
     return false;
   }
@@ -364,15 +371,15 @@ export default class ConversationForm extends React.Component {
       Fetch all entities & closed-list entities for
       autocomplete
      */
-    Promise.all([
-      LuisApi.getEntities(),
-      LuisApi.getClosedLists()
-    ])
-      .then(results => this.setState({
-        entities: []
-          .concat(results[0].map(entity => entity.name),
-          results[1].map(entity => entity.name))
-      }))
+    Promise.all([LuisApi.getEntities(), LuisApi.getClosedLists()])
+      .then(results =>
+        this.setState({
+          entities: [].concat(
+            results[0].map(entity => entity.name),
+            results[1].map(entity => entity.name)
+          )
+        })
+      )
       .catch(error => {
         console.error(error);
         console.error("[ENTITY_RETRIEVE] Failed.");
@@ -527,12 +534,16 @@ export default class ConversationForm extends React.Component {
                     name="entityId"
                     value={value.entityId || ""}
                     onChange={event => this.updateEntityCondition(event, index)}
-                    onSelect={value => this.updateEntityCondition({
-                      target: {
-                        value,
-                        name: "entityId"
-                      }
-                    }, index)}
+                    onSelect={value =>
+                      this.updateEntityCondition(
+                        {
+                          target: {
+                            value,
+                            name: "entityId"
+                          }
+                        },
+                        index
+                      )}
                     items={entities}
                     shouldItemRender={(item, value) => {
                       return (
@@ -540,10 +551,11 @@ export default class ConversationForm extends React.Component {
                       );
                     }}
                     getItemValue={item => item}
-                    renderItem={(item, isHighlighted) =>
+                    renderItem={(item, isHighlighted) => (
                       <SelectItem isHighlighted={isHighlighted}>
                         {item}
-                      </SelectItem>}
+                      </SelectItem>
+                    )}
                   />
                   <StyledSelect
                     name="not"
@@ -571,6 +583,26 @@ export default class ConversationForm extends React.Component {
                     placeholder="Value"
                     onChange={event => this.updateEntityCondition(event, index)}
                   />
+                  {value.comparator !== "REGEX_MATCH" && (
+                    <StyledCheckboxLabel>
+                      Case sensitive?
+                      <input
+                        type="checkbox"
+                        name="caseSensitive"
+                        checked={Boolean(value.caseSensitive)}
+                        onChange={event =>
+                          this.updateEntityCondition(
+                            {
+                              target: {
+                                value: Boolean(event.target.checked),
+                                name: event.target.name
+                              }
+                            },
+                            index
+                          )}
+                      />
+                    </StyledCheckboxLabel>
+                  )}
                   <StyledButton
                     type="button"
                     onClick={event => this.removeEntityCondition(event, index)}

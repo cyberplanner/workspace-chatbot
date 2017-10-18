@@ -80,6 +80,13 @@ const StyledTextArea = styled.textarea`
   }
 `;
 
+const StyledCheckboxLabel = styled.label`
+  display: inline-block;
+  font-size: 12px;
+  display: flex;
+  padding: 11px;
+`;
+
 //  language=SCSS
 const StyledSelect = styled.select`
   & {
@@ -340,7 +347,7 @@ export default class ConversationForm extends React.Component {
     event.preventDefault();
     event.stopPropagation();
     let newConditions = [].concat(this.state.entityConditions);
-    newConditions.push(new EntityCondition(null, false, "EQUALS", null));
+    newConditions.push(new EntityCondition(null, false, "EQUALS", null, false));
     this.setState({ entityConditions: newConditions });
     return false;
   }
@@ -602,6 +609,26 @@ export default class ConversationForm extends React.Component {
                       onChange={event =>
                         this.updateEntityCondition(event, index)}
                     />
+                    {value.comparator !== "REGEX_MATCH" && (
+                      <StyledCheckboxLabel>
+                        Case sensitive?
+                        <input
+                          type="checkbox"
+                          name="caseSensitive"
+                          checked={Boolean(value.caseSensitive)}
+                          onChange={event =>
+                            this.updateEntityCondition(
+                              {
+                                target: {
+                                  value: Boolean(event.target.checked),
+                                  name: event.target.name
+                                }
+                              },
+                              index
+                            )}
+                        />
+                      </StyledCheckboxLabel>
+                    )}
                     <StyledButton
                       type="button"
                       onClick={event =>

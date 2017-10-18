@@ -1,6 +1,7 @@
 const botUtils = require("./lib/botUtils.js");
 const supercharger = require("./lib/supercharger.js");
 const userSuperchargers = require("./superchargers.js");
+const { addEntitiesToUserData } = require("./lib/userDataManager");
 const logger = require("./logger.js");
 let builder;
 
@@ -60,6 +61,7 @@ const setCurrentConversation = (id, session, args, next) => {
  */
 const progressConversation = (session, args, next, conversationData) => {
   logger.debug("[PROGRESSION] INTENT: " + args.intent);
+  logger.debug("[PROGRESSION] children: ", conversationData.current.children);
   let chosenOne = conversationData.current.children.find(
     child =>
       child.intentId === "*" ||
@@ -68,6 +70,8 @@ const progressConversation = (session, args, next, conversationData) => {
   );
   if (chosenOne) {
     logger.debug("[PROGRESSION] Valid node present.");
+    session.message.summary = "{}";
+    addEntitiesToUserData(session.userData.summary, args.entities);
     setCurrentConversation(chosenOne.nodeId, session, args, next);
   } else {
     logger.debug("[PROGRESSION] No valid node present.");

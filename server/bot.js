@@ -86,98 +86,62 @@ const progressConversation = (session, args, next, conversationData) => {
  */
 const checkForFallbacks = (session, args, next, conversationData) => {
   // Get the root of the conversation
-  return databases.conversation
-    .get("root")
-    .then(conversation => {
-      logger.debug("[FALLBACK] Retrieved root.");
-      // Check the root node for a fallback.
-      let chosenOne = conversation.children.find(child => {
-        return (
-          child.intentId === args.intent &&
-          botUtils.checkConditions(child, session, args, next, builder)
-        );
-      });
-      if (chosenOne) {
-        logger.debug("[FALLBACK] Direct child of root is valid. Using.");
-        // We have a viable path from the root - use it.
-        setCurrentConversation(chosenOne.nodeId, session, args, next);
-      } else {
-        logger.debug("[FALLBACK] Direct child of root is NOT valid.");
-        /*
+  return databases.conversation.get("root").then(conversation => {
+    logger.debug("[FALLBACK] Retrieved root.");
+    // Check the root node for a fallback.
+    let chosenOne = conversation.children.find(child => {
+      return (
+        child.intentId === args.intent &&
+        botUtils.checkConditions(child, session, args, next, builder)
+      );
+    });
+    if (chosenOne) {
+      logger.debug("[FALLBACK] Direct child of root is valid. Using.");
+      // We have a viable path from the root - use it.
+      setCurrentConversation(chosenOne.nodeId, session, args, next);
+    } else {
+      logger.debug("[FALLBACK] Direct child of root is NOT valid.");
+      /*
           We're unable to find a good option on the 'root' node.
           So let's inspect it's children for a good option.
         */
-        let replied = false;
-        let responses = [];
+      let childDocs = [];
 
-        // Iterate through
-        conversation.children.forEach(child => {
-          // Push promise into array of responses
-          responses.push(
-            new Promise((resolve, reject) => {
-              // Get child from DB
-              databases.conversation
-                .get(child.nodeId)
-                .then(node => {
-                  let chosenOne = node.children.find(child => {
-                    return (
-                      child.intentId === args.intent &&
-                      botUtils.checkConditions(
-                        child,
-                        session,
-                        args,
-                        next,
-                        builder
-                      )
-                    );
-                  });
-                  if (chosenOne && !replied) {
-                    logger.debug(
-                      "[CONVERSATION] Retrieved fallback by children."
-                    );
-                    replied = true;
-                    // If we have a response for the given intent.... USE IT.
-                    setCurrentConversation(
-                      chosenOne.nodeId,
-                      session,
-                      args,
-                      () => {
-                        resolve();
-                        next();
-                      }
-                    );
-                  } else {
-                    // Otherwise - resolve
-                    resolve();
-                  }
-                })
-                .catch(err => {
-                  logger.error("[ERROR] Loading child fallback node.", err);
-                  resolve();
-                });
-            })
-          );
-        });
-        // Once we've checked every child's potential paths
-        Promise.all(responses).then(
-          () => {
-            // If we've not already replied - move on.
-            if (!replied) {
+      // Generate list of documents for bulk operation
+      conversation.children.forEach(child => {
+        childDocs.push({ id: child.nodeId });
+      });
+
+      //Perform bulk_get operation
+      databases.conversation
+        .bulk_get({ docs: childDocs })
+        .then(response => {
+          let children = [];
+          response.results.forEach(child => {
+            children.push(child.docs[0].ok.children);
+          });
+          let chosenOne = children.find(child => {
+            return (
+              child.intentId === args.intent &&
+              botUtils.checkConditions(child, session, args, next, builder)
+            );
+          });
+          if (chosenOne) {
+            logger.debug("[CONVERSATION] Retrieved fallback by children.");
+            // If we have a response for the given intent.... USE IT.
+            setCurrentConversation(chosenOne.nodeId, session, args, () => {
               next();
-            }
-          },
-          () => {
-            logger.debug("Check for fallbacks rejected.");
-            // If we've not already replied - move on.
+            });
+          } else {
             next();
           }
-        );
-      }
-    })
-    .catch(error => {
-      logger.error("[ERROR] Loading root node for fallback.", error);
-      next();
-    });
+        })
+        .catch(err => {
+          logger.error("[ERROR] Loading child nodes.", err);
+          next();
+        });
+    }
+  });
 };
 
 /**

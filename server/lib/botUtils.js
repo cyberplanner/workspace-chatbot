@@ -49,16 +49,23 @@ const checkConditions = (node, session, args, next, builder) => {
   if (node.conditions && node.conditions.length > 0) {
     return node.conditions.reduce((result, condition) => {
       if (result) {
+        let userState = null;
         let entity = builder.EntityRecognizer.findEntity(
           args.entities,
           condition.entityId
         );
         if (!entity) {
-          // No result, return false;
-          return false;
+          // No result found against entities, try looking in user state.
+          if (session.userData.summary[condition.entityId]) {
+            //Result found in user state.
+            userState = session.userData.summary[condition.entityId];
+          } else {
+            //No result found, return false.
+            return false;
+          }
         }
-        // Store the text value of the entity.
-        let value = entity.entity;
+        // Store the text value of the entity or user state.
+        let value = entity ? entity.entity : userState;
         // Great - we've got a result, carry on.
         let getResult = (condition, value) => {
           switch (condition.comparator) {
@@ -94,6 +101,7 @@ const checkConditions = (node, session, args, next, builder) => {
         // If it's a List entity, let's handle that
         // by checking all entity resolutions
         if (
+          entity &&
           entity.resolution &&
           entity.resolution.values &&
           entity.resolution.values

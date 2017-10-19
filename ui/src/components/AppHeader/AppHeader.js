@@ -23,7 +23,7 @@ class AppHeader extends Component {
   render() {
     return (
       <Header>
-        <img src={yak} />
+        <img src={yak} alt="Yak project logo" />
         <h3>Yak</h3>
       </Header>
     );

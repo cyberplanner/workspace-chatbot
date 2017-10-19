@@ -113,15 +113,22 @@ const checkForFallbacks = (session, args, next, conversationData) => {
           id: child.nodeId
         }));
 
-        //Perform bulk_get operation
+        //Perform bulk_get operation.
         databases.conversation
           .bulk_get({ docs: childDocs })
           .then(response => {
-            let children = [];
-            response.results.map(child => {
-              if (child.docs && child.docs[0] && child.docs[0].ok)
-                children = children.concat(child.docs[0].ok.children);
-            });
+            //Generate list of child nodes from bulk response.
+            let children = response.results.reduce(
+              (output, child) => {
+                if (child.docs && child.docs[0] && child.docs[0].ok)
+                  return {
+                    children: output.children.concat(child.docs[0].ok.children)
+                  };
+                else return output;
+              },
+              { children: [] }
+            ).children;
+            //Attempt to find a matching node.
             let chosenOne = children.find(child => {
               return (
                 child.intentId === args.intent &&
@@ -135,6 +142,7 @@ const checkForFallbacks = (session, args, next, conversationData) => {
                 next();
               });
             } else {
+              //Matching node isn't found, move on.
               next();
             }
           })

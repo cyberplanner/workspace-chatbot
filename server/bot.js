@@ -153,7 +153,7 @@ const checkForFallbacks = (session, args, next, conversationData) => {
       }
     })
     .catch(error => {
-      logger.error("[ERROR]Loading root node for fallback", error);
+      logger.error("[ERROR] Loading root node for fallback", error);
       next();
     });
 };

@@ -107,78 +107,56 @@ const checkForFallbacks = (session, args, next, conversationData) => {
       } else {
         logger.debug("[FALLBACK] Direct child of root is NOT valid.");
         /*
-          We're unable to find a good option on the 'root' node.
-          So let's inspect it's children for a good option.
-        */
-        let replied = false;
-        let responses = [];
+            We're unable to find a good option on the 'root' node.
+            So let's inspect it's children for a good option.
+          */
 
-        // Iterate through
-        conversation.children.forEach(child => {
-          // Push promise into array of responses
-          responses.push(
-            new Promise((resolve, reject) => {
-              // Get child from DB
-              databases.conversation
-                .get(child.nodeId)
-                .then(node => {
-                  let chosenOne = node.children.find(child => {
-                    return (
-                      child.intentId === args.intent &&
-                      botUtils.checkConditions(
-                        child,
-                        session,
-                        args,
-                        next,
-                        builder
-                      )
-                    );
-                  });
-                  if (chosenOne && !replied) {
-                    logger.debug(
-                      "[CONVERSATION] Retrieved fallback by children."
-                    );
-                    replied = true;
-                    // If we have a response for the given intent.... USE IT.
-                    setCurrentConversation(
-                      chosenOne.nodeId,
-                      session,
-                      args,
-                      () => {
-                        resolve();
-                        next();
-                      }
-                    );
-                  } else {
-                    // Otherwise - resolve
-                    resolve();
-                  }
-                })
-                .catch(err => {
-                  logger.error("[ERROR] Loading child fallback node.", err);
-                  resolve();
-                });
-            })
-          );
-        });
-        // Once we've checked every child's potential paths
-        Promise.all(responses).then(
-          () => {
-            // If we've not already replied - move on.
-            if (!replied) {
+        // Generate list of documents for bulk operation
+        let childDocs = conversation.children.map(child => ({
+          id: child.nodeId
+        }));
+
+        //Perform bulk_get operation.
+        databases.conversation
+          .bulk_get({ docs: childDocs })
+          .then(response => {
+            //Generate list of child nodes from bulk response.
+            let children = response.results.reduce(
+              (output, child) => {
+                if (child.docs && child.docs[0] && child.docs[0].ok)
+                  return {
+                    children: output.children.concat(child.docs[0].ok.children)
+                  };
+                else return output;
+              },
+              { children: [] }
+            ).children;
+            //Attempt to find a matching node.
+            let chosenOne = children.find(child => {
+              return (
+                child.intentId === args.intent &&
+                botUtils.checkConditions(child, session, args, next, builder)
+              );
+            });
+            if (chosenOne) {
+              logger.debug("[CONVERSATION] Retrieved fallback by children.");
+              // If we have a response for the given intent.... USE IT.
+              setCurrentConversation(chosenOne.nodeId, session, args, () => {
+                next();
+              });
+            } else {
+              //Matching node isn't found, move on.
               next();
             }
-          },
-          () => {
-            logger.debug("Check for fallbacks rejected.");
-            // If we've not already replied - move on.
+          })
+          .catch(err => {
+            logger.error("[ERROR] Retrieving child nodes.", err);
             next();
-          }
-        );
+          });
       }
     })
     .catch(error => {
-      logger.error("[ERROR] Loading root node for fallback.", error);
+      logger.error("[ERROR] Loading root node for fallback", error);
       next();
     });
 };

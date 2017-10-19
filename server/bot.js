@@ -70,7 +70,6 @@ const progressConversation = (session, args, next, conversationData) => {
   );
   if (chosenOne) {
     logger.debug("[PROGRESSION] Valid node present.");
-    session.message.summary = "{}";
     addEntitiesToUserData(session.userData.summary, args.entities);
     setCurrentConversation(chosenOne.nodeId, session, args, next);
   } else {

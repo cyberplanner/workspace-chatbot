@@ -107,12 +107,11 @@ const checkForFallbacks = (session, args, next, conversationData) => {
             We're unable to find a good option on the 'root' node.
             So let's inspect it's children for a good option.
           */
-        let childDocs = [];
 
         // Generate list of documents for bulk operation
-        conversation.children.map(child =>
-          childDocs.push({ id: child.nodeId })
-        );
+        let childDocs = conversation.children.map(child => ({
+          id: child.nodeId
+        }));
 
         //Perform bulk_get operation
         databases.conversation

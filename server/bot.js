@@ -118,7 +118,8 @@ const checkForFallbacks = (session, args, next, conversationData) => {
         .then(response => {
           let children = [];
           response.results.forEach(child => {
-            children.push(child.docs[0].ok.children);
+            if (child.docs && child.docs[0] && child.docs[0].ok)
+              children = children.concat(child.docs[0].ok.children);
           });
           let chosenOne = children.find(child => {
             return (
@@ -137,7 +138,7 @@ const checkForFallbacks = (session, args, next, conversationData) => {
           }
         })
         .catch(err => {
-          logger.error("[ERROR] Loading child nodes.", err);
+          logger.error("[ERROR] Retrieving child nodes.", err);
           next();
         });
     }

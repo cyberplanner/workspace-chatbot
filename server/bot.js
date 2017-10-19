@@ -102,9 +102,9 @@ const checkForFallbacks = (session, args, next, conversationData) => {
     } else {
       logger.debug("[FALLBACK] Direct child of root is NOT valid.");
       /*
-          We're unable to find a good option on the 'root' node.
-          So let's inspect it's children for a good option.
-        */
+            We're unable to find a good option on the 'root' node.
+            So let's inspect it's children for a good option.
+          */
       let childDocs = [];
 
       // Generate list of documents for bulk operation

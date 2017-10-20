@@ -1,17 +1,21 @@
 const Middleware = require("../model/middleware");
+const InvalidTypeError = require("../errors/InvalidTypeError");
 
 class MiddlewareStore {
   constructor() {
     this._middleware = [];
   }
 
+  /**
+   * Registers a middleware object in the store.
+   * @param {Middleware} middlewareObject 
+   * @throws InvalidTypeError
+   */
   register(middlewareObject) {
     if (middlewareObject instanceof Middleware) {
       this._middleware.push(middlewareObject);
     } else {
-      throw new Error(
-        "Middleware passed is of an invalid type. Should be an instance of Middleware class"
-      );
+      throw new InvalidTypeError("Middleware", Middleware.name);
     }
   }
 

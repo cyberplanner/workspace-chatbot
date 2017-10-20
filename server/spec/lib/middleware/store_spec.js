@@ -1,6 +1,8 @@
 const Middleware = require("../../../lib/model/middleware");
 const MiddlewareStore = require("../../../lib/middleware/store");
 
+const InvalidTypeError = require("../../../lib/errors/InvalidTypeError");
+
 // Test Data
 const MiddlewareItem = new Middleware(true, false, () => 321);
 const MiddlewareItem2 = new Middleware(true, false, () => 456);
@@ -26,8 +28,9 @@ describe("Middleware Store", () => {
     try {
       MiddlewareStore.register(InvalidMiddleware);
     } catch (e) {
+      expect(e.constructor.name).toEqual(InvalidTypeError.name);
       expect(e.message).toEqual(
-        "Middleware passed is of an invalid type. Should be an instance of Middleware class"
+        "Middleware passed is of an invalid type. Expected instance of: Middleware"
       );
     }
 

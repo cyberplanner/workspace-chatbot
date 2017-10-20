@@ -1,6 +1,6 @@
 const Middleware = require("../model/middleware");
 
-class MiddlewareModule {
+class MiddlewareStore {
   constructor() {
     this._middleware = [];
   }
@@ -20,4 +20,4 @@ class MiddlewareModule {
   }
 }
 
-module.exports = new MiddlewareModule();
+module.exports = new MiddlewareStore();

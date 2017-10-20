@@ -6,7 +6,7 @@ class MiddlewareStore {
   }
 
   register(middlewareObject) {
-    if (middlewareObject.constructor.name === Middleware.constructor.name) {
+    if (middlewareObject instanceof Middleware) {
       this._middleware.push(middlewareObject);
     } else {
       throw new Error(

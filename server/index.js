@@ -21,7 +21,7 @@ const botComponents = require("./lib/botComponents");
 const dbcon = require("./lib/dbConnection");
 const botHandler = require("./bot.js");
 const expressMiddleware = require("./lib/expressMiddleware");
-const middlewareExecutor = require("./lib/middleware/store");
+const middlewareStore = require("./lib/middleware/store");
 const middlewareExecutor = require("./lib/middleware/executor");
 let botLogger = require("./lib/botLogger");
 
@@ -104,13 +104,25 @@ const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 
 bot.use({
-  botbuilder: (event, next) => {
+  receive: (event, next) => {
+    logger.info("[MIDDLEWARE] Triggering Recieve");
     // Execute all registered "recieve" middleware.
-    middlewareExecutor.execute(botMiddleware, middlewareExecutor.types.RECIEVE);
+    middlewareExecutor.execute(
+      botMiddleware,
+      middlewareExecutor.types.RECIEVE,
+      event,
+      next
+    );
   },
   send: (event, next) => {
+    logger.info("[MIDDLEWARE] Triggering Send");
     // Execute all registered "send" middleware.
-    middlewareExecutor.execute(botMiddleware, middlewareExecutor.types.SEND);
+    middlewareExecutor.execute(
+      botMiddleware,
+      middlewareExecutor.types.SEND,
+      event,
+      next
+    );
   }
 });
 

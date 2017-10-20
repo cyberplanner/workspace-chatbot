@@ -1,7 +1,7 @@
 class Middleware {
   constructor(executeOnRecieve, executeOnSend, middlewareFunction) {
-    this._executeOnRecieve = new Boolean(executeOnRecieve);
-    this._executeOnSend = new Boolean(executeOnSend);
+    this._executeOnRecieve = Boolean(executeOnRecieve);
+    this._executeOnSend = Boolean(executeOnSend);
     this._middleware = middlewareFunction;
   }
   get recieve() {

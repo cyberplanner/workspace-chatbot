@@ -21,6 +21,8 @@ const botComponents = require("./lib/botComponents");
 const dbcon = require("./lib/dbConnection");
 const botHandler = require("./bot.js");
 const expressMiddleware = require("./lib/expressMiddleware");
+const middlewareStore = require("./lib/middleware/store");
+const middlewareExecutor = require("./lib/middleware/executor");
 let botLogger = require("./lib/botLogger");
 
 //=========================================================
@@ -87,24 +89,10 @@ const swaggerSpec = swaggerJSDoc(options);
 // }
 //
 
-let botMiddleware = [
-  {
-    recieve: false,
-    send: true,
-    middleware: (event, next) => {
-      logger.debug("[SEND] " + event.text);
-      next();
-    }
-  },
-  {
-    recieve: true,
-    send: false,
-    middleware: (event, next) => {
-      logger.debug("[RECIEVE] " + event.message.text);
-      next();
-    }
-  }
-];
+// Pull in registration document
+require("./middleware");
+
+let botMiddleware = middlewareStore.middleware;
 
 //=========================================================
 // Bots Dialogs
@@ -116,43 +104,25 @@ const recognizer = botComponents.getRecognizer();
 const dialog = botComponents.getDialog();
 
 bot.use({
-  botbuilder: (event, next) => {
-    let current = -1;
+  receive: (event, next) => {
+    logger.info("[MIDDLEWARE] Triggering Recieve");
     // Execute all registered "recieve" middleware.
-    const executor = () => {
-      current++;
-      if (
-        botMiddleware &&
-        botMiddleware[current] &&
-        botMiddleware[current].recieve
-      ) {
-        botMiddleware[current].middleware(event, executor);
-      } else if (!botMiddleware || !botMiddleware[current]) {
-        next();
-      } else {
-        executor();
-      }
-    };
-    executor();
+    middlewareExecutor.execute(
+      botMiddleware,
+      middlewareExecutor.types.RECIEVE,
+      event,
+      next
+    );
   },
   send: (event, next) => {
+    logger.info("[MIDDLEWARE] Triggering Send");
     // Execute all registered "send" middleware.
-    let current = -1;
-    const executor = () => {
-      current++;
-      if (
-        botMiddleware &&
-        botMiddleware[current] &&
-        botMiddleware[current].send
-      ) {
-        botMiddleware[current].middleware(event, executor);
-      } else if (!botMiddleware || !botMiddleware[current]) {
-        next();
-      } else {
-        executor();
-      }
-    };
-    executor();
+    middlewareExecutor.execute(
+      botMiddleware,
+      middlewareExecutor.types.SEND,
+      event,
+      next
+    );
   }
 });
 

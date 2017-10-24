@@ -40,11 +40,11 @@ const setCurrentConversation = (id, session, args, next) => {
         current: conversation
       };
       logger.debug("[CONVERSATION] Setting current");
-      next();
+      next(args);
     })
     .catch(error => {
       logger.error("[CONVERSATION] Failed to set current", error);
-      next();
+      next(args);
     });
 };
 

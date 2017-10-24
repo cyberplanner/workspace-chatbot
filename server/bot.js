@@ -64,9 +64,10 @@ const progressConversation = (session, args, next, conversationData) => {
   logger.debug("[PROGRESSION] children: ", conversationData.current.children);
   let chosenOne = conversationData.current.children.find(
     child =>
-      child.intentId === "*" ||
-      (child.intentId === args.intent &&
-        botUtils.checkConditions(child, session, args, next, builder))
+      // Intent is a wildcard or matches provided intent
+      (child.intentId === "*" || child.intentId === args.intent) &&
+      // And conditions match
+      botUtils.checkConditions(child, session, args, next, builder)
   );
   if (chosenOne) {
     logger.debug("[PROGRESSION] Valid node present.");

@@ -23,8 +23,8 @@
     "precommit": "lint-staged",
     "bootstrap": "yarn && cd server && yarn && cd ../ui && yarn && cd ../",
     "server": "npm run --prefix ./server start",
-    "start": "lerna run start",
-    "test": "npm run --prefix ./server test && npm run --prefix ./ui test",
+    "start": "lerna run start --stream",
+    "test": "lerna run test --stream",
     "build": "npm run --prefix ./ui build && mv ./ui/build/ ./server/public/"
   },
   "devDependencies": {

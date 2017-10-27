@@ -1,4 +1,5 @@
 {
+  "name": "yak-server",
   "main": "index.js",
   "scripts": {
     "test": "jasmine-node spec --junitreport",

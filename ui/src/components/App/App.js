@@ -4,7 +4,6 @@ import "botframework-webchat/botchat.css";
 import "./App.css";
 import { ThemeProvider } from "styled-components";
 import { BrowserRouter as Router, Route } from "react-router-dom";
-import HomeContainer from "../../containers/HomeContainer";
 import ChatbotContainer from "../../containers/ChatbotContainer";
 import ConversationContainer from "../../containers/ConversationContainer";
 import AddIntentContainer from "../../containers/AddIntentContainer";
@@ -29,13 +28,8 @@ class App extends Component {
           <RouteContainer>
             <AppHeader />
             <Route exact path="/" component={ChatbotContainer} />
-            <Route exact path="/admin" component={HomeContainer} />
+            <Route exact path="/admin" component={ConversationContainer} />
             <Route exact path="/admin/agent" component={AgentChatContainer} />
-            <Route
-              exact
-              path="/admin/conversation"
-              component={ConversationContainer}
-            />
             <Route exact path="/addIntent" component={AddIntentContainer} />
             <Route
               path="/addIntent/:intentId/:response"

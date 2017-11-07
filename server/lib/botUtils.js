@@ -1,3 +1,4 @@
+const logger = require("../logger");
 /**
  * Setup prototype on string for replacing between two indexes
  */
@@ -47,19 +48,34 @@ const processResponse = (session, message) => {
  */
 const checkConditions = (node, session, args, next, builder) => {
   if (node.conditions && node.conditions.length > 0) {
+    logger.info("[UTILS] Checking conditions");
     return node.conditions.reduce((result, condition) => {
+      logger.debug("[CONDITIONS] Looping - result is", result);
+      logger.debug("[CONDITIONS] Looping - condition is", condition);
       if (result) {
+        logger.info("[CONDITIONS] We have a result.");
         let userState = null;
         let entity = builder.EntityRecognizer.findEntity(
           args.entities,
           condition.entityId
         );
+        logger.debug("[CONDITIONS] Entity is:", entity);
         if (!entity) {
+          logger.info("[CONDITIONS] Entity is falsey");
           // No result found against entities, try looking in user state.
-          if (session.userData.summary[condition.entityId]) {
+          if (
+            session.userData.summary[condition.entityId] &&
+            condition.checkUserData
+          ) {
+            logger.info(
+              "[CONDITIONS] Found in userdata, soldiering on.",
+              condition.entityId,
+              session.userData.summary[condition.entityId]
+            );
             //Result found in user state.
             userState = session.userData.summary[condition.entityId];
           } else {
+            logger.info("[CONDITIONS] Nothing in userdata - returning false");
             //No result found, return false.
             return false;
           }
@@ -140,6 +156,7 @@ const checkConditions = (node, session, args, next, builder) => {
     }, true);
   } else {
     // No conditions present - just return true.
+    logger.info("[UTILS] No Conditions present");
     return true;
   }
 };

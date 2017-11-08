@@ -28,6 +28,9 @@
                 },
                 "value": {
                   "type": "string"
+                },
+                "checkUserData": {
+                  "type": "boolean"
                 }
               },
               "required": [

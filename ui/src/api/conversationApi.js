@@ -23,7 +23,29 @@ export const retrieveAllConversationNodes = () => {
     .then(checkStatus)
     .then(parseJSON)
     .then(results => {
-      return results.rows;
+      console.log(results.rows);
+      let res = results.rows.map(item => {
+        return Object.assign({}, item, {
+          doc: Object.assign({}, item.doc, {
+            children: item.doc.children.map(child =>
+              Object.assign({}, child, {
+                conditions: child.conditions.map(condition =>
+                  Object.assign({}, condition, {
+                    caseSensitive: Boolean(condition.caseSensitive),
+                    checkUserData: Boolean(condition.checkUserData),
+                    comparator: condition.comparator,
+                    entityId: condition.entityId,
+                    not: Boolean(condition.not),
+                    value: condition.value
+                  })
+                )
+              })
+            )
+          })
+        });
+      });
+      console.log(res);
+      return res;
     });
 };
 

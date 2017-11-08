@@ -38,8 +38,7 @@
                 "comparator",
                 "value",
                 "not",
-                "caseSensitive",
-                "checkUserData"
+                "caseSensitive"
               ],
               "type": "object"
             },

@@ -347,7 +347,9 @@ export default class ConversationForm extends React.Component {
     event.preventDefault();
     event.stopPropagation();
     let newConditions = [].concat(this.state.entityConditions);
-    newConditions.push(new EntityCondition(null, false, "EQUALS", null, false));
+    newConditions.push(
+      new EntityCondition(null, false, "EQUALS", null, false, false)
+    );
     this.setState({ entityConditions: newConditions });
     return false;
   }

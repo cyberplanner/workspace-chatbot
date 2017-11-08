@@ -596,4 +596,68 @@ describe("checkConditions", () => {
       })
     ).toEqual(false);
   });
+
+  it("should return true if valid userData condition present in node", () => {
+    let node = {
+      conditions: [
+        {
+          entityId: "test",
+          not: false,
+          comparator: "EQUALS",
+          value: "Company Car",
+          checkUserData: true
+        }
+      ]
+    };
+    let session = {
+      userData: {
+        summary: {
+          test: "Company Car"
+        }
+      }
+    };
+    let args = {
+      entities: []
+    };
+    let next = () => {};
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => null
+        }
+      })
+    ).toEqual(true);
+  });
+
+  it("should return false if valid userData condition present in node but checkUserData false", () => {
+    let node = {
+      conditions: [
+        {
+          entityId: "test",
+          not: false,
+          comparator: "EQUALS",
+          value: "Company Car",
+          checkUserData: false
+        }
+      ]
+    };
+    let session = {
+      userData: {
+        summary: {
+          test: "Company Car"
+        }
+      }
+    };
+    let args = {
+      entities: []
+    };
+    let next = () => {};
+    expect(
+      utils.checkConditions(node, session, args, next, {
+        EntityRecognizer: {
+          findEntity: () => null
+        }
+      })
+    ).toEqual(false);
+  });
 });

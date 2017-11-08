@@ -23,8 +23,7 @@ export const retrieveAllConversationNodes = () => {
     .then(checkStatus)
     .then(parseJSON)
     .then(results => {
-      console.log(results.rows);
-      let res = results.rows.map(item => {
+      return results.rows.map(item => {
         return Object.assign({}, item, {
           doc: Object.assign({}, item.doc, {
             children: item.doc.children.map(child =>
@@ -44,8 +43,6 @@ export const retrieveAllConversationNodes = () => {
           })
         });
       });
-      console.log(res);
-      return res;
     });
 };
 

@@ -31,12 +31,11 @@ const ErrorContainer = styled(ErrorSection)`
 
       & > a {
         color: rgba(0, 0, 0, 0.8);
-        text-decoration: none;
-        &:hover {
-          text-decoration: underline;
-        }
         &:visited {
           color: rgba(0, 0, 0, 0.8);
+        }
+        &:hover {
+          color: rgba(50, 50, 50, 0.8);
         }
       }
     }

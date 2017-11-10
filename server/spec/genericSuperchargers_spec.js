@@ -37,6 +37,12 @@ describe("Optional Question Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {},
@@ -58,14 +64,21 @@ describe("Optional Question Supercharger", () => {
     expect(mockSession.send).not.toHaveBeenCalled();
   });
 
-  it("should NOT skip if userData doesn't exist for KEY", () => {
+  it("should NOT skip if no children", () => {
     let optional = genericSuperchargers.optionalQuestion;
     let skip = jasmine.createSpy("skip");
+    let next = jasmine.createSpy("next");
 
     let mockSession = {
       userData: {
         summary: {
-          email: "dancotton@test.com"
+          age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: []
+          }
         }
       },
       conversationData: {},
@@ -78,10 +91,52 @@ describe("Optional Question Supercharger", () => {
     };
 
     // Call supercharger function
-    optional.function(mockSession, {}, {}, mockCustomArgs, skip);
+    optional.function(mockSession, {}, next, mockCustomArgs, skip);
 
     // Assert that skip was NOT called
     expect(skip).not.toHaveBeenCalled();
+
+    // Assert that next was called
+    expect(next).toHaveBeenCalled();
+
+    // Assert that session.send (sending question) was NOT called
+    expect(mockSession.send).not.toHaveBeenCalled();
+  });
+
+  it("should NOT skip if userData doesn't exist for KEY", () => {
+    let optional = genericSuperchargers.optionalQuestion;
+    let skip = jasmine.createSpy("skip");
+    let next = jasmine.createSpy("next");
+
+    let mockSession = {
+      userData: {
+        summary: {
+          email: "dancotton@test.com"
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
+        }
+      },
+      conversationData: {},
+      send: jasmine.createSpy("send")
+    };
+
+    let mockCustomArgs = {
+      KEY: "age",
+      QUESTION: "How old are you?"
+    };
+
+    // Call supercharger function
+    optional.function(mockSession, {}, next, mockCustomArgs, skip);
+
+    // Assert that skip was NOT called
+    expect(skip).not.toHaveBeenCalled();
+
+    // Assert that next was called
+    expect(next).toHaveBeenCalled();
 
     // Assert that session.send (sending question) was called
     // and that it was passed the question provided as a customArgument.
@@ -96,6 +151,12 @@ describe("Optional Question Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {},
@@ -120,11 +181,18 @@ describe("Optional Question Supercharger", () => {
   it("should NOT set value of skip if userData exists for KEY", () => {
     let optional = genericSuperchargers.optionalQuestion;
     let skip = jasmine.createSpy("skip");
+    let next = jasmine.createSpy("next");
 
     let mockSession = {
       userData: {
         summary: {
           email: "dancotton@test.com"
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {},
@@ -137,7 +205,10 @@ describe("Optional Question Supercharger", () => {
     };
 
     // Call supercharger function
-    optional.function(mockSession, {}, {}, mockCustomArgs, skip);
+    optional.function(mockSession, {}, next, mockCustomArgs, skip);
+
+    // Assert that next was called
+    expect(next).toHaveBeenCalled();
 
     // Assert that skip value in conversationData is equal to KEY.
     expect(mockSession.conversationData.skip).not.toEqual("age");
@@ -183,6 +254,12 @@ describe("Store Answer Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {
@@ -214,6 +291,12 @@ describe("Store Answer Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {
@@ -245,6 +328,12 @@ describe("Store Answer Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {
@@ -273,6 +362,12 @@ describe("Store Answer Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {
@@ -294,6 +389,7 @@ describe("Store Answer Supercharger", () => {
     let storeAnswer = genericSuperchargers.storeAnswer;
     let skip = jasmine.createSpy("skip");
     let skip2 = jasmine.createSpy("skip2");
+    let next = jasmine.createSpy("next");
 
     // Setup data required to cause storage to occur
     let mockSession = {
@@ -303,6 +399,12 @@ describe("Store Answer Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {
@@ -319,6 +421,12 @@ describe("Store Answer Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {
@@ -333,19 +441,87 @@ describe("Store Answer Supercharger", () => {
     };
 
     // Call supercharger function
-    storeAnswer.function(mockSession, {}, {}, mockCustomArgs, skip);
+    storeAnswer.function(mockSession, {}, next, mockCustomArgs, skip);
 
     // Call supercharger function with skippable parameters
-    storeAnswer.function(mockSessionSkip, {}, {}, mockCustomArgs, skip2);
+    storeAnswer.function(mockSessionSkip, {}, next, mockCustomArgs, skip2);
 
     // Assert that both skips have been called.
     expect(skip).toHaveBeenCalled();
     expect(skip2).toHaveBeenCalled();
   });
 
+  it("should always call skip unless no children provided", () => {
+    let storeAnswer = genericSuperchargers.storeAnswer;
+    let skip = jasmine.createSpy("skip");
+    let skip2 = jasmine.createSpy("skip2");
+    let next = jasmine.createSpy("next");
+
+    // Setup data required to cause storage to occur
+    let mockSession = {
+      message: {
+        text: 34
+      },
+      userData: {
+        summary: {
+          age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: []
+          }
+        }
+      },
+      conversationData: {
+        skip: null
+      },
+      send: jasmine.createSpy("send")
+    };
+
+    // Setup data required to cause no-change
+    let mockSessionSkip = {
+      message: {
+        text: 34
+      },
+      userData: {
+        summary: {
+          age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: []
+          }
+        }
+      },
+      conversationData: {
+        skip: "age"
+      },
+      send: jasmine.createSpy("send")
+    };
+
+    let mockCustomArgs = {
+      KEY: "age",
+      MESSAGE: "Thanks, we've got your age."
+    };
+
+    // Call supercharger function
+    storeAnswer.function(mockSession, {}, next, mockCustomArgs, skip);
+
+    // Call supercharger function with skippable parameters
+    storeAnswer.function(mockSessionSkip, {}, next, mockCustomArgs, skip2);
+
+    // Assert that both skips have been called.
+    expect(skip).not.toHaveBeenCalled();
+    expect(skip2).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
+  });
+
   it("should reset skip if it matched the key provided", () => {
     let storeAnswer = genericSuperchargers.storeAnswer;
     let skip = jasmine.createSpy("skip");
+    let next = jasmine.createSpy("next");
 
     let mockSession = {
       message: {
@@ -354,6 +530,12 @@ describe("Store Answer Supercharger", () => {
       userData: {
         summary: {
           age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: [{}]
+          }
         }
       },
       conversationData: {
@@ -368,7 +550,7 @@ describe("Store Answer Supercharger", () => {
     };
 
     // Call supercharger function
-    storeAnswer.function(mockSession, {}, {}, mockCustomArgs, skip);
+    storeAnswer.function(mockSession, {}, next, mockCustomArgs, skip);
 
     // Assert skip has been reset.
     expect(mockSession.conversationData.skip).toEqual(null);

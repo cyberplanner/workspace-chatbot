@@ -1,5 +1,9 @@
 import React, { Component } from "react";
+import styled from "styled-components";
 import SortableTree, { toggleExpandedForAll } from "react-sortable-tree";
+
+import Logo from "../../components/Logo";
+import ErrorSection from "../../components/ErrorSection";
 import ConversationNodeView from "./ConversationNode";
 import {
   bulkDeleteConversationNodes,
@@ -17,15 +21,6 @@ import { getKnowledgeById, bulkDeleteKnowledge } from "../../api/knowledgeApi";
 import ConversationNode from "../../model/conversationNode";
 import CreateConversation from "../../components/CreateConversation";
 import { KnowledgeManagmentService } from "../../components/KnowledgeManagmentService";
-import styled from "styled-components";
-
-const ErrorSection = styled.section`
-  opacity: 0.8;
-  text-align: center;
-  & img {
-    height: 150px;
-  }
-`;
 
 const StyledButton = styled.button`
   background: white;
@@ -603,10 +598,7 @@ class ConversationContainer extends Component {
         </SearchContainer>
         {this.state.error && (
           <ErrorSection id="error">
-            <img
-              src={require("../../components/AppHeader/Yak.svg")}
-              alt="Yak Project logo"
-            />
+            <Logo />
             <h2>Oops, Something went wrong!</h2>
             <p>{this.state.error.message}</p>
             <StyledButton onClick={this.updateFromServer}>Retry</StyledButton>

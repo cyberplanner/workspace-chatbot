@@ -15,9 +15,8 @@ const crossOriginMiddleware = (req, res, next) => {
     if (allowedOrigins.indexOf(origin) > -1) {
       res.setHeader("Access-Control-Allow-Origin", origin);
     }
-
-    return next();
   }
+  return next();
 };
 
 module.exports = {

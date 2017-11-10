@@ -451,6 +451,73 @@ describe("Store Answer Supercharger", () => {
     expect(skip2).toHaveBeenCalled();
   });
 
+  it("should always call skip unless no children provided", () => {
+    let storeAnswer = genericSuperchargers.storeAnswer;
+    let skip = jasmine.createSpy("skip");
+    let skip2 = jasmine.createSpy("skip2");
+    let next = jasmine.createSpy("next");
+
+    // Setup data required to cause storage to occur
+    let mockSession = {
+      message: {
+        text: 34
+      },
+      userData: {
+        summary: {
+          age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: []
+          }
+        }
+      },
+      conversationData: {
+        skip: null
+      },
+      send: jasmine.createSpy("send")
+    };
+
+    // Setup data required to cause no-change
+    let mockSessionSkip = {
+      message: {
+        text: 34
+      },
+      userData: {
+        summary: {
+          age: 54
+        },
+        conversation: {
+          current: {
+            // Should ensure it has a child - otherwise skip will not be called
+            children: []
+          }
+        }
+      },
+      conversationData: {
+        skip: "age"
+      },
+      send: jasmine.createSpy("send")
+    };
+
+    let mockCustomArgs = {
+      KEY: "age",
+      MESSAGE: "Thanks, we've got your age."
+    };
+
+    // Call supercharger function
+    storeAnswer.function(mockSession, {}, next, mockCustomArgs, skip);
+
+    // Call supercharger function with skippable parameters
+    storeAnswer.function(mockSessionSkip, {}, next, mockCustomArgs, skip2);
+
+    // Assert that both skips have been called.
+    expect(skip).not.toHaveBeenCalled();
+    expect(skip2).not.toHaveBeenCalled();
+    expect(next).toHaveBeenCalled();
+  });
+
   it("should reset skip if it matched the key provided", () => {
     let storeAnswer = genericSuperchargers.storeAnswer;
     let skip = jasmine.createSpy("skip");

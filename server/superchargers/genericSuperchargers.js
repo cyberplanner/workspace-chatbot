@@ -26,15 +26,22 @@ const optionalQuestion = new supercharger.Detail(
   // Logic for supercharger
   (session, args, next, customArguments, skip) => {
     if (session.userData.summary[customArguments.KEY]) {
-      logger.debug(
-        "[OPTIONAL-Q] DATA EXISTING: " +
-          session.userData.summary[customArguments.KEY]
+      logger.info(
+        "[OPTIONAL-Q] DATA EXISTING: ",
+        session.userData.summary[customArguments.KEY]
       );
       session.conversationData.skip = customArguments.KEY;
-      skip(session, args, next);
+      if (session.userData.conversation.current.children.length > 0) {
+        logger.info("[OPTIONAL-Q] Skipping.");
+        skip(session, args, next);
+      } else {
+        logger.info("[OPTIONAL-Q] Not skipping, calling next.");
+        next();
+      }
     } else {
-      logger.debug("[OPTIONAL-Q] DATA DOESN'T EXIST");
+      logger.info("[OPTIONAL-Q] DATA DOESN'T EXIST");
       session.send(customArguments.QUESTION);
+      next();
     }
   },
 
@@ -70,12 +77,23 @@ const storeAnswer = new supercharger.Detail(
       session.userData.summary[customArguments.KEY] &&
       session.conversationData.skip === customArguments.KEY
     ) {
+      logger.info(
+        "[STORE-ANSWER] Optional Q was skipped, so reset skip and move on."
+      );
       session.conversationData.skip = null;
     } else {
+      logger.info("[STORE-ANSWER] No optional Q skipped, save under userData.");
       session.userData.summary[customArguments.KEY] = session.message.text;
     }
+    logger.info("[STORE-ANSWER] Sending message: ", customArguments.message);
     session.send(customArguments.MESSAGE);
-    skip(session, args, next);
+    if (session.userData.conversation.current.children.length > 0) {
+      logger.info("[STORE-ANSWER] Skipping.");
+      skip(session, args, next);
+    } else {
+      logger.info("[STORE-ANSWER] Not skipping, calling next.");
+      next();
+    }
   },
 
   // Supercharger ID.
